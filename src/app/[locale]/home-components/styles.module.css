@@ -1,0 +1,7 @@
+.SVGContainer {
+  @apply absolute flex items-center justify-center w-full h-full -z-10;
+
+  & svg {
+    @apply w-full h-full;
+  }
+}

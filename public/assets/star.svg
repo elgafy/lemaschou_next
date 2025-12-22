@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="OBJECT" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 300">
+  <!-- Generator: Adobe Illustrator 29.0.1, SVG Export Plug-In . SVG Version: 2.1.0 Build 192)  -->
+  <defs>
+    <style>
+      .st0 {
+        fill: url(#linear-gradient2);
+      }
+
+      .st1 {
+        fill: url(#linear-gradient10);
+      }
+
+      .st2 {
+        fill: url(#linear-gradient1);
+      }
+
+      .st3 {
+        fill: url(#linear-gradient9);
+      }
+
+      .st4 {
+        fill: url(#linear-gradient18);
+      }
+
+      .st5 {
+        fill: url(#linear-gradient8);
+      }
+
+      .st6 {
+        fill: url(#linear-gradient11);
+      }
+
+      .st7 {
+        fill: url(#linear-gradient16);
+      }
+
+      .st8 {
+        fill: url(#linear-gradient19);
+      }
+
+      .st9 {
+        fill: url(#linear-gradient12);
+      }
+
+      .st10 {
+        fill: url(#linear-gradient7);
+      }
+
+      .st11 {
+        fill: url(#linear-gradient4);
+      }
+
+      .st12 {
+        fill: url(#linear-gradient14);
+      }
+
+      .st13 {
+        fill: url(#linear-gradient5);
+      }
+
+      .st14 {
+        fill: url(#linear-gradient3);
+      }
+
+      .st15 {
+        fill: url(#linear-gradient15);
+      }
+
+      .st16 {
+        fill: url(#linear-gradient17);
+      }
+
+      .st17 {
+        fill: url(#linear-gradient6);
+      }
+
+      .st18 {
+        fill: url(#linear-gradient13);
+      }
+
+      .st19 {
+        fill: url(#linear-gradient);
+      }
+    </style>
+    <linearGradient id="linear-gradient" x1="140.11" y1="184.84" x2="25.77" y2="107.65" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#5c1d00"/>
+      <stop offset="1" stop-color="#5c3a39"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient1" x1="36.13" y1="274.62" x2="139.86" y2="200.81" xlink:href="#linear-gradient"/>
+    <linearGradient id="linear-gradient2" x1="229.13" y1="331.52" x2="180.89" y2="184.38" xlink:href="#linear-gradient"/>
+    <linearGradient id="linear-gradient3" x1="150.03" y1="141.17" x2="292.47" y2="141.17" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#5c3a39"/>
+      <stop offset="1" stop-color="#5c1d00"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient4" x1="173.32" y1="22.65" x2="124.11" y2="163.52" xlink:href="#linear-gradient"/>
+    <linearGradient id="linear-gradient5" x1="104.65" y1="141.17" x2="-12.58" y2="141.17" xlink:href="#linear-gradient"/>
+    <linearGradient id="linear-gradient6" x1="79.74" y1="299.37" x2="114.96" y2="196.13" xlink:href="#linear-gradient"/>
+    <linearGradient id="linear-gradient7" x1="96.45" y1="164.76" x2="247.46" y2="257.87" xlink:href="#linear-gradient"/>
+    <linearGradient id="linear-gradient8" x1="150.03" y1="150.01" x2="292.47" y2="150.01" xlink:href="#linear-gradient"/>
+    <linearGradient id="linear-gradient9" x1="185.17" y1="163.08" x2="119.08" y2="24.62" xlink:href="#linear-gradient3"/>
+    <linearGradient id="linear-gradient10" x1=".73" y1="109.38" x2="153.19" y2="185.61" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#5c1d00"/>
+      <stop offset="1" stop-color="#7a4f4e"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient11" x1="74.33" y1="242.34" x2="151" y2="190.94" xlink:href="#linear-gradient10"/>
+    <linearGradient id="linear-gradient12" x1="231.18" y1="281.86" x2="178.91" y2="181.67" xlink:href="#linear-gradient10"/>
+    <linearGradient id="linear-gradient13" x1="282.29" y1="105.71" x2="151.61" y2="148.39" xlink:href="#linear-gradient10"/>
+    <linearGradient id="linear-gradient14" x1="141.38" y1="6.07" x2="135.28" y2="142.85" xlink:href="#linear-gradient10"/>
+    <linearGradient id="linear-gradient15" x1="59.89" y1="117.15" x2="173.58" y2="175.09" xlink:href="#linear-gradient10"/>
+    <linearGradient id="linear-gradient16" x1="76.78" y1="243.92" x2="147.35" y2="141.12" xlink:href="#linear-gradient10"/>
+    <linearGradient id="linear-gradient17" x1="208.31" y1="265.49" x2="118.14" y2="147.87" xlink:href="#linear-gradient10"/>
+    <linearGradient id="linear-gradient18" x1="296.1" y1="101.8" x2="191.56" y2="161.92" xlink:href="#linear-gradient10"/>
+    <linearGradient id="linear-gradient19" x1="165.59" y1="41.89" x2="162.98" y2="157.33" xlink:href="#linear-gradient10"/>
+  </defs>
+  <g>
+    <polygon class="st19" points="149.97 164.3 149.97 164.33 95.58 181.99 7.53 118.04 149.97 164.3"/>
+    <polygon class="st2" points="150 164.33 150 221.53 61.97 285.5 150 164.33"/>
+    <polygon class="st0" points="204.42 181.99 238.03 285.5 150 164.33 150.03 164.33 204.42 181.99"/>
+    <polygon class="st14" points="292.47 118.04 150.03 164.3 183.64 118.04 292.47 118.04"/>
+    <polygon class="st11" points="150 14.5 150 164.3 149.97 164.3 116.36 118.04 150 14.5"/>
+    <polygon class="st13" points="116.36 118.04 149.97 164.3 7.53 118.04 116.36 118.04"/>
+    <polygon class="st17" points="150 164.33 61.97 285.5 95.58 181.99 149.97 164.33 150 164.33"/>
+    <polygon class="st10" points="150 164.33 238.03 285.5 150 221.53 150 164.33"/>
+    <polygon class="st5" points="292.47 118.04 204.42 181.99 150.03 164.33 150.03 164.3 292.47 118.04"/>
+    <polygon class="st3" points="150 14.5 183.64 118.04 150.03 164.3 150 164.3 150 14.5"/>
+  </g>
+  <g>
+    <polygon class="st1" points="150 164.3 102.2 179.83 24.84 123.65 150 164.3"/>
+    <polygon class="st6" points="150 164.3 150 214.56 72.67 270.77 150 164.3"/>
+    <polygon class="st9" points="197.8 179.83 227.33 270.77 150 164.3 197.8 179.83"/>
+    <polygon class="st18" points="275.16 123.65 150 164.3 179.54 123.65 275.16 123.65"/>
+    <polygon class="st12" points="150 32.71 150 164.3 120.46 123.65 150 32.71"/>
+    <polygon class="st15" points="150 164.3 24.84 123.65 120.46 123.65 150 164.3"/>
+    <polygon class="st7" points="150 164.3 72.67 270.77 102.2 179.83 150 164.3"/>
+    <polygon class="st16" points="150 164.3 227.33 270.77 150 214.56 150 164.3"/>
+    <polygon class="st4" points="275.16 123.65 197.8 179.83 150 164.3 275.16 123.65"/>
+    <polygon class="st8" points="150 32.71 179.54 123.65 150 164.3 150 32.71"/>
+  </g>
+</svg>

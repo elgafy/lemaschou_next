@@ -1,0 +1,111 @@
+{
+  "notFound": {
+    "code": "404 Error",
+    "title": "Page Not Found",
+    "description": "we’re sorry. the page you requested could no be found Please go back to the home page.",
+    "CTA": "Back to Home"
+  },
+  "navbar": {
+    "home": "Home",
+    "menu": "Menu",
+    "venue": "Venue",
+    "faqs": "FAQs",
+    "reservation": "Reservation"
+  },
+  "footer": {
+    "contact": "Contact",
+    "miss": "Never Miss a Recipe",
+    "emailPlaceholder": "Email Address",
+    "description": "Join our subscribers and get best recipe delivered each week!",
+    "owned": "This website is owned by Delta Co. Limited.",
+    "copyright": "© 1963 Le Maschou . All rights Reserved.",
+    "CTA": "Subscribe",
+    "email": "Email",
+    "phone": "Phone",
+    "time": "Working Hours",
+    "location": "Location",
+    "from": "From",
+    "to": "To",
+    "developed": "Developed by"
+  },
+  "index": {
+    "tab": "Le Maschou",
+    "description": "Discover the exquisite dining experience at Le Maschou, a premier restaurant in Saudi Arabia offering a fusion of gourmet international cuisine and traditional flavors. Indulge in carefully crafted dishes made from the freshest ingredients, served in a luxurious and welcoming ambiance. Whether for an intimate dinner or a special celebration, Le Maschou promises an unforgettable culinary journey in the heart of Riyadh. Reserve your table today and elevate your dining experience."
+  },
+  "homePage": {
+    "tab": "Le Maschou",
+    "description": "Discover the exquisite dining experience at Le Maschou, a premier restaurant in Saudi Arabia offering a fusion of gourmet international cuisine and traditional flavors. Indulge in carefully crafted dishes made from the freshest ingredients, served in a luxurious and welcoming ambiance. Whether for an intimate dinner or a special celebration, Le Maschou promises an unforgettable culinary journey in the heart of Riyadh. Reserve your table today and elevate your dining experience.",
+    "venueSection": {
+      "title": "A Special Journey from the Entrance to your Plate",
+      "subtitle": "Experience old town of Cannes vibes.",
+      "link": "Our Venue"
+    },
+    "eventsSection": {
+      "title": "Make sure to attend the popular events.",
+      "event1": "Ramadan",
+      "event2": "Valentine",
+      "event3": "New year"
+    },
+    "menuSection": {
+      "title": "Where every dish is crafted to delight and every moment savored with elegance.",
+      "link": "Our Menu",
+      "faq": "Frequently Asked Questions",
+      "faqsLink": "FAQs",
+      "faqTitle": "Customer frequently ask"
+    },
+    "adComponent": {
+      "linkCTA": "View Details"
+    }
+  },
+  "menuPage": {
+    "tab": "Menu",
+    "title": "Experience exquisite dining with dishes crafted to perfection.",
+    "subtitle": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Neque congue arcu",
+    "heroCTA": "View details",
+    "calories": "CAL",
+    "menuTitle": "Discover Our menu ",
+    "currency": "SAR",
+    "heroTitle": "MENU",
+    "heroText": "Explore a curated selection of exquisite dishes, blending tradition with innovation, designed to elevate your dining experience.",
+    "new": "New",
+    "best": "Best Seller",
+    "featured": "Featured",
+    "ramadanMeals": "Ramadan Meals",
+    "defaultMeals": "Default Meals",
+    "inclusive":"VAT inclusive",
+    "choose": "Choose one",
+    "ramadanMenu": "Ramadan Set Menu",
+    "ramadan":"Ramadan",
+    "setMenu":"Set Menu"
+  },
+  "venuePage": {
+    "tab": "Venue",
+    "subtitle": "Experience the vibrant flavors and inviting ambiance of our restaurant.",
+    "title": "Discover Our venue",
+    "introTitle": "One of the best restaurants in Saudi Arabia.",
+    "introPone": "Your one direction to high-quality Saudi feasts, since 1963 we served in Saudi Arabia.Locals who are proud of the country and want to introduce it to visitors from around the world.  We are perfectly positioned to provide our guests with an extraordinary health experience unlike any they’ve ever tasted. We can confidently claim that our menu is unlike anything else offered in the industry. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum finibus mauris nec tincidunt varius. Ut sagittis, lorem at bibendum ornare, mauris neque venenatis justo, ut gravida mi neque eu lorem. Vestibulum auctor leo sit amet vulputate mollis. Curabitur ac lorem felis. Morbi ullamcorper maximus lorem.",
+    "contactTitle": "Get In Touch",
+    "namePlaceholder": "Name",
+    "emailPlaceholder": "Email",
+    "phonePlaceholder": "Phone Number",
+    "selectPlaceholder": "How did you find us ?",
+    "send": "Send",
+    "workingHours": "Working Hours",
+    "phone": "PHONE",
+    "email": "EMAIL",
+    "from": "From",
+    "to": "To",
+    "about": "About us",
+    "firstAboutText": "Le Maschou was born in 1963 by the founding duo, Jean Biraly and Gerard Fery, who worked fervently to exemplify a high-end quality epicurean experience derived from both excellent tastes, and elegance and panache of medieval France.",
+    "secondAboutText": "Your experience at Le Maschou begins as soon as you set foot in our location. You will be welcomed by the soft crackling and earthy freshness of our open woo-fire, complemented with ambient music, intimately designed to settle you in. The old fashioned cosiness of Maschou's stone walls is inspired by the historical patterns of old-world charm.",
+    "nameValidation": "Name is required",
+    "emailValidation": "Email is required",
+    "emailPattern": "Email is not valid",
+    "phoneValidation": "Phone number is required",
+    "phonePattern": "Please enter a saudi arabian phone number"
+  },
+  "faqsPage": {
+    "title": "FAQ",
+    "subtitle": "Customers frequently ask"
+  }
+}
