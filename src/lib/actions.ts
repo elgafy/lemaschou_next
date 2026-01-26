@@ -17,17 +17,14 @@ const convertDate = function(date: Date): string {
     timeZone: 'Asia/Riyadh',
     dateStyle: 'short',
     });
-    console.log("Converted Date: " + riyadhDate);
-    const dateFormatted = date.toISOString().slice(0, 10);
-    console.log("Formatted Date: " + dateFormatted);
+    // console.log("Converted Date: " + riyadhDate);
     return riyadhDate;
-    // return riyadhDate.replace(/\//g, '-');
 }
 
 export async function checkAvailability(date: Date, guests: number = 2) {
-    console.log(date);
+    // console.log(date);
     const url = process.env.BASE_URL +'reservations/check-availability/' + convertDate(date) + '/' + guests + '/';
-    console.log(url);
+    // console.log(url);
     try {
         const response = await fetch(url, {
             method: 'GET',
@@ -48,7 +45,7 @@ export async function checkAvailability(date: Date, guests: number = 2) {
         }
         if (!response.ok) {
             const res = await response.json();
-            console.log(res);
+            // console.log(res);
             const data = {
                 success: false,
                 message: 'Failed to check availability',
@@ -72,7 +69,7 @@ export async function checkAvailability(date: Date, guests: number = 2) {
 
 export async function makeReservation(formData: any) {
     // console.log("Raw date: " + formData.date);
-    console.log("JSON data: " + JSON.stringify(formData));
+    // console.log("JSON data: " + JSON.stringify(formData));
     formData.date = convertDate(formData.date);
     // console.log("Converted date: " + formData.date);
     const urlencodedData = new URLSearchParams(formData);
@@ -100,13 +97,13 @@ export async function makeReservation(formData: any) {
             //     message: data.message,
 
             // }
-            console.log(data);
+            // console.log(data);
             return data;
         }
         if (!response.ok) {
             // throw new Error(`HTTP error! status: ${response.status}`);
             const res = await response.json();
-            console.log(res);
+            // console.log(res);
             const data = {
                 success: false,
                 message: 'Failed to make reservation'

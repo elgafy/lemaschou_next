@@ -49,7 +49,6 @@ export default async function Reservation({ params: { locale } }: pageProps) {
   setRequestLocale(locale);
 //   const t = await getTranslations({ locale, namespace: "reservationPage" });
   const reservationSettings = await getData("reservations/settings", locale);
-  // console.log(reservationSettings);
 
   return (
     <main className="flex flex-col justify-center items-center reservation-container pt-32">

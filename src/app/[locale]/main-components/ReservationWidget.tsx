@@ -85,20 +85,20 @@ const searchGuests = searchParams.get('guests') || '';
 // Availability check function
 const check = async function(date: Date, guests?: number) {
     setLoading(true);
-    console.log('Availability check for date: ' + date);
+    // console.log('Availability check for date: ' + date);
     const availability = await checkAvailability(date, guests);
-    console.log(availability);
-    console.log(availability?.success);
+    // console.log(availability);
+    // console.log(availability?.success);
     if (availability?.success == true) {
-        console.log('Availability times: ' + {...availability});
+        // console.log('Availability times: ' + {...availability});
         setAvailability(availability?.data);
         setSpecialDay(availability?.specialDay);
         setLoading(false);
-        console.log(`Availability Special Day: ${availability?.specialDay}`);
+        // console.log(`Availability Special Day: ${availability?.specialDay}`);
     } else {
         setAvailability([]);
         setLoading(false);
-        console.log('Failed to fetch availability');
+        // console.log('Failed to fetch availability');
     }
 }
 
@@ -106,7 +106,7 @@ const check = async function(date: Date, guests?: number) {
 const addSearchParams = () => {
     const params = new URLSearchParams(searchParams.toString());
     if (date) {
-        console.log("Search params" + date);
+        // console.log("Search params" + date);
       params.set('date', date.toLocaleString('sv-SE', { timeZone: 'Asia/Riyadh', dateStyle: 'short' }));
     } else {
       params.delete('date');
@@ -186,7 +186,7 @@ const [debouncedDate] = useDebounce(date, 300);
 const [debouncedGuests] = useDebounce(guests, 800);
 useEffect(()=> {
     // console.log("useEffect triggered: ", { date, guests });
-    console.log('Debounce useEffect triggered');
+    // console.log('Debounce useEffect triggered');
     check(debouncedDate, debouncedGuests);
     
 }, [debouncedDate, debouncedGuests]);
@@ -195,7 +195,7 @@ useEffect(()=> {
 useEffect(()=> {
     let price = 0;
     let total = 0;
-    console.log(occasionSelectedItems);
+    // console.log(occasionSelectedItems);
     setOrderItems([]);
     occasionSelectedItems.forEach((itemId: any) => {
         occasionItems.forEach((category: any) => {
@@ -225,14 +225,17 @@ useEffect(()=> {
 
 // Time selection effect
 useEffect(() => {
-    console.log('Time has changed')
-    console.log('Time value: ' + time)
+    // console.log('Time has changed')
+    // console.log('Time value: ' + time)
     if (!time) return;
     setShowSummary(time ? true : false);
     setRemainingTime(bookingWindow);
     const timeItem: any = availability.find((item: any) => item.time === time);
-    let seatingDuration = Math.floor(timeItem?.duration[guests] / 60) + "h";
-    (timeItem?.duration[guests] % 60) > 0 ?  seatingDuration += " : " + (timeItem?.duration[guests] % 60)  + "mins" : "";
+    let seatingT = 0;
+    timeItem.duration[guests] ? seatingT = timeItem.duration[guests] : seatingT = 120; // default duration 2 hours
+    if (guests > 9) seatingT = 210; // default duration 1 hour
+    let seatingDuration = Math.floor(seatingT / 60) + "h";
+    (seatingT % 60) > 0 ?  seatingDuration += " : " + (seatingT % 60)  + "mins" : "";
     setSeatingTime(seatingDuration);
     if (timeItem.payment && timeItem.payment > 0) {
         setDownPayment(timeItem.payment);
@@ -273,9 +276,9 @@ function itemIsAvailable(item: any) {
 
 async function book(values: z.infer<typeof formSchema>) {
     setLoading(true);
-    console.log('form submit');
+    // console.log('form submit');
     const response = await makeReservation(values);
-    console.log(response);
+    // console.log(response);
     setLoading(false);
     if (response.success) {
     // redirect(`${locale}/home`);
@@ -342,7 +345,6 @@ async function book(values: z.infer<typeof formSchema>) {
                                         selected={field.value}
                                         defaultMonth={date}
                                         onSelect={(date) => {
-                                            console.log(date)
                                             field.onChange(date ?? field.value);
                                             // check(date, guests);
                                             setOpen(false)
