@@ -12,7 +12,7 @@ type props = {
   title: string;
   data: Meals;
   lang?: string;
-  grouped: boolean;
+  grouped: boolean | number;
   isRamadan?: boolean
   choose?: string
 };
@@ -31,7 +31,7 @@ function CategorySection({
 
 // users data array
 
-
+console.log(grouped);
 
   const Brackets=memo(function brackets(props:{
     text:string
@@ -56,7 +56,7 @@ function CategorySection({
         </h2>
       </header>
 
-      {grouped ? (
+      {grouped || grouped == 1 ? (
         <div
           className={`w-full grid grid-cols-2 gap-6 tablet:grid-cols-1 bg-[length:100%_100%] px-20 ss:px-10 py-14 ss:py-14 bxs:py-12  relative tablet:pb-20 ${
             data?.length <= 5 ? "bxs:py-5 " : "bxs:pb-20 "

@@ -28,7 +28,6 @@ function CustomLinkWithBG({ href, className, external, title }: props) {
   const bgImg = apiData?.data?.find(
     (item) => item?.type === "button-with-bg"
   )?.image;
-  console.log(apiData);
   
 
   return (

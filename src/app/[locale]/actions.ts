@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 
 export async function getData(url: string, locale: string) {
-  return await fetch(process.env.BASE_URL + url, {
+  const response = await fetch(process.env.BASE_URL + url, {
     cache: "no-store",
     method: "GET",
     headers: {
@@ -12,8 +12,9 @@ export async function getData(url: string, locale: string) {
       lang: locale,
     },
   })
-    .then((res) => res.json())
-    .then((data) => data.data);
+  // console.log(url);
+  // console.log(response);
+  return await response.json().then((data) => data.data);
 }
 export async function getMenuData(url: string, lang: string) {
   return await fetch(process.env.BASE_URL + url, {

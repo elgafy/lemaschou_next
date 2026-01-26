@@ -15,7 +15,7 @@ import { routing } from "@/i18n/routing";
 import Navbar from "./main-components/Navbar";
 import dynamic from "next/dynamic";
 import { getData } from "./actions";
-import { AdsType, HomeProps } from "./AppTypes";
+import { Settings } from "./AppTypes";
 import AdComponent from "./main-components/AdComponent";
 import ReduxContainer from "@/store/redux-container";
 import MicrosoftClarity from "../Metrics/MicrosoftClarity";
@@ -62,9 +62,10 @@ export default async function RootLayout({
 }>) {
   const messages = await getMessages();
   setRequestLocale(locale);
-  const footer = await getData("settings/footer", locale);
-  const homeData: HomeProps = await getData("pages/home", locale);
-  const ads: AdsType = await getData("settings/ad", locale);
+  const settings: Settings = await getData("settings/all", locale);
+  const footer = settings.footer;
+  const ads = settings.ads;
+  const reservationSettings = settings.reservation;
 
   return (
     <html
@@ -85,9 +86,8 @@ export default async function RootLayout({
             </ReduxContainer>
           )}
           <ReduxContainer>
-            <Navbar reservationLink={homeData?.reservation_link} />
+            <Navbar reservationSettings={reservationSettings} />
           </ReduxContainer>
-
           {children}
           <Footer
             phone={footer?.phone}

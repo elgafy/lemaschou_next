@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import { getData } from "../actions";
 import { FAQStype } from "../AppTypes";
 import styles from "./styles.module.css";
-const Hero = dynamic(() => import("./components/Hero"));
+const Hero = dynamic(() => import("../main-components/Hero"));
 const FAQS = dynamic(() => import("../home-components/FAQS"));
 
 export const revalidate = 10;

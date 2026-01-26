@@ -1,3 +1,11 @@
+.hero {
+    @apply flex items-center justify-center h-[469px] relative ss:h-screen overflow-hidden;
+
+    & img:nth-of-type(1) {
+        @apply absolute top-0 left-0 w-full h-full object-cover -z-10 ss:h-1/2;
+    }
+}
+
 .faqs {
     @apply flex flex-col gap-[60px] my-[104px] px-[90px];
 

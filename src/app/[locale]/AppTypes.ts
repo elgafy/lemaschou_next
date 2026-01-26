@@ -109,3 +109,35 @@ export type FAQStype = {
     answer: string;
   }[];
 };
+export type ReservationType = {
+  desc_reservation_seo: string;
+  keywords_reservation_seo: string;
+  title: string;
+};
+export type TermsType = {
+  desc_terms_seo: string;
+  keywords_terms_seo: string;
+  title: string;
+  content: string;
+};
+
+export type ReservationSettings = {
+  use_external_reservation_link: boolean;
+  external_reservation_link: string;
+}
+export type Settings = {
+  "ads" : {
+    desktop_image: string;
+    mobile_image: string;
+    show_one_time: boolean;
+    link: string;
+    ad_pages: {
+      page: string;
+    }[];
+  },
+  "reservation": {
+    use_external_reservation_link: boolean;
+    external_reservation_link: string;
+  },
+  "footer": any
+}

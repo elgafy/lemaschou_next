@@ -9,12 +9,13 @@ import LanguageChanger from "./LanguageChanger";
 import CustomLinkWithBG from "./CustomLinkWithBG";
 import { usePathname } from "next/navigation";
 import MobileMenu from "./MobileMenu";
+import { ReservationSettings } from "../AppTypes";
 
 type props = {
-  reservationLink: string;
+  reservationSettings: ReservationSettings;
 };
 
-function Navbar({ reservationLink }: props) {
+function Navbar({ reservationSettings }: props) {
   const t = useTranslations("navbar");
   const locale = useLocale();
 
@@ -109,8 +110,8 @@ function Navbar({ reservationLink }: props) {
           <LanguageChanger className="clg:text-xs amd:text-[10px]" />
           <CustomLinkWithBG
             title={t("reservation")}
-            href={reservationLink}
-            external
+            href={reservationSettings.use_external_reservation_link ? reservationSettings.external_reservation_link : 'reservation'}
+            external={reservationSettings.use_external_reservation_link}
           />
         </div>
       </nav>
