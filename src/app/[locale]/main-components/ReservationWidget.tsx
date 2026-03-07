@@ -32,7 +32,6 @@ import { PaymentItem, ReservationBookingWidget, ReservationSummaryWidget } from 
 export default function ReservationWidget(props: {settings: any}) {
 const {settings} = props;
 const locale = useLocale();
-// console.log(settings);
 
 const bookingWindow = settings.settings.booking_time_window ? settings.settings.booking_time_window * 60000 : 300000; // 5 minutes in milliseconds
 const t = useTranslations("reservationPage");
@@ -59,7 +58,7 @@ const occasionItems:Array<string> = Object.values(settings.occasionItems) ?? [];
 
 // Availability check function
 const check = async function(date: Date, guests?: number) {
-    console.log(reservationSuccess)
+    // console.log(reservationSuccess)
     if (reservationSuccess == true) return;
     setLoading(true);
     // console.log('Availability check for date: ' + date);
@@ -80,7 +79,7 @@ const check = async function(date: Date, guests?: number) {
 useEffect(() => {
     document.addEventListener("visibilitychange", function() {
         if (document.visibilityState === 'visible') {
-            console.log("Window is visible");
+            // console.log("Window is visible");
             const bookingStartTime = localStorage.getItem("bookingStartTime");
             if (bookingStartTime) {
                 const currentTime = Date.now();
@@ -88,7 +87,7 @@ useEffect(() => {
                 setRemainingTime(bookingWindow - elapsedTime);
             }
         } else {
-            console.log("Window is not visible");
+            // console.log("Window is not visible");
         }
     });
 }, []);
@@ -218,7 +217,7 @@ useEffect(() => {
     // Set down payment if applicable
     if (timeItem.payment && timeItem.payment > 0) {
         setDownPayment(timeItem.payment);
-        console.log(timeItem.payment);
+        // console.log(timeItem.payment);
         form.setValue("deposite", parseInt(timeItem.payment));
     } else {
         setDownPayment(null);
@@ -246,9 +245,9 @@ function itemIsAvailable(item: any) {
 async function book(values: z.infer<typeof formSchema>) {
     
     setLoading(true);
-    console.log('form submit');
+    // console.log('form submit');
     const response = await makeReservation(values);
-    console.log(response);
+    // console.log(response);
     setLoading(false);
     if (response.success) {
 
@@ -257,8 +256,8 @@ async function book(values: z.infer<typeof formSchema>) {
         localStorage.setItem("reservation", JSON.stringify(reservation));
         setReservationSuccess(true);
         setReservation(reservation);
-        console.log(JSON.parse(response.data.reservation));
-        console.log(reservation.id);
+        // console.log(JSON.parse(response.data.reservation));
+        // console.log(reservation.id);
         // console.log(reservationId);
         
         // Hide form and summary
@@ -269,7 +268,7 @@ async function book(values: z.infer<typeof formSchema>) {
         // }
         // updateSearchParams([{key: 'id', value: reservation.id}, {key: 'date', value: null}, {key: 'guests', value: null}]);
   }
-  console.log('end of booking function');
+//   console.log('end of booking function');
 }
 
 const startBookingTimer = () => {
@@ -405,9 +404,7 @@ const resetBookingForm = () => {
                             <FormLabel>{t("selectTime")}</FormLabel>
                             <FormControl>
                                 <ToggleGroup type="single" variant="outline" className="flex-wrap justify-start gap-2" value={field.value} onValueChange={(value)=>{
-                                    // console.log(value); 
                                     field.onChange(value); 
-                                    // console.log(field.value)
                                     }}>
                                     {availability.length > 0 ? 
                                         availability.map((item: { time: string, payment?: number }, index) => (
@@ -671,8 +668,6 @@ const resetBookingForm = () => {
                     : ''}
                     {time && 
                     <FormField control={form.control} name="termsAccepted" render={({field}) => {
-                        // console.log(field)
-
                         return <FormItem className="w-full">
                             <FormControl>
                                 <div className="flex items-start gap-3">

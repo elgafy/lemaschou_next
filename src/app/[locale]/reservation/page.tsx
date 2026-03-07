@@ -47,7 +47,6 @@ export async function generateMetadata({
 export default async function Reservation({ params: { locale } }: pageProps) {
 
   setRequestLocale(locale);
-//   const t = await getTranslations({ locale, namespace: "reservationPage" });
   const reservationSettings = await getData("reservations/settings", locale);
 
   return (
