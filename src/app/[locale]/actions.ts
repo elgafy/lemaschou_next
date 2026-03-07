@@ -12,8 +12,6 @@ export async function getData(url: string, locale: string) {
       lang: locale,
     },
   })
-  // console.log(url);
-  // console.log(response);
   return await response.json().then((data) => data.data);
 }
 export async function getMenuData(url: string, lang: string) {

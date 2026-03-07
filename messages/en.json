@@ -149,6 +149,7 @@
     "mobilePattern": "Please enter a valid mobile number",
     "paymentTitle": "Payment Summary",
     "downPayment": "Reservation Deposit",
-    "specialDay": "Special Day"
+    "specialDay": "Special Day",
+    "reservationSuccessTitle": "Congratulations"
   }
 }

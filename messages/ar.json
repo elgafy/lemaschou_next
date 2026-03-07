@@ -149,6 +149,7 @@
     "mobilePattern": "يرجى إدخال رقم جوال صالح.",
     "paymentTitle": "ملخص الدفع",
     "downPayment": "دفعة الحجز",
-    "specialDay": "يوم مميز"
+    "specialDay": "يوم مميز",
+    "reservationSuccessTitle": "تهانينا"
   }
 }

@@ -27,32 +27,10 @@ import { Label } from "@/components/ui/label";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { isValidPhoneNumber } from "react-phone-number-input";
 import Link from "next/link";
-import { useRouter, useSearchParams } from 'next/navigation';
-// import { redirect } from "next/navigation";
+import { PaymentItem, ReservationBookingWidget, ReservationSummaryWidget } from "./ReservationWidgetComponents";
 
-const ReservationSummaryWidget = (props: { title: string, value: string, subtitle: string, icon?: React.ReactNode }) => {
-    const { title, value, subtitle, icon } = props;
-    return (
-        <div className="bg-white px-2 py-4 rounded-lg shadow-md flex-1 flex flex-col justify-center items-center text-center">
-            {icon && <div className="pb-2" color="#381112">{icon}</div>}
-            <h3 className="text-sm font-semibold">{title}</h3>
-            <p className="text-sm">{value}</p>
-            <p>{subtitle}</p>
-        </div>
-    );
-};
-const PaymentItem = (props: { title: string, value: number }) => {
-    const { title, value } = props;
-    return (
-        <div className="w-full flex justify-between text-base sm:text-sm border-b-2 border-gray-300 pt-4 pb-2 text-left rtl:text-right">
-            <p className="">{title}</p>
-            <p className="flex items-center gap-2">{value} <CurrencySymbol /></p>
-        </div>
-    );
-}
-
-export default function ReservationWidget({settings}: any) {
-
+export default function ReservationWidget(props: {settings: any}) {
+const {settings} = props;
 const locale = useLocale();
 // console.log(settings);
 
@@ -61,13 +39,17 @@ const t = useTranslations("reservationPage");
 const [open, setOpen] = useState(false);
 const [loading, setLoading] = useState<Boolean>(true);
 const [showSummary, setShowSummary] = useState<Boolean>(false);
+const [showTimer, setShowTimer] = useState(false);
+const [showForm, setShowForm] = useState(true);
 const [cardEnabled, setCardEnabled] = useState<Boolean>(false);
-const [remainingTime, setRemainingTime] = useState(bookingWindow); // 5 minutes in milliseconds
+const [remainingTime, setRemainingTime] = useState(bookingWindow);
 const [seatingTime, setSeatingTime] = useState('0');
 const [availability, setAvailability] = useState([]);
 const [specialDay, setSpecialDay] = useState(null);
 const [price, setPrice] = useState(0);
 const [vat, setVat] = useState(0);
+const [reservationSuccess, setReservationSuccess] = useState<Boolean>(false);
+const [reservation, setReservation] = useState<any | null>(null);
 const [totalPrice, setTotalPrice] = useState(0);
 const [downPayment, setDownPayment] = useState(null);
 const [orderItems, setOrderItems] = useState<Array<{ title: string, value: number }>>([]);
@@ -75,15 +57,10 @@ const occasions:Array<string> = Object.values(settings.occasions) ?? [];
 const allergies:Array<string> = Object.values(settings.foodAllergies) ?? [];
 const occasionItems:Array<string> = Object.values(settings.occasionItems) ?? [];
 
-const router = useRouter();
-const searchParams = useSearchParams();
-const searchDate = searchParams.get('date') || '';
-const searchTime = searchParams.get('time') || '';
-const searchGuests = searchParams.get('guests') || '';
-
-
 // Availability check function
 const check = async function(date: Date, guests?: number) {
+    console.log(reservationSuccess)
+    if (reservationSuccess == true) return;
     setLoading(true);
     // console.log('Availability check for date: ' + date);
     const availability = await checkAvailability(date, guests);
@@ -94,35 +71,31 @@ const check = async function(date: Date, guests?: number) {
         setAvailability(availability?.data);
         setSpecialDay(availability?.specialDay);
         setLoading(false);
-        // console.log(`Availability Special Day: ${availability?.specialDay}`);
     } else {
         setAvailability([]);
         setLoading(false);
-        // console.log('Failed to fetch availability');
     }
 }
 
-// Add search params to URL
-const addSearchParams = () => {
-    const params = new URLSearchParams(searchParams.toString());
-    if (date) {
-        // console.log("Search params" + date);
-      params.set('date', date.toLocaleString('sv-SE', { timeZone: 'Asia/Riyadh', dateStyle: 'short' }));
-    } else {
-      params.delete('date');
-    }
-    if (guests) {
-      params.set('guests', guests.toString());
-    } else {
-      params.delete('guests');
-    }
-
-    router.push(`?${params.toString()}`, { scroll: false });
-}
+useEffect(() => {
+    document.addEventListener("visibilitychange", function() {
+        if (document.visibilityState === 'visible') {
+            console.log("Window is visible");
+            const bookingStartTime = localStorage.getItem("bookingStartTime");
+            if (bookingStartTime) {
+                const currentTime = Date.now();
+                const elapsedTime = currentTime - parseInt(bookingStartTime);
+                setRemainingTime(bookingWindow - elapsedTime);
+            }
+        } else {
+            console.log("Window is not visible");
+        }
+    });
+}, []);
 
 // Form schema and setup
 const formSchema = z.object({
-    date: z.date() || z.undefined(),
+    date: z.date(),
     time: z.string(),
     guests: z.coerce.number<number>().min(2).max(12),
     firstName: z.string().min(1, { message: t('emptyFieldError') }),
@@ -143,18 +116,19 @@ const formSchema = z.object({
     allergies: z.array(z.string()),
     paymentPolicyAccepted: z.boolean(),
     termsAccepted: z.boolean(),
+    deposite: z.uint32(),
 })
 const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     // mode: "onSubmit",
     defaultValues: {
-        date: searchDate ? new Date(searchDate) : new Date(),
-        time: searchTime ? searchTime : "",
-        guests: searchGuests ? parseInt(searchGuests) : 2,
-        firstName: "",
-        lastName: "",
-        mobile: "",
-        emailAddress: "",
+        date:  new Date(),
+        time: "",
+        guests: 2,
+        firstName: "Abdalaziz",
+        lastName: "El Gafy",
+        mobile: "+201008084006",
+        emailAddress: "abdalaziz.elgafy@gmail.com",
         specialRequest: "",
         occasion: false,
         occasionType: "",
@@ -164,7 +138,8 @@ const form = useForm<z.infer<typeof formSchema>>({
         allergic: false,
         allergies: [],
         paymentPolicyAccepted: false,
-        termsAccepted: false,
+        termsAccepted: true,
+        deposite: 0
     }
 })
 
@@ -178,17 +153,11 @@ const time = form.watch("time");
 const termsAccepted = form.getValues("termsAccepted");
 const paymentPolicyAccepted = form.getValues("paymentPolicyAccepted");
 
-useEffect(() => {
-    addSearchParams();
-}, [date, guests, searchParams, router]);
 
 const [debouncedDate] = useDebounce(date, 300);
 const [debouncedGuests] = useDebounce(guests, 800);
 useEffect(()=> {
-    // console.log("useEffect triggered: ", { date, guests });
-    // console.log('Debounce useEffect triggered');
     check(debouncedDate, debouncedGuests);
-    
 }, [debouncedDate, debouncedGuests]);
 
 // Calculate total price of selected occasion items
@@ -221,43 +190,43 @@ useEffect(()=> {
         setTotalPrice(price);
         form.setValue("occasionItemsPrice", price);
     }
+
 }, [occasionSelectedItems]);
 
 // Time selection effect
 useEffect(() => {
     // console.log('Time has changed')
     // console.log('Time value: ' + time)
-    if (!time) return;
-    setShowSummary(time ? true : false);
-    setRemainingTime(bookingWindow);
+    if (!time) {
+        setShowSummary(false);
+        setShowTimer(false);
+        return
+    };
+
+
+    // Setup seating time
     const timeItem: any = availability.find((item: any) => item.time === time);
     let seatingT = 0;
     timeItem.duration[guests] ? seatingT = timeItem.duration[guests] : seatingT = 120; // default duration 2 hours
-    if (guests > 9) seatingT = 210; // default duration 1 hour
+    if (guests > 9) seatingT = 210; // default duration for more than 9 guests is 3.5 hours
+
+    // Set seating time based on number of guests
     let seatingDuration = Math.floor(seatingT / 60) + "h";
     (seatingT % 60) > 0 ?  seatingDuration += " : " + (seatingT % 60)  + "mins" : "";
     setSeatingTime(seatingDuration);
+
+    // Set down payment if applicable
     if (timeItem.payment && timeItem.payment > 0) {
         setDownPayment(timeItem.payment);
+        console.log(timeItem.payment);
+        form.setValue("deposite", parseInt(timeItem.payment));
     } else {
         setDownPayment(null);
     }
-    // startTimer();
-    const interval = setInterval(() => {
-        setRemainingTime((prevTime) => {
-            if (prevTime <= 0) {
-                setShowSummary(false);
-                form.setValue("time", "");
-                check(date, guests);
-                clearInterval(interval);
-            }
-            return prevTime - 1000
-        });
-        if(form.getValues("time") === "") {
-            clearInterval(interval);
-        }
-    }, 1000);
-    return () => clearInterval(interval);
+
+    setShowSummary(true);
+    startBookingTimer();
+
 }, [time]);
 
 
@@ -275,24 +244,87 @@ function itemIsAvailable(item: any) {
 }
 
 async function book(values: z.infer<typeof formSchema>) {
+    
     setLoading(true);
-    // console.log('form submit');
+    console.log('form submit');
     const response = await makeReservation(values);
-    // console.log(response);
+    console.log(response);
     setLoading(false);
     if (response.success) {
-    // redirect(`${locale}/home`);
+
+        // Set reservation data to local storage and state
+        const reservation = JSON.parse(response.data.reservation);
+        localStorage.setItem("reservation", JSON.stringify(reservation));
+        setReservationSuccess(true);
+        setReservation(reservation);
+        console.log(JSON.parse(response.data.reservation));
+        console.log(reservation.id);
+        // console.log(reservationId);
+        
+        // Hide form and summary
+        resetBookingForm();
+        // if (reservation.order) {
+        //     window.location.href = 'payment';
+        //     return;
+        // }
+        // updateSearchParams([{key: 'id', value: reservation.id}, {key: 'date', value: null}, {key: 'guests', value: null}]);
   }
+  console.log('end of booking function');
 }
+
+const startBookingTimer = () => {
+    
+    setRemainingTime(bookingWindow);
+    localStorage.setItem("bookingStartTime", Date.now().toString());
+    setShowTimer(true);
+    // startTimer();
+
+    // Booking hold countdown
+    const interval = setInterval(() => {
+        setRemainingTime((prevTime) => {
+            if (prevTime <= 0) {
+                setShowSummary(false);
+                setShowTimer(false);
+                form.setValue("time", "");
+                check(date, guests);
+                clearInterval(interval);
+            }
+            return prevTime - 1000
+        });
+        if(form.getValues("time") === "" ) {
+            clearInterval(interval);
+        }
+    }, 1000);
+}
+const resetBookingForm = () => {
+    setReservationSuccess(true);
+    setShowForm(false);
+    setShowTimer(false);
+    setRemainingTime(0);
+    // localStorage.removeItem("bookingStartTime");
+    // setShowForm(false);
+    // form.reset();
+}
+
+// useEffect(() => {
+//     if (reservation && reservation.id) {
+//         // Navigate after reservation state is set
+//         window.history.pushState({}, '', `?id=${reservation.id}`);
+//     }
+// }, [reservation]);
 
   return (
     <div className="content w-[90vw] max-w-[800px] flex flex-col items-center justify-center my-[104px] gap-12 clg:my-5">
-        <div className="theme-background flex flex-col gap-4 p-8 tablet:p-0 w-full reservation-widget relative">
-            <h2 className="text-3xl text-center font-Rufina">{t("widgetTitle")}</h2>
-            {showSummary && (
+        <div className="theme-border bg-[#e5cbbd] flex flex-col gap-4 p-8 tablet:p-0 w-full reservation-widget relative">
+            <h2 className="text-3xl text-center font-Rufina font-semibold">{t("widgetTitle")}</h2>
+            {showTimer && (
                 <div className="w-full flex flex-col gap-1 mb-4">
                     <h4 className="text-sm text-center mt-4 mb-1">{t("remainingTime")}</h4>
                     <h4 className="text-4xl text-center ltr mb-4" style={{direction: 'ltr'}}>{Math.floor(remainingTime / 60000).toString().padStart(2, '0')} : {Math.floor((remainingTime % 60000) / 1000).toString().padStart(2, '0')}</h4>
+                </div>
+            )}
+            {showSummary && (
+                <div className="w-full flex flex-col gap-1 mb-4">
                     <h4 className="text-xl font-semibold text-center mb-4">{t("bookingDetails")}</h4>
                     <div className="w-full flex flex-col gap-1">
                         <div className="w-full flex flex-wrap gap-1 justify-center">
@@ -304,10 +336,15 @@ async function book(values: z.infer<typeof formSchema>) {
                         </div>
                         {/* <p className="text-center pt-4">{t("seating")} : {seatingTime}</p> */}
                     </div>
-                    <Button variant="default" className="mt-4 mx-auto" onClick={()=> {setShowSummary(false); form.setValue("time", "")}}>{t("editBooking")}</Button>
+                    <Button variant="default" className="mt-4 mx-auto" onClick={()=> form.setValue("time", "")}>{t("editBooking")}</Button>
                 </div>
             )}
+            {reservation && 
+                <ReservationBookingWidget title={t('reservationSuccessTitle')} reservation={reservation} />
+            }
+            {showForm && 
             <Form {...form} >
+
                 <form onSubmit={form.handleSubmit(book)} className="flex flex-col w-full gap-4">
                 {!showSummary && 
                 <div className="gap-4 flex flex-col">
@@ -649,10 +686,11 @@ async function book(values: z.infer<typeof formSchema>) {
                     }
                     </div>
                     {availability.length > 0 ? 
-                    <Button type="submit" disabled={!termsAccepted || time == '' || (downPayment !== null && !paymentPolicyAccepted)} className="mt-4">{t('book')}</Button>
+                    <Button type="submit" disabled={!termsAccepted || time == ''} className="mt-4">{t('book')}</Button>
                     : ''}
                 </form>
             </Form>
+            }
             {loading && 
             <div className="">
                 <div className="loader"></div>
