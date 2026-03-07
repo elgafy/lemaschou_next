@@ -151,7 +151,7 @@ const date = form.watch("date");
 const guests = form.watch("guests");
 const time = form.watch("time");
 const termsAccepted = form.getValues("termsAccepted");
-const paymentPolicyAccepted = form.getValues("paymentPolicyAccepted");
+// const paymentPolicyAccepted = form.getValues("paymentPolicyAccepted");
 
 
 const [debouncedDate] = useDebounce(date, 300);
@@ -180,8 +180,8 @@ useEffect(()=> {
     // console.log(`Enable Vat Setting: ${settings.settings.add_calculated_vat}`);
     // console.log(`Vat Percentage: ${settings.settings.vat_value}`);
     if (settings.settings.add_calculated_vat) {
-        const vat = price * (settings.settings.vat_value / 100);
-        setVat(vat.toFixed(2) as unknown as number);
+        const clacVat = price * (settings.settings.vat_value / 100);
+        setVat(clacVat.toFixed(2) as unknown as number);
         setPrice(price);
         total = price + vat;
         setTotalPrice(total.toFixed(2) as unknown as number);
