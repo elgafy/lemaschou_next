@@ -2,6 +2,8 @@
 
 import { z } from "zod";
 import { isValidPhoneNumber } from "libphonenumber-js";
+// import { NextApiRequest, NextApiResponse } from "next";
+// import { NextRequest, NextResponse } from "next/server";
 
 export async function getReservationSettings(day: number = 0) {
     try {

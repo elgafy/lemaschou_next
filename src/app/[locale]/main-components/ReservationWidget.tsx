@@ -297,7 +297,7 @@ const startBookingTimer = () => {
     }, 1000);
 }
 const resetBookingForm = () => {
-    setReservationSuccess(true);
+    // setReservationSuccess(true);
     setShowForm(false);
     setShowTimer(false);
     setRemainingTime(0);

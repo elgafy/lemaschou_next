@@ -36,7 +36,7 @@ const ReservationBookingWidget = (props: { title: string, reservation: any }) =>
             </div>
             <div className="flex justify-start w-full sm:flex-col">
                 <p className="font-semibold text-base sm:text-base w-[30%] sm:w-full">Reservation Reference: </p>
-                <p className="text-base sm:text-base">{reservation?.id}</p>
+                <p className="text-base sm:text-base">{reservation?.sevenrooms_reservation_id}</p>
             </div>
             <div className="flex justify-start w-full sm:flex-col">
                 <p className="font-semibold text-base sm:text-base w-[30%] sm:w-full">Reservation Date: </p>
