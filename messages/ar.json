@@ -150,6 +150,7 @@
     "paymentTitle": "ملخص الدفع",
     "downPayment": "دفعة الحجز",
     "specialDay": "يوم مميز",
-    "reservationSuccessTitle": "تهانينا"
+    "reservationSuccessTitle": "تهانينا",
+    "agree": "أوافق"
   }
 }

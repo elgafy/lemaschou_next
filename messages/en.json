@@ -150,6 +150,7 @@
     "paymentTitle": "Payment Summary",
     "downPayment": "Reservation Deposit",
     "specialDay": "Special Day",
-    "reservationSuccessTitle": "Congratulations"
+    "reservationSuccessTitle": "Congratulations",
+    "agree": "I Agree"
   }
 }

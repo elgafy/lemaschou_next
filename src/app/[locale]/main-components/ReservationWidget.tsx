@@ -1,7 +1,7 @@
 "use client";
 import { useDebounce } from "use-debounce";
 import { useLocale, useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { ChevronDownIcon, UsersRoundIcon, CalendarDaysIcon, ClockIcon, ArmchairIcon, GemIcon } from "lucide-react";
 import {
   Popover,
@@ -37,6 +37,7 @@ const bookingWindow = settings.settings.booking_time_window ? settings.settings.
 const t = useTranslations("reservationPage");
 const [open, setOpen] = useState(false);
 const [loading, setLoading] = useState<Boolean>(true);
+const [showReservationNotice, setShowReservationNotice] = useState<Boolean | null>(null);
 const [showSummary, setShowSummary] = useState<Boolean>(false);
 const [showTimer, setShowTimer] = useState(false);
 const [showForm, setShowForm] = useState(true);
@@ -56,6 +57,7 @@ const occasions:Array<string> = Object.values(settings.occasions) ?? [];
 const allergies:Array<string> = Object.values(settings.foodAllergies) ?? [];
 const occasionItems:Array<string> = Object.values(settings.occasionItems) ?? [];
 
+console.log(settings.settings.booking_notice_en);
 // Availability check function
 const check = async function(date: Date, guests?: number) {
     // console.log(reservationSuccess)
@@ -201,7 +203,7 @@ useEffect(() => {
         setShowTimer(false);
         return
     };
-
+    setShowReservationNotice(true);
 
     // Setup seating time
     const timeItem: any = availability.find((item: any) => item.time === time);
@@ -223,10 +225,17 @@ useEffect(() => {
         setDownPayment(null);
     }
 
-    setShowSummary(true);
-    startBookingTimer();
+    // setShowSummary(true);
+    // startBookingTimer();
 
 }, [time]);
+
+useEffect(() => {
+    if (showReservationNotice === false) {
+        setShowSummary(true);
+        startBookingTimer();
+    }
+}, [showReservationNotice]);
 
 
 // Check if selected occasion items are available for the selected date
@@ -304,7 +313,9 @@ const resetBookingForm = () => {
     // setShowForm(false);
     // form.reset();
 }
-
+const resetBookingNotice = () => {
+  setShowReservationNotice(false);
+};
 // useEffect(() => {
 //     if (reservation && reservation.id) {
 //         // Navigate after reservation state is set
@@ -426,8 +437,12 @@ const resetBookingForm = () => {
                         </FormItem>
                     }} 
                     />
+                    {showReservationNotice && <div className="bg-white text-base p-8 rounded-md flex flex-col items-center whitespace-pre-wrap" >
+                        <p className="pb-4">{settings.settings[`booking_notice_${locale}`]}</p>
+                        <Button className="mt-4" onClick={resetBookingNotice}>{t("agree")}</Button>
+                    </div>}
                 </div>}
-                    {time && <div className="flex flex-col gap-4 tablet:flex-col justify-items-stretch">
+                    {showTimer && <div className="flex flex-col gap-4 tablet:flex-col justify-items-stretch">
 
                     <div className="flex gap-4 tablet:flex-col justify-items-stretch">
                             <FormField control={form.control} name="firstName" render={({field}) => {
@@ -452,16 +467,6 @@ const resetBookingForm = () => {
                         />
                     </div>
                     <div className="flex gap-4 tablet:flex-col justify-items-stretch w-full">
-                    {/* <FormField control={form.control} name="mobile" render={({field}) => {
-                        return <FormItem className="w-full">
-                            <FormLabel>{t("mobile")}</FormLabel>
-                            <FormControl>
-                                <Input {...field} value={field.value ?? ""}/>
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    }} 
-                    /> */}
                     <FormField
                         control={form.control}
                         name="mobile"
