@@ -57,7 +57,6 @@ const occasions:Array<string> = Object.values(settings.occasions) ?? [];
 const allergies:Array<string> = Object.values(settings.foodAllergies) ?? [];
 const occasionItems:Array<string> = Object.values(settings.occasionItems) ?? [];
 
-console.log(settings.settings.booking_notice_en);
 // Availability check function
 const check = async function(date: Date, guests?: number) {
     // console.log(reservationSuccess)
@@ -203,7 +202,12 @@ useEffect(() => {
         setShowTimer(false);
         return
     };
-    setShowReservationNotice(true);
+    if (settings.settings?.enable_booking_notice) {
+        setShowReservationNotice(true);
+    } else {
+        setShowSummary(true);
+        startBookingTimer();
+    }
 
     // Setup seating time
     const timeItem: any = availability.find((item: any) => item.time === time);
@@ -437,7 +441,7 @@ const resetBookingNotice = () => {
                         </FormItem>
                     }} 
                     />
-                    {showReservationNotice && <div className="bg-white text-base p-8 rounded-md flex flex-col items-center whitespace-pre-wrap" >
+                    {showReservationNotice && <div className="bg-white text-base p-8 rounded-lg mt-4 flex flex-col items-center whitespace-pre-wrap shadow-lg" >
                         <p className="pb-4">{settings.settings[`booking_notice_${locale}`]}</p>
                         <Button className="mt-4" onClick={resetBookingNotice}>{t("agree")}</Button>
                     </div>}
