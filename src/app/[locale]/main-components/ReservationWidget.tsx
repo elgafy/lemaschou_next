@@ -557,7 +557,7 @@ const resetBookingNotice = () => {
                                     {occasionItems.map((category: any, index: number) => (
                                         category.items.length > 0 && (
                                             <div key={index} className="flex flex-col w-full gap-4 pb-8 border-b border-mainColor">
-                                            <h4 className="text-[64px] font-normal text-mainColor text-[1.5rem] text-center pt-2">{category[`name_${locale}`]}</h4>
+                                            <h4 className="font-normal text-mainColor ss:text-[1.5rem] text-[2rem] text-center pt-2">{category[`name_${locale}`]}</h4>
                                             {category.items.map((item: any, index: number) => (
                                                 <ToggleGroupItem disabled={!itemIsAvailable(item)} key={index} value={item.id.toString()} className="w-full h-auto justify-start rtl:justify-end relative occasion-item bg-white theme-border">
                                                     {!itemIsAvailable(item) && (
