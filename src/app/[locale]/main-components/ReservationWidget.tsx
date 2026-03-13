@@ -57,6 +57,7 @@ const occasions:Array<string> = Object.values(settings.occasions) ?? [];
 const allergies:Array<string> = Object.values(settings.foodAllergies) ?? [];
 const occasionItems:Array<string> = Object.values(settings.occasionItems) ?? [];
 
+console.log(new Date().getHours());
 // Availability check function
 const check = async function(date: Date, guests?: number) {
     // console.log(reservationSuccess)
@@ -245,11 +246,17 @@ useEffect(() => {
 // Check if selected occasion items are available for the selected date
 function itemIsAvailable(item: any) {
     const today = new Date();
+    const currentHour = today.getHours();
     const reservationDay = date.getDate();
     const reservationMonth = date.getMonth();
     const toDay = today.getDate();
     const currentMonth = today.getMonth();
     if ((reservationDay - toDay) >= item.reservation_availability_period || (reservationMonth > currentMonth)) {
+        console.log('item time:' + item.available_before_time);
+        console.log('current time:' + currentHour);
+        if (reservationDay == toDay && item.available_before_time <= currentHour) {
+            return false;
+        }
         return true;
     }
     return false; 
@@ -275,13 +282,7 @@ async function book(values: z.infer<typeof formSchema>) {
         
         // Hide form and summary
         resetBookingForm();
-        // if (reservation.order) {
-        //     window.location.href = 'payment';
-        //     return;
-        // }
-        // updateSearchParams([{key: 'id', value: reservation.id}, {key: 'date', value: null}, {key: 'guests', value: null}]);
   }
-//   console.log('end of booking function');
 }
 
 const startBookingTimer = () => {
@@ -332,13 +333,13 @@ const resetBookingNotice = () => {
         <div className="theme-border bg-[#e5cbbd] flex flex-col gap-4 p-8 tablet:p-0 w-full reservation-widget relative">
             <h2 className="text-3xl text-center font-Rufina font-semibold">{t("widgetTitle")}</h2>
             {showTimer && (
-                <div className="w-full flex flex-col gap-1 mb-4">
+                <div className="w-full flex flex-col gap-1 mb-4 animated fadeIn">
                     <h4 className="text-sm text-center mt-4 mb-1">{t("remainingTime")}</h4>
                     <h4 className="text-4xl text-center ltr mb-4" style={{direction: 'ltr'}}>{Math.floor(remainingTime / 60000).toString().padStart(2, '0')} : {Math.floor((remainingTime % 60000) / 1000).toString().padStart(2, '0')}</h4>
                 </div>
             )}
             {showSummary && (
-                <div className="w-full flex flex-col gap-1 mb-4">
+                <div className="w-full flex flex-col gap-1 mb-4 animated fadeIn">
                     <h4 className="text-xl font-semibold text-center mb-4">{t("bookingDetails")}</h4>
                     <div className="w-full flex flex-col gap-1">
                         <div className="w-full flex flex-wrap gap-1 justify-center">
@@ -359,7 +360,7 @@ const resetBookingNotice = () => {
             {showForm && 
             <Form {...form} >
 
-                <form onSubmit={form.handleSubmit(book)} className="flex flex-col w-full gap-4">
+                <form onSubmit={form.handleSubmit(book)} className="flex flex-col w-full gap-4 animated fadeIn">
                 {!showSummary && 
                 <div className="gap-4 flex flex-col">
                    <div className="flex gap-4 tablet:flex-col">
@@ -441,12 +442,12 @@ const resetBookingNotice = () => {
                         </FormItem>
                     }} 
                     />
-                    {showReservationNotice && <div className="bg-white text-base p-8 rounded-lg mt-4 flex flex-col items-center whitespace-pre-wrap shadow-lg" >
+                    {showReservationNotice && <div className="bg-white text-base p-8 rounded-lg mt-4 flex flex-col items-center whitespace-pre-wrap shadow-lg animated fadeIn" >
                         <p className="pb-4">{settings.settings[`booking_notice_${locale}`]}</p>
                         <Button className="mt-4" onClick={resetBookingNotice}>{t("agree")}</Button>
                     </div>}
                 </div>}
-                    {showTimer && <div className="flex flex-col gap-4 tablet:flex-col justify-items-stretch">
+                    {showTimer && <div className="flex flex-col gap-4 tablet:flex-col justify-items-stretch animated fadeIn">
 
                     <div className="flex gap-4 tablet:flex-col justify-items-stretch">
                             <FormField control={form.control} name="firstName" render={({field}) => {
@@ -555,13 +556,13 @@ const resetBookingNotice = () => {
                                             <div key={index} className="flex flex-col w-full gap-4">
                                             <h4 className="font-bold text-base pt-2">{category[`name_${locale}`]}</h4>
                                             {category.items.map((item: any, index: number) => (
-                                                <ToggleGroupItem disabled={!itemIsAvailable(item)} key={index} value={item.id.toString()} className="w-full h-auto justify-start rtl:justify-end p-4 relative">
+                                                <ToggleGroupItem disabled={!itemIsAvailable(item)} key={index} value={item.id.toString()} className="w-full h-auto justify-start rtl:justify-end relative occasion-item bg-white theme-border">
                                                     {!itemIsAvailable(item) && (
                                                         <div className="absolute top-0 left-0 w-full h-full bg-white/70 z-10 flex items-center justify-center">
                                                             <p className="text-red-600 font-bold">{t('notAvailableForSelectedDate')}</p>
                                                         </div>
                                                     )}
-                                                    <div className="w-full flex justify-start gap-4">
+                                                    <div className="w-full flex flex-row ss:flex-col justify-start gap-4">
                                                         <Image
                                                         src={'https://fls-9e8f049b-831e-4138-b0b6-1ce5ada62bd6.laravel.cloud/' + item.image}
                                                         // alt={lang === "en" ? item.name_en : item.name_ar}
@@ -573,9 +574,9 @@ const resetBookingNotice = () => {
                                                         <div className="flex flex-col w-full justify-start">
                                                             <div className="flex justify-between items-center w-full">
                                                                 <h2 className="font-Rufina text-xl font-bold ltr:text-left rtl:text-right leading-none">{item[`name_${locale}`]}</h2>
-                                                                <p className="flex gap-1">
-                                                                    {item.price}
+                                                                <p className="flex text-lg gap-1">
                                                                     <CurrencySymbol />
+                                                                    {item.price}
                                                                 </p>
                                                             </div>
                                                             <p className={locale === 'en' ? 'text-left pt-2' : 'text-right pt-2'}>{item[`description_${locale}`]}</p>
