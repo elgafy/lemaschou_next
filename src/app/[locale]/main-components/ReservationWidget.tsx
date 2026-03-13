@@ -553,11 +553,11 @@ const resetBookingNotice = () => {
                                 <FormField control={form.control} name="occasionSelectedItems" render={({field}) => {
                             return <FormItem className="w-full">
                                 <FormControl>
-                                <ToggleGroup type="multiple" dir={locale === 'en' ? 'ltr' : 'rtl'} variant="outline" className="flex-wrap justify-start gap-2" value={field.value} onValueChange={(value)=>{field.onChange(value)}}>
+                                <ToggleGroup type="multiple" dir={locale === 'en' ? 'ltr' : 'rtl'} variant="outline" className="flex-wrap justify-start gap-4" value={field.value} onValueChange={(value)=>{field.onChange(value)}}>
                                     {occasionItems.map((category: any, index: number) => (
                                         category.items.length > 0 && (
-                                            <div key={index} className="flex flex-col w-full gap-4">
-                                            <h4 className="font-bold text-base pt-2">{category[`name_${locale}`]}</h4>
+                                            <div key={index} className="flex flex-col w-full gap-4 pb-8 border-b border-mainColor">
+                                            <h4 className="text-[64px] font-normal text-mainColor text-[1.5rem] text-center pt-2">{category[`name_${locale}`]}</h4>
                                             {category.items.map((item: any, index: number) => (
                                                 <ToggleGroupItem disabled={!itemIsAvailable(item)} key={index} value={item.id.toString()} className="w-full h-auto justify-start rtl:justify-end relative occasion-item bg-white theme-border">
                                                     {!itemIsAvailable(item) && (
