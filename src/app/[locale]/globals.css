@@ -173,14 +173,31 @@
   from {
     opacity: 1;
   }
-
-  to {
+  99% {
     opacity: 0;
+  }
+  to {
+    display: none;
   }
 }
 
 .fadeOut {
   animation-name: fadeOut;
+}
+
+@keyframes zoomIn {
+  from {
+    opacity: 0;
+    transform: scale3d(0.3, 0.3, 0.3);
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+.zoomIn {
+  animation-name: zoomIn;
 }
 
 @media print, (prefers-reduced-motion: reduce) {
