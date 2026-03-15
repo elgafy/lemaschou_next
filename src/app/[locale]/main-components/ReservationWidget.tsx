@@ -43,7 +43,7 @@ const [showSummary, setShowSummary] = useState<Boolean>(false);
 const [showTimer, setShowTimer] = useState(false);
 const [showForm, setShowForm] = useState(true);
 const [cardEnabled, setCardEnabled] = useState<Boolean>(false);
-const [remainingTime, setRemainingTime] = useState(bookingWindow);
+// const [remainingTime, setRemainingTime] = useState(bookingWindow);
 const [seatingTime, setSeatingTime] = useState('0');
 const [availability, setAvailability] = useState([]);
 const [specialDay, setSpecialDay] = useState(null);
@@ -323,7 +323,7 @@ const resetBookingForm = () => {
     // setReservationSuccess(true);
     setShowForm(false);
     setShowTimer(false);
-    setRemainingTime(0);
+    // setRemainingTime(0);
     // localStorage.removeItem("bookingStartTime");
     // setShowForm(false);
     // form.reset();
