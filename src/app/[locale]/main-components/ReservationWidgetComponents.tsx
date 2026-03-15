@@ -25,7 +25,7 @@ const PaymentItem = (props: { title: string, value: number }) => {
 }
 
 // Display booking success or failure message
-const ReservationBookingWidget = (props: { title: string, reservation: any }) => {
+const ReservationSuccessWidget = (props: { title: string, reservation: any }) => {
     const { title, reservation } = props;
     return (
         <div className="flex flex-col items-center justify-center w-full gap-4 bg-white theme-border rounded-lg shadow-md flex-1">
@@ -87,4 +87,4 @@ const ReservationTimer = (props: {title: string, time: number, showTimer: boolea
     );
 }
 
-export { ReservationSummaryWidget, PaymentItem, ReservationBookingWidget, ReservationTimer };
+export { ReservationSummaryWidget, PaymentItem, ReservationSuccessWidget, ReservationTimer };

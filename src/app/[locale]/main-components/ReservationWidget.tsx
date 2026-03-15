@@ -27,7 +27,7 @@ import { Label } from "@/components/ui/label";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { isValidPhoneNumber } from "react-phone-number-input";
 import Link from "next/link";
-import { PaymentItem, ReservationBookingWidget, ReservationSummaryWidget, ReservationTimer } from "./ReservationWidgetComponents";
+import { PaymentItem, ReservationSuccessWidget, ReservationSummaryWidget, ReservationTimer } from "./ReservationWidgetComponents";
 import CelebrationSymbol from "@/components/ui/celebrationSymbol";
 
 export default function ReservationWidget(props: {settings: any}) {
@@ -369,7 +369,7 @@ const resetBookingNotice = () => {
                 </div>
             )}
             {reservation && 
-                <ReservationBookingWidget title={t('reservationSuccessTitle')} reservation={reservation} />
+                <ReservationSuccessWidget title={t('reservationSuccessTitle')} reservation={reservation} />
             }
             {showForm && 
             <Form {...form} >
