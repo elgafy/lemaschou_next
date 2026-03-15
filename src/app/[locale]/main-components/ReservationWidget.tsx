@@ -80,21 +80,21 @@ const check = async function(date: Date, guests?: number) {
     }
 }
 
-useEffect(() => {
-    document.addEventListener("visibilitychange", function() {
-        if (document.visibilityState === 'visible') {
-            // console.log("Window is visible");
-            const bookingStartTime = localStorage.getItem("bookingStartTime");
-            if (bookingStartTime) {
-                const currentTime = Date.now();
-                const elapsedTime = currentTime - parseInt(bookingStartTime);
-                setRemainingTime(bookingWindow - elapsedTime);
-            }
-        } else {
-            // console.log("Window is not visible");
-        }
-    });
-}, []);
+// useEffect(() => {
+//     document.addEventListener("visibilitychange", function() {
+//         if (document.visibilityState === 'visible') {
+//             // console.log("Window is visible");
+//             const bookingStartTime = localStorage.getItem("bookingStartTime");
+//             if (bookingStartTime) {
+//                 const currentTime = Date.now();
+//                 const elapsedTime = currentTime - parseInt(bookingStartTime);
+//                 setRemainingTime(bookingWindow - elapsedTime);
+//             }
+//         } else {
+//             // console.log("Window is not visible");
+//         }
+//     });
+// }, []);
 
 // Form schema and setup
 const formSchema = z.object({
@@ -289,7 +289,7 @@ async function book(values: z.infer<typeof formSchema>) {
 
 const startBookingTimer = () => {
     
-    setRemainingTime(bookingWindow);
+    // setRemainingTime(bookingWindow);
     localStorage.setItem("bookingStartTime", Date.now().toString());
     setShowTimer(true);
     // startTimer();
