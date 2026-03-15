@@ -1,5 +1,4 @@
 import CurrencySymbol from "@/components/ui/currencySymbol";
-import { clear } from "console";
 import { useEffect, useState } from "react";
 
 const ReservationSummaryWidget = (props: { title: string, value: string, subtitle: string, icon?: React.ReactNode }) => {
