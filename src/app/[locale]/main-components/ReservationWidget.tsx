@@ -365,7 +365,7 @@ const resetBookingNotice = () => {
                         </div>
                         {/* <p className="text-center pt-4">{t("seating")} : {seatingTime}</p> */}
                     </div>
-                    <Button variant="default" className="mt-4 mx-auto" onClick={()=> form.setValue("time", "")}>{t("editBooking")}</Button>
+                    {showTimer && <Button variant="default" className="mt-4 mx-auto" onClick={()=> form.setValue("time", "")}>{t("editBooking")}</Button>}
                 </div>
             )}
             {reservation && 
