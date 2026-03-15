@@ -19,7 +19,7 @@ const PaymentItem = (props: { title: string, value: number }) => {
     return (
         <div className="w-full flex justify-between text-base sm:text-sm border-b-2 border-gray-300 pt-4 pb-2 text-left rtl:text-right">
             <p className="">{title}</p>
-            <p className="flex items-center gap-2">{value} <CurrencySymbol /></p>
+            <p className="flex items-center gap-2"><CurrencySymbol /> {value}</p>
         </div>
     );
 }

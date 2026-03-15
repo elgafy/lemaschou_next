@@ -28,6 +28,7 @@ import { PhoneInput } from "@/components/ui/phone-input";
 import { isValidPhoneNumber } from "react-phone-number-input";
 import Link from "next/link";
 import { PaymentItem, ReservationBookingWidget, ReservationSummaryWidget } from "./ReservationWidgetComponents";
+import CelebrationSymbol from "@/components/ui/celebrationSymbol";
 
 export default function ReservationWidget(props: {settings: any}) {
 const {settings} = props;
@@ -416,7 +417,7 @@ const resetBookingNotice = () => {
                         </FormItem>
                     }} 
                     />
-                    {specialDay && <div className="flex items-end pb-2 font-semibold">{specialDay[`name_${locale}`]}</div>}
+                    {specialDay && <div className="flex items-end font-Rufina text-xl pb-[4px] font-semibold"><div className="flex items-center gap-4"><CelebrationSymbol size={32}/>{specialDay[`name_${locale}`]}</div></div>}
                     </div>
                     <FormField control={form.control} name="time" render={({field}) => {
                         return <FormItem>
@@ -431,7 +432,7 @@ const resetBookingNotice = () => {
                                                 <div className="flex flex-col items-center justify-center">
                                                     <p className="w-full text-sm flex p-2">{item?.time}</p>
                                                     {item.payment && 
-                                                        <p className="w-full flex justify-center text-xs flex p-2 gap-1 border-t border-black bg-[#fa9898] hover:text-black rounded-b-md"><DownPaymentSymbol/> {item.payment} <CurrencySymbol/></p>
+                                                        <p className="w-full flex justify-center text-xs flex p-2 gap-1 border-t border-black bg-[#fa9898] hover:text-black rounded-b-md"><CurrencySymbol/> {item.payment} <DownPaymentSymbol/></p>
                                                     }
                                                 </div>
                                                 </ToggleGroupItem>
@@ -661,7 +662,7 @@ const resetBookingNotice = () => {
                         }
                         <div className="w-full flex justify-between text-xl font-semibold sm:text-base pt-4 pb-2 text-left rtl:text-right">
                             <p className=" ">Total</p>
-                            <p className="flex items-center gap-2">{orderItems.reduce((sum: number, item) => sum + Math.floor(item.value), 0) + Math.floor(downPayment ?? 0)} <CurrencySymbol size={20}/></p>
+                            <p className="flex items-center gap-2"><CurrencySymbol size={20}/>{orderItems.reduce((sum: number, item) => sum + Math.floor(item.value), 0) + Math.floor(downPayment ?? 0)}</p>
                         </div>
                     </div>
                     }
