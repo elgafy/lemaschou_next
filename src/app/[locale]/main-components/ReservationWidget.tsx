@@ -27,7 +27,7 @@ import { Label } from "@/components/ui/label";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { isValidPhoneNumber } from "react-phone-number-input";
 import Link from "next/link";
-import { PaymentItem, ReservationBookingWidget, ReservationSummaryWidget } from "./ReservationWidgetComponents";
+import { PaymentItem, ReservationBookingWidget, ReservationSummaryWidget, ReservationTimer } from "./ReservationWidgetComponents";
 import CelebrationSymbol from "@/components/ui/celebrationSymbol";
 
 export default function ReservationWidget(props: {settings: any}) {
@@ -61,9 +61,10 @@ const occasionItems:Array<string> = Object.values(settings.occasionItems) ?? [];
 console.log(new Date().getHours());
 // Availability check function
 const check = async function(date: Date, guests?: number) {
-    // console.log(reservationSuccess)
+    console.log("Checking avaialabity for date and time");
     if (reservationSuccess == true) return;
     setLoading(true);
+    console.log("Set loading to true");
     // console.log('Availability check for date: ' + date);
     const availability = await checkAvailability(date, guests);
     // console.log(availability);
@@ -294,21 +295,29 @@ const startBookingTimer = () => {
     // startTimer();
 
     // Booking hold countdown
-    const interval = setInterval(() => {
-        setRemainingTime((prevTime) => {
-            if (prevTime <= 0) {
-                setShowSummary(false);
-                setShowTimer(false);
-                form.setValue("time", "");
-                check(date, guests);
-                clearInterval(interval);
-            }
-            return prevTime - 1000
-        });
-        if(form.getValues("time") === "" ) {
-            clearInterval(interval);
-        }
-    }, 1000);
+    // const interval = setInterval(() => {
+    //     setRemainingTime((prevTime) => {
+    //         if (prevTime <= 0) {
+    //             setShowSummary(false);
+    //             setShowTimer(false);
+    //             form.setValue("time", "");
+    //             check(date, guests);
+    //             clearInterval(interval);
+    //         }
+    //         return prevTime - 1000
+    //     });
+    //     if(form.getValues("time") === "" ) {
+    //         clearInterval(interval);
+    //     }
+    // }, 1000);
+}
+
+const handleFormTimeOut = () => {
+    console.log("form time out");
+    setShowSummary(false);
+    setShowTimer(false);
+    form.setValue("time", "");
+    check(date, guests);
 }
 const resetBookingForm = () => {
     // setReservationSuccess(true);
@@ -336,12 +345,13 @@ const resetBookingNotice = () => {
             {settings.settings[`booking_intro_${locale}`] && (
                 <p className="text-center text-base mb-4">{settings.settings[`booking_intro_${locale}`]}</p>
             )}
-            {showTimer && (
+            {/* {showTimer && (
                 <div className="w-full flex flex-col gap-1 mb-4 animated zoomIn">
                     <h4 className="text-sm text-center mt-4 mb-1">{t("remainingTime")}</h4>
                     <h4 className="text-4xl text-center ltr mb-4" style={{direction: 'ltr'}}>{Math.floor(remainingTime / 60000).toString().padStart(2, '0')} : {Math.floor((remainingTime % 60000) / 1000).toString().padStart(2, '0')}</h4>
                 </div>
-            )}
+            )} */}
+            {showTimer && <ReservationTimer title={t("remainingTime")} time={bookingWindow} showTimer={showTimer} onTimeOut={handleFormTimeOut} />}
             {showSummary && (
                 <div className="w-full flex flex-col gap-1 mb-4 animated zoomIn">
                     <h4 className="text-xl font-semibold text-center mb-4">{t("bookingDetails")}</h4>

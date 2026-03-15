@@ -1,5 +1,6 @@
 import CurrencySymbol from "@/components/ui/currencySymbol";
-import React from "react";
+import { clear } from "console";
+import { useEffect, useState } from "react";
 
 const ReservationSummaryWidget = (props: { title: string, value: string, subtitle: string, icon?: React.ReactNode }) => {
     const { title, value, subtitle, icon } = props;
@@ -54,4 +55,37 @@ const ReservationBookingWidget = (props: { title: string, reservation: any }) =>
     );
 }
 
-export { ReservationSummaryWidget, PaymentItem, ReservationBookingWidget };
+// Display booking success or failure message
+const ReservationTimer = (props: {title: string, time: number, showTimer: boolean, onTimeOut: any }) => {
+    const { title, time, showTimer, onTimeOut } = props;
+    const [remainingTime, setRemainingTime] = useState(time);
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setRemainingTime((prevTime) => {
+                if (prevTime <= 0) {
+                    onTimeOut();
+                    setRemainingTime(0);
+                    clearInterval(interval);
+                }
+                return prevTime - 1000
+            });
+            if(!showTimer) {
+                clearInterval(interval);
+                setRemainingTime(time);
+            }
+        }, 1000);
+        console.log(remainingTime);
+        return () => clearInterval(interval);
+    }, [showTimer]);
+    
+    if (showTimer) return (
+        <>
+         <div className="w-full flex flex-col gap-1 mb-4 animated zoomIn">
+            <h4 className="text-sm text-center mt-4 mb-1">{title}</h4>
+            <h4 className="text-4xl text-center ltr mb-4" style={{direction: 'ltr'}}>{Math.floor(remainingTime / 60000).toString().padStart(2, '0')} : {Math.floor((remainingTime % 60000) / 1000).toString().padStart(2, '0')}</h4>
+            </div>
+        </>
+    );
+}
+
+export { ReservationSummaryWidget, PaymentItem, ReservationBookingWidget, ReservationTimer };
