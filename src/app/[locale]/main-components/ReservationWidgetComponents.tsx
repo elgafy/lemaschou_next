@@ -6,8 +6,8 @@ const ReservationSummaryWidget = (props: { title: string, value: string, subtitl
     return (
         <div className="bg-white px-2 py-4 rounded-lg shadow-md flex-1 flex flex-col justify-center items-center text-center">
             {icon && <div className="pb-2" color="#381112">{icon}</div>}
-            <h3 className="text-sm font-semibold">{title}</h3>
-            <p className="text-sm">{value}</p>
+            <h3 className="text-sm font-semibold whitespace-nowrap">{title}</h3>
+            <p className="text-sm whitespace-nowrap">{value}</p>
             <p>{subtitle}</p>
         </div>
     );
