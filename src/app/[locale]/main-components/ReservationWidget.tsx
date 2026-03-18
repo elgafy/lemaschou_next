@@ -1,7 +1,7 @@
 "use client";
 import { useDebounce } from "use-debounce";
 import { useLocale, useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ChevronDownIcon, UsersRoundIcon, CalendarDaysIcon, ClockIcon, ArmchairIcon, GemIcon } from "lucide-react";
 import {
   Popover,
@@ -142,7 +142,7 @@ const form = useForm<z.infer<typeof formSchema>>({
         allergic: false,
         allergies: [],
         paymentPolicyAccepted: false,
-        termsAccepted: true,
+        termsAccepted: false,
         deposite: 0
     }
 })
@@ -156,8 +156,11 @@ const guests = form.watch("guests");
 const time = form.watch("time");
 const termsAccepted = form.getValues("termsAccepted");
 const paymentPolicyAccepted = form.getValues("paymentPolicyAccepted");
-// const paymentPolicyAccepted = form.getValues("paymentPolicyAccepted");
 
+
+// Define refs to scroll behavior
+const bookingNotice = useRef<HTMLDivElement>(null);
+const bookingForm = useRef<HTMLDivElement>(null);
 
 const [debouncedDate] = useDebounce(date, 300);
 const [debouncedGuests] = useDebounce(guests, 800);
@@ -213,6 +216,9 @@ useEffect(() => {
     };
     if (settings.settings?.enable_booking_notice) {
         setShowReservationNotice(true);
+        setTimeout(() => {
+            bookingNotice.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+        }, 100);
     } else {
         setShowSummary(true);
         startBookingTimer();
@@ -248,6 +254,9 @@ useEffect(() => {
     if (showReservationNotice === false) {
         setShowSummary(true);
         startBookingTimer();
+        setTimeout(() => {
+            bookingForm.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+        }, 100);
     }
 }, [showReservationNotice]);
 
@@ -360,7 +369,7 @@ const resetBookingNotice = () => {
             )} */}
             {showTimer && <ReservationTimer title={t("remainingTime")} time={bookingWindow} showTimer={showTimer} onTimeOut={handleFormTimeOut} />}
             {showSummary && (
-                <div className="w-full flex flex-col gap-1 mb-4 animated zoomIn">
+                <div ref={bookingForm} className="w-full flex flex-col gap-1 mb-4 animated zoomIn">
                     <h4 className="text-xl font-semibold text-center mb-4">{t("bookingDetails")}</h4>
                     <div className="w-full flex flex-col gap-1">
                         <div className="w-full flex flex-wrap gap-1 justify-center">
@@ -463,7 +472,7 @@ const resetBookingNotice = () => {
                         </FormItem>
                     }} 
                     />
-                    {showReservationNotice && <div className="bg-white text-base p-8 rounded-lg mt-4 flex flex-col items-center whitespace-pre-wrap shadow-lg animated zoomIn" >
+                    {showReservationNotice && <div ref={bookingNotice} className="bg-white text-base p-8 rounded-lg mt-4 flex flex-col items-center whitespace-pre-wrap shadow-lg animated zoomIn" >
                         <p className="pb-4">{settings.settings[`booking_notice_${locale}`]}</p>
                         <Button className="mt-4" onClick={resetBookingNotice}>{t("agree")}</Button>
                     </div>}
