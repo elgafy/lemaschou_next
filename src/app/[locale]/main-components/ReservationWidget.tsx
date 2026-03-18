@@ -155,6 +155,7 @@ const date = form.watch("date");
 const guests = form.watch("guests");
 const time = form.watch("time");
 const termsAccepted = form.getValues("termsAccepted");
+const paymentPolicyAccepted = form.getValues("paymentPolicyAccepted");
 // const paymentPolicyAccepted = form.getValues("paymentPolicyAccepted");
 
 
@@ -687,7 +688,7 @@ const resetBookingNotice = () => {
                     </div>
                     }
                     <div className="w-full flex flex-col gap-4 pt-4">
-                    {(downPayment > 0 || price > 0) ?     
+                    {(downPayment > 0 || price > 0) && showTimer &&    
                         <FormField control={form.control} name="paymentPolicyAccepted" render={({field}) => {
                             return <FormItem className="w-full">
                                 <FormControl>
@@ -699,8 +700,8 @@ const resetBookingNotice = () => {
                             </FormItem>
                         }}
                         />
-                    : ''}
-                    {time && 
+                    }
+                    {showTimer && 
                     <FormField control={form.control} name="termsAccepted" render={({field}) => {
                         return <FormItem className="w-full">
                             <FormControl>
@@ -715,7 +716,7 @@ const resetBookingNotice = () => {
                     }
                     </div>
                     {availability.length > 0 ? 
-                    <Button type="submit" disabled={!termsAccepted || time == ''} className="mt-4">{t('book')}</Button>
+                    <Button type="submit" disabled={!termsAccepted || time == '' || (downPayment > 0 &&!paymentPolicyAccepted) } className="mt-4">{t('book')}</Button>
                     : ''}
                 </form>
             </Form>
