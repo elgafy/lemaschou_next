@@ -35,6 +35,7 @@ const {settings} = props;
 const locale = useLocale();
 
 const bookingWindow = settings.settings.booking_time_window ? settings.settings.booking_time_window * 60000 : 300000; // 5 minutes in milliseconds
+const addVat = settings.settings.add_calculated_vat; // 5 minutes in milliseconds
 const t = useTranslations("reservationPage");
 const [open, setOpen] = useState(false);
 const [loading, setLoading] = useState<Boolean>(true);
@@ -52,7 +53,7 @@ const [vat, setVat] = useState(0);
 const [reservationSuccess, setReservationSuccess] = useState<Boolean>(false);
 const [reservation, setReservation] = useState<any | null>(null);
 const [totalPrice, setTotalPrice] = useState(0);
-const [downPayment, setDownPayment] = useState(null);
+const [downPayment, setDownPayment] = useState<number>(0);
 const [orderItems, setOrderItems] = useState<Array<{ title: string, value: number }>>([]);
 const occasions:Array<string> = Object.values(settings.occasions) ?? [];
 const allergies:Array<string> = Object.values(settings.foodAllergies) ?? [];
@@ -165,36 +166,40 @@ useEffect(()=> {
 
 // Calculate total price of selected occasion items
 useEffect(()=> {
-    let price = 0;
-    let total = 0;
+    let itemsPrice = 0;
+    let itemsTotalPrice = 0;
     // console.log(occasionSelectedItems);
     setOrderItems([]);
     occasionSelectedItems.forEach((itemId: any) => {
         occasionItems.forEach((category: any) => {
             const item:any = category.items.find((item: any) => item.id == itemId);
             if (item) {
-                price += item.price;
+                itemsPrice += item.price;
                 setOrderItems((prevItems) => [...prevItems, { title: item[`name_${locale}`], value: item.price }]);
             }
         });
     });
-    setPrice(price);
+    setPrice(itemsPrice);
     // Update form value
-    // console.log(`Enable Vat Setting: ${settings.settings.add_calculated_vat}`);
-    // console.log(`Vat Percentage: ${settings.settings.vat_value}`);
-    if (settings.settings.add_calculated_vat) {
-        const clacVat = price * (settings.settings.vat_value / 100);
-        setVat(clacVat.toFixed(2) as unknown as number);
-        setPrice(price);
-        total = price + vat;
-        setTotalPrice(total.toFixed(2) as unknown as number);
+    const clacVat = (itemsPrice * settings.settings.vat_value) / 100;
+    if (addVat) {
+        console.log("Add calculated vat: true");
+        setVat(clacVat);
+        setPrice(itemsPrice);
+        itemsTotalPrice = downPayment > 0 ? itemsPrice + clacVat + downPayment : itemsPrice + clacVat;
+        setTotalPrice(itemsTotalPrice);
         form.setValue("occasionItemsPrice", totalPrice);
     } else {
-        setTotalPrice(price);
-        form.setValue("occasionItemsPrice", price);
+        setTotalPrice(downPayment > 0 ? itemsPrice + downPayment : itemsPrice);
+        form.setValue("occasionItemsPrice", itemsPrice);
     }
+    console.log("Price: " + itemsPrice);
+    console.log("Vat: " + clacVat);
+    console.log("Total Price: " + itemsTotalPrice);
+    console.log("Deposite: " + downPayment);
+    console.log("Deposite type: " + typeof downPayment);
 
-}, [occasionSelectedItems]);
+}, [occasionSelectedItems, downPayment]);
 
 // Time selection effect
 useEffect(() => {
@@ -225,11 +230,12 @@ useEffect(() => {
 
     // Set down payment if applicable
     if (timeItem.payment && timeItem.payment > 0) {
-        setDownPayment(timeItem.payment);
+        setDownPayment(parseInt(timeItem.payment));
+        setTotalPrice(parseInt(timeItem.payment));
         // console.log(timeItem.payment);
         form.setValue("deposite", parseInt(timeItem.payment));
     } else {
-        setDownPayment(null);
+        setDownPayment(0);
     }
 
     // setShowSummary(true);
@@ -254,8 +260,8 @@ function itemIsAvailable(item: any) {
     const toDay = today.getDate();
     const currentMonth = today.getMonth();
     if ((reservationDay - toDay) >= item.reservation_availability_period || (reservationMonth > currentMonth)) {
-        console.log('item time:' + item.available_before_time);
-        console.log('current time:' + currentHour);
+        // console.log('item time:' + item.available_before_time);
+        // console.log('current time:' + currentHour);
         if (reservationDay == toDay && item.available_before_time <= currentHour) {
             return false;
         }
@@ -659,25 +665,29 @@ const resetBookingNotice = () => {
                     />
                     }
                     </div>}
-                    {(orderItems.length > 0 || downPayment) && time && 
+                    {(orderItems.length > 0 || downPayment > 0) && showTimer && 
                         <div className="bg-white px-2 py-4 rounded-lg shadow-md flex-1 flex flex-col justify-center items-center text-center w-full px-6 mt-4">
                         <h3 className="text-xl font-semibold">{t('paymentTitle')}</h3>
-                        { downPayment &&
-                            <PaymentItem title={t('downPayment')} value={Math.floor(downPayment)} />
-                        }
+                        
                         { orderItems &&
                             orderItems.map((item, index) => (
-                                <PaymentItem key={index} title={item.title} value={Math.floor(item.value)} />
+                                <PaymentItem key={index} title={item.title} value={item.value} />
                             ))
                         }
-                        <div className="w-full flex justify-between text-xl font-semibold sm:text-base pt-4 pb-2 text-left rtl:text-right">
+                        {addVat && vat > 0 && 
+                            <PaymentItem title={`${t('vat')} (${settings.settings.vat_value}%)`} value={vat} />
+                        }
+                        { downPayment > 0 &&
+                            <PaymentItem title={t('downPayment')} value={downPayment} />
+                        }
+                        {totalPrice > 0 && <div className="w-full flex justify-between text-xl font-semibold sm:text-base pt-4 pb-2 text-left rtl:text-right">
                             <p className=" ">Total</p>
-                            <p className="flex items-center gap-2"><CurrencySymbol size={20}/>{orderItems.reduce((sum: number, item) => sum + Math.floor(item.value), 0) + Math.floor(downPayment ?? 0)}</p>
-                        </div>
+                            <p className="flex items-center gap-2"><CurrencySymbol size={20}/>{totalPrice}</p>
+                        </div>}
                     </div>
                     }
                     <div className="w-full flex flex-col gap-4 pt-4">
-                    {(downPayment || price) ?     
+                    {(downPayment > 0 || price > 0) ?     
                         <FormField control={form.control} name="paymentPolicyAccepted" render={({field}) => {
                             return <FormItem className="w-full">
                                 <FormControl>
