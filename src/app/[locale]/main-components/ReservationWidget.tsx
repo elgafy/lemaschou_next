@@ -389,7 +389,7 @@ const resetBookingNotice = () => {
                 </div>
             )}
             {reservation && 
-                <div ref={bookingSuccess}><ReservationSuccessWidget title={t('reservationSuccessTitle')} reservation={reservation} /></div>
+                <div ref={bookingSuccess} className="w-full"><ReservationSuccessWidget title={t('reservationSuccessTitle')} reservation={reservation} /></div>
             }
             {showForm && 
             <Form {...form} >
