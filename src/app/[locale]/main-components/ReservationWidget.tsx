@@ -161,6 +161,7 @@ const paymentPolicyAccepted = form.getValues("paymentPolicyAccepted");
 // Define refs to scroll behavior
 const bookingNotice = useRef<HTMLDivElement>(null);
 const bookingForm = useRef<HTMLDivElement>(null);
+const bookingSuccess = useRef<HTMLDivElement>(null);
 
 const [debouncedDate] = useDebounce(date, 300);
 const [debouncedGuests] = useDebounce(guests, 800);
@@ -294,6 +295,9 @@ async function book(values: z.infer<typeof formSchema>) {
         localStorage.setItem("reservation", JSON.stringify(reservation));
         setReservationSuccess(true);
         setReservation(reservation);
+        setTimeout(() => {
+            bookingSuccess.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+        }, 100);
         // console.log(JSON.parse(response.data.reservation));
         // console.log(reservation.id);
         // console.log(reservationId);
@@ -385,7 +389,7 @@ const resetBookingNotice = () => {
                 </div>
             )}
             {reservation && 
-                <ReservationSuccessWidget title={t('reservationSuccessTitle')} reservation={reservation} />
+                <div ref={bookingSuccess}><ReservationSuccessWidget title={t('reservationSuccessTitle')} reservation={reservation} /></div>
             }
             {showForm && 
             <Form {...form} >
