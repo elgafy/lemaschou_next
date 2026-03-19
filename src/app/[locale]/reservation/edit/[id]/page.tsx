@@ -5,7 +5,7 @@ import { getData } from "../../../actions";
 import { ReservationType } from "../../../AppTypes";
 import Image from "next/image";
 import logoWord from "/public/assets/logo-word.svg";
-import ReservationWidget from "../../../main-components/ReservationWidget";
+import ReservationEditWidget from "../../../main-components/ReservationEditWidget";
 
 export const revalidate = 10;
 
@@ -44,11 +44,11 @@ export async function generateMetadata({
     },
   };
 }
-export default async function Reservation({ params: { locale } }: pageProps) {
+export default async function EditReservation({ params: { locale, id } }: { params: { locale: string; id: string } }) {
 
   setRequestLocale(locale);
   const reservationSettings = await getData("reservations/settings", locale);
-
+  console.log(id);
   return (
     <main className="flex flex-col justify-center items-center reservation-container pt-32">
       <div className="header"></div>
@@ -59,7 +59,7 @@ export default async function Reservation({ params: { locale } }: pageProps) {
         sizes="(max-width: 600px) 186px, 447px"
         className="mobile:w-[80%] bxs:w-[70%]"
         />
-        <ReservationWidget settings={reservationSettings} />
+        <ReservationEditWidget settings={reservationSettings} reservationId={id} />
     </main>
   );
 }
