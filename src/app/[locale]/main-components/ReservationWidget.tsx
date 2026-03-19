@@ -44,7 +44,6 @@ const [showSummary, setShowSummary] = useState<Boolean>(false);
 const [showTimer, setShowTimer] = useState(false);
 const [showForm, setShowForm] = useState(true);
 const [cardEnabled, setCardEnabled] = useState<Boolean>(false);
-// const [remainingTime, setRemainingTime] = useState(bookingWindow);
 const [seatingTime, setSeatingTime] = useState('0');
 const [availability, setAvailability] = useState([]);
 const [specialDay, setSpecialDay] = useState(null);
@@ -59,19 +58,12 @@ const occasions:Array<string> = Object.values(settings.occasions) ?? [];
 const allergies:Array<string> = Object.values(settings.foodAllergies) ?? [];
 const occasionItems:Array<string> = Object.values(settings.occasionItems) ?? [];
 
-console.log(new Date().getHours());
 // Availability check function
 const check = async function(date: Date, guests?: number) {
-    console.log("Checking avaialabity for date and time");
     if (reservationSuccess == true) return;
     setLoading(true);
-    console.log("Set loading to true");
-    // console.log('Availability check for date: ' + date);
     const availability = await checkAvailability(date, guests);
-    // console.log(availability);
-    // console.log(availability?.success);
     if (availability?.success == true) {
-        // console.log('Availability times: ' + {...availability});
         setAvailability(availability?.data);
         setSpecialDay(availability?.specialDay);
         setLoading(false);
@@ -173,7 +165,6 @@ useEffect(()=> {
 useEffect(()=> {
     let itemsPrice = 0;
     let itemsTotalPrice = 0;
-    // console.log(occasionSelectedItems);
     setOrderItems([]);
     occasionSelectedItems.forEach((itemId: any) => {
         occasionItems.forEach((category: any) => {
@@ -188,7 +179,6 @@ useEffect(()=> {
     // Update form value
     const clacVat = (itemsPrice * settings.settings.vat_value) / 100;
     if (addVat) {
-        console.log("Add calculated vat: true");
         setVat(clacVat);
         setPrice(itemsPrice);
         itemsTotalPrice = downPayment > 0 ? itemsPrice + clacVat + downPayment : itemsPrice + clacVat;
@@ -198,18 +188,11 @@ useEffect(()=> {
         setTotalPrice(downPayment > 0 ? itemsPrice + downPayment : itemsPrice);
         form.setValue("occasionItemsPrice", itemsPrice);
     }
-    console.log("Price: " + itemsPrice);
-    console.log("Vat: " + clacVat);
-    console.log("Total Price: " + itemsTotalPrice);
-    console.log("Deposite: " + downPayment);
-    console.log("Deposite type: " + typeof downPayment);
 
 }, [occasionSelectedItems, downPayment]);
 
 // Time selection effect
 useEffect(() => {
-    // console.log('Time has changed')
-    // console.log('Time value: ' + time)
     if (!time) {
         setShowSummary(false);
         setShowTimer(false);
@@ -240,14 +223,10 @@ useEffect(() => {
     if (timeItem.payment && timeItem.payment > 0) {
         setDownPayment(parseInt(timeItem.payment));
         setTotalPrice(parseInt(timeItem.payment));
-        // console.log(timeItem.payment);
         form.setValue("deposite", parseInt(timeItem.payment));
     } else {
         setDownPayment(0);
     }
-
-    // setShowSummary(true);
-    // startBookingTimer();
 
 }, [time]);
 
@@ -271,8 +250,6 @@ function itemIsAvailable(item: any) {
     const toDay = today.getDate();
     const currentMonth = today.getMonth();
     if ((reservationDay - toDay) >= item.reservation_availability_period || (reservationMonth > currentMonth)) {
-        // console.log('item time:' + item.available_before_time);
-        // console.log('current time:' + currentHour);
         if (reservationDay == toDay && item.available_before_time <= currentHour) {
             return false;
         }
@@ -284,9 +261,7 @@ function itemIsAvailable(item: any) {
 async function book(values: z.infer<typeof formSchema>) {
     
     setLoading(true);
-    // console.log('form submit');
     const response = await makeReservation(values);
-    // console.log(response);
     setLoading(false);
     if (response.success) {
 
@@ -298,10 +273,6 @@ async function book(values: z.infer<typeof formSchema>) {
         setTimeout(() => {
             bookingSuccess.current?.scrollIntoView({ behavior: "smooth", block: "center" });
         }, 100);
-        // console.log(JSON.parse(response.data.reservation));
-        // console.log(reservation.id);
-        // console.log(reservationId);
-        
         // Hide form and summary
         resetBookingForm();
   }
@@ -312,28 +283,9 @@ const startBookingTimer = () => {
     // setRemainingTime(bookingWindow);
     localStorage.setItem("bookingStartTime", Date.now().toString());
     setShowTimer(true);
-    // startTimer();
-
-    // Booking hold countdown
-    // const interval = setInterval(() => {
-    //     setRemainingTime((prevTime) => {
-    //         if (prevTime <= 0) {
-    //             setShowSummary(false);
-    //             setShowTimer(false);
-    //             form.setValue("time", "");
-    //             check(date, guests);
-    //             clearInterval(interval);
-    //         }
-    //         return prevTime - 1000
-    //     });
-    //     if(form.getValues("time") === "" ) {
-    //         clearInterval(interval);
-    //     }
-    // }, 1000);
 }
 
 const handleFormTimeOut = () => {
-    console.log("form time out");
     setShowSummary(false);
     setShowTimer(false);
     form.setValue("time", "");
@@ -343,10 +295,6 @@ const resetBookingForm = () => {
     // setReservationSuccess(true);
     setShowForm(false);
     setShowTimer(false);
-    // setRemainingTime(0);
-    // localStorage.removeItem("bookingStartTime");
-    // setShowForm(false);
-    // form.reset();
 }
 const resetBookingNotice = () => {
   setShowReservationNotice(false);
@@ -365,12 +313,6 @@ const resetBookingNotice = () => {
             {settings.settings[`booking_intro_${locale}`] && (
                 <p className="text-center text-base mb-4">{settings.settings[`booking_intro_${locale}`]}</p>
             )}
-            {/* {showTimer && (
-                <div className="w-full flex flex-col gap-1 mb-4 animated zoomIn">
-                    <h4 className="text-sm text-center mt-4 mb-1">{t("remainingTime")}</h4>
-                    <h4 className="text-4xl text-center ltr mb-4" style={{direction: 'ltr'}}>{Math.floor(remainingTime / 60000).toString().padStart(2, '0')} : {Math.floor((remainingTime % 60000) / 1000).toString().padStart(2, '0')}</h4>
-                </div>
-            )} */}
             {showTimer && <ReservationTimer title={t("remainingTime")} time={bookingWindow} showTimer={showTimer} onTimeOut={handleFormTimeOut} />}
             {showSummary && (
                 <div ref={bookingForm} className="w-full flex flex-col gap-1 mb-4 animated zoomIn">
@@ -383,7 +325,6 @@ const resetBookingNotice = () => {
                             <ReservationSummaryWidget title={t("seating")} value={seatingTime} subtitle={""} icon={<ArmchairIcon />}/>
                             {specialDay && <ReservationSummaryWidget title={t("specialDay")} value={specialDay[`name_${locale}`]} subtitle={""} icon={<GemIcon />} />}
                         </div>
-                        {/* <p className="text-center pt-4">{t("seating")} : {seatingTime}</p> */}
                     </div>
                     {showTimer && <Button variant="default" className="mt-4 mx-auto" onClick={()=> form.setValue("time", "")}>{t("editBooking")}</Button>}
                 </div>
@@ -514,15 +455,6 @@ const resetBookingNotice = () => {
                             <FormLabel className="text-left">Phone Number</FormLabel>
                             <FormControl className="w-full">
                                 <PhoneInput placeholder="Enter a phone number" {...field} className="w-full" defaultCountry="SA" />
-                                {/* <PhoneInput
-                                international
-                                countryCallingCodeEditable={false}
-                                defaultCountry="RU"
-                                placeholder="Enter phone number"
-                                value={field.value}
-                                onChange={field.onChange}
-                                className="flex w-full bg-white border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                /> */}
                             </FormControl>
                             <FormMessage />
                             </FormItem>
@@ -738,8 +670,6 @@ const resetBookingNotice = () => {
             <div className="">
                 <div className="loader"></div>
                 <div className="loader-container flex">
-                    {/* <div className="flex w-full items-center justify-center">
-                    </div> */}
                 </div>
             </div>}
             
