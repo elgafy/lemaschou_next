@@ -1,7 +1,7 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import { Metadata } from "next";
-import { getData } from "../../../actions";
+import { getData, requestData } from "../../../actions";
 import { ReservationType } from "../../../AppTypes";
 import Image from "next/image";
 import logoWord from "/public/assets/logo-word.svg";
@@ -12,6 +12,7 @@ export const revalidate = 10;
 type pageProps = {
   params: {
     locale: string;
+    id: string;
   };
 };
 type MetaDataProps = {
@@ -44,11 +45,14 @@ export async function generateMetadata({
     },
   };
 }
-export default async function EditReservation({ params: { locale, id } }: { params: { locale: string; id: string } }) {
+export default async function EditReservation({ params: { locale, id } }: pageProps) {
 
   setRequestLocale(locale);
   const reservationSettings = await getData("reservations/settings", locale);
+  const reservation = await requestData("reservations/5ALUK4S777");
   console.log(id);
+  console.log(reservation);
+  // console.log(reservationSettings);
   return (
     <main className="flex flex-col justify-center items-center reservation-container pt-32">
       <div className="header"></div>

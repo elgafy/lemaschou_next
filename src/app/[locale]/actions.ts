@@ -14,6 +14,16 @@ export async function getData(url: string, locale: string) {
   })
   return await response.json().then((data) => data.data);
 }
+export async function requestData(url: string) {
+  const response = await fetch(process.env.BASE_URL + url, {
+    cache: "no-store",
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+  return await response.json().then((data) => data);
+}
 export async function getMenuData(url: string, lang: string) {
   return await fetch(process.env.BASE_URL + url, {
     method: "GET",
