@@ -49,9 +49,9 @@ export default async function EditReservation({ params: { locale, id } }: pagePr
 
   setRequestLocale(locale);
   const reservationSettings = await getData("reservations/settings", locale);
-  const reservation = await requestData("reservations/5ALUK4S777");
+  const reservationData = await requestData(`reservations/${id}`);
   console.log(id);
-  console.log(reservation);
+  console.log(reservationData);
   // console.log(reservationSettings);
   return (
     <main className="flex flex-col justify-center items-center reservation-container pt-32">
@@ -63,7 +63,7 @@ export default async function EditReservation({ params: { locale, id } }: pagePr
         sizes="(max-width: 600px) 186px, 447px"
         className="mobile:w-[80%] bxs:w-[70%]"
         />
-        <ReservationEditWidget settings={reservationSettings} reservationId={id} />
+        <ReservationEditWidget settings={reservationSettings} reservationData={reservationData} />
     </main>
   );
 }

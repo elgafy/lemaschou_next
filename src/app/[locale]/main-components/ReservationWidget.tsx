@@ -4,9 +4,9 @@ import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import { ChevronDownIcon, UsersRoundIcon, CalendarDaysIcon, ClockIcon, ArmchairIcon, GemIcon } from "lucide-react";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -30,650 +30,653 @@ import Link from "next/link";
 import { PaymentItem, ReservationSuccessWidget, ReservationSummaryWidget, ReservationTimer } from "./ReservationWidgetComponents";
 import CelebrationSymbol from "@/components/ui/celebrationSymbol";
 
-export default function ReservationWidget(props: {settings: any}) {
-const {settings} = props;
-const locale = useLocale();
+export default function ReservationWidget(props: { settings: any }) {
+    const { settings } = props;
+    const locale = useLocale();
 
-const bookingWindow = settings.settings.booking_time_window ? settings.settings.booking_time_window * 60000 : 300000; // 5 minutes in milliseconds
-const addVat = settings.settings.add_calculated_vat; // 5 minutes in milliseconds
-const t = useTranslations("reservationPage");
-const [open, setOpen] = useState(false);
-const [loading, setLoading] = useState<Boolean>(true);
-const [showReservationNotice, setShowReservationNotice] = useState<Boolean | null>(null);
-const [showSummary, setShowSummary] = useState<Boolean>(false);
-const [showTimer, setShowTimer] = useState(false);
-const [showForm, setShowForm] = useState(true);
-const [cardEnabled, setCardEnabled] = useState<Boolean>(false);
-const [seatingTime, setSeatingTime] = useState('0');
-const [availability, setAvailability] = useState([]);
-const [specialDay, setSpecialDay] = useState(null);
-const [price, setPrice] = useState(0);
-const [vat, setVat] = useState(0);
-const [reservationSuccess, setReservationSuccess] = useState<Boolean>(false);
-const [reservation, setReservation] = useState<any | null>(null);
-const [totalPrice, setTotalPrice] = useState(0);
-const [downPayment, setDownPayment] = useState<number>(0);
-const [orderItems, setOrderItems] = useState<Array<{ title: string, value: number }>>([]);
-const occasions:Array<string> = Object.values(settings.occasions) ?? [];
-const allergies:Array<string> = Object.values(settings.foodAllergies) ?? [];
-const occasionItems:Array<string> = Object.values(settings.occasionItems) ?? [];
+    const bookingWindow = settings.settings.booking_time_window ? settings.settings.booking_time_window * 60000 : 300000; // 5 minutes in milliseconds
+    const addVat = settings.settings.add_calculated_vat; // 5 minutes in milliseconds
+    const t = useTranslations("reservationPage");
+    const [open, setOpen] = useState(false);
+    const [loading, setLoading] = useState<Boolean>(true);
+    const [showReservationNotice, setShowReservationNotice] = useState<Boolean | null>(null);
+    const [showSummary, setShowSummary] = useState<Boolean>(false);
+    const [showTimer, setShowTimer] = useState(false);
+    const [showForm, setShowForm] = useState(true);
+    const [cardEnabled, setCardEnabled] = useState<Boolean>(false);
+    const [seatingTime, setSeatingTime] = useState('0');
+    const [availability, setAvailability] = useState([]);
+    const [specialDay, setSpecialDay] = useState(null);
+    const [price, setPrice] = useState(0);
+    const [vat, setVat] = useState(0);
+    const [reservationSuccess, setReservationSuccess] = useState<Boolean>(false);
+    const [reservation, setReservation] = useState<any | null>(null);
+    const [totalPrice, setTotalPrice] = useState(0);
+    const [downPayment, setDownPayment] = useState<number>(0);
+    const [orderItems, setOrderItems] = useState<Array<{ title: string, value: number }>>([]);
+    const occasions: Array<string> = Object.values(settings.occasions) ?? [];
+    const allergies: Array<string> = Object.values(settings.foodAllergies) ?? [];
+    const occasionItems: Array<string> = Object.values(settings.occasionItems) ?? [];
 
-// Availability check function
-const check = async function(date: Date, guests?: number) {
-    if (reservationSuccess == true) return;
-    setLoading(true);
-    const availability = await checkAvailability(date, guests);
-    if (availability?.success == true) {
-        setAvailability(availability?.data);
-        setSpecialDay(availability?.specialDay);
-        setLoading(false);
-    } else {
-        setAvailability([]);
-        setLoading(false);
+    console.log("occasionItems:", occasionItems);
+    console.log("allergies:", allergies);
+
+    // Availability check function
+    const check = async function (date: Date, guests?: number) {
+        if (reservationSuccess == true) return;
+        setLoading(true);
+        const availability = await checkAvailability(date, guests);
+        if (availability?.success == true) {
+            setAvailability(availability?.data);
+            setSpecialDay(availability?.specialDay);
+            setLoading(false);
+        } else {
+            setAvailability([]);
+            setLoading(false);
+        }
     }
-}
 
-// useEffect(() => {
-//     document.addEventListener("visibilitychange", function() {
-//         if (document.visibilityState === 'visible') {
-//             // console.log("Window is visible");
-//             const bookingStartTime = localStorage.getItem("bookingStartTime");
-//             if (bookingStartTime) {
-//                 const currentTime = Date.now();
-//                 const elapsedTime = currentTime - parseInt(bookingStartTime);
-//                 setRemainingTime(bookingWindow - elapsedTime);
-//             }
-//         } else {
-//             // console.log("Window is not visible");
-//         }
-//     });
-// }, []);
+    // useEffect(() => {
+    //     document.addEventListener("visibilitychange", function() {
+    //         if (document.visibilityState === 'visible') {
+    //             // console.log("Window is visible");
+    //             const bookingStartTime = localStorage.getItem("bookingStartTime");
+    //             if (bookingStartTime) {
+    //                 const currentTime = Date.now();
+    //                 const elapsedTime = currentTime - parseInt(bookingStartTime);
+    //                 setRemainingTime(bookingWindow - elapsedTime);
+    //             }
+    //         } else {
+    //             // console.log("Window is not visible");
+    //         }
+    //     });
+    // }, []);
 
-// Form schema and setup
-const formSchema = z.object({
-    date: z.date(),
-    time: z.string(),
-    guests: z.coerce.number<number>().min(2).max(12),
-    firstName: z.string().min(1, { message: t('emptyFieldError') }),
-    lastName: z.string().min(1, { message: t('emptyFieldError') }),
-    mobile: z.string().refine(isValidPhoneNumber, { message: "Invalid phone number" }),
-    emailAddress: z.email({ message: t('invalidEmail') }),
-    specialRequest: z.string().max(255, {
-        message: "Request is too long, please reduce message"
-    }),
-    occasion: z.boolean(),
-    occasionType: z.string(),
-    occasionSelectedItems: z.array(z.string()),
-    occasionItemsPrice: z.number(),
-    cardContent: z.string().max(255, {
-        message: t('cardContentPattern')
-    }),
-    allergic: z.boolean(),
-    allergies: z.array(z.string()),
-    paymentPolicyAccepted: z.boolean(),
-    termsAccepted: z.boolean(),
-    deposite: z.uint32(),
-})
-const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    // mode: "onSubmit",
-    defaultValues: {
-        date:  new Date(),
-        time: "",
-        guests: 2,
-        firstName: "",
-        lastName: "",
-        mobile: "",
-        emailAddress: "",
-        specialRequest: "",
-        occasion: false,
-        occasionType: "",
-        occasionSelectedItems: [],
-        occasionItemsPrice: 0,
-        cardContent: "",
-        allergic: false,
-        allergies: [],
-        paymentPolicyAccepted: false,
-        termsAccepted: false,
-        deposite: 0
-    }
-})
+    // Form schema and setup
+    const formSchema = z.object({
+        date: z.date(),
+        time: z.string(),
+        guests: z.coerce.number<number>().min(2).max(12),
+        firstName: z.string().min(1, { message: t('emptyFieldError') }),
+        lastName: z.string().min(1, { message: t('emptyFieldError') }),
+        mobile: z.string().refine(isValidPhoneNumber, { message: "Invalid phone number" }),
+        emailAddress: z.email({ message: t('invalidEmail') }),
+        specialRequest: z.string().max(255, {
+            message: "Request is too long, please reduce message"
+        }),
+        occasion: z.boolean(),
+        occasionType: z.string(),
+        occasionSelectedItems: z.array(z.string()),
+        occasionItemsPrice: z.number(),
+        cardContent: z.string().max(255, {
+            message: t('cardContentPattern')
+        }),
+        allergic: z.boolean(),
+        allergies: z.array(z.string()),
+        paymentPolicyAccepted: z.boolean(),
+        termsAccepted: z.boolean(),
+        deposite: z.uint32(),
+    })
+    const form = useForm<z.infer<typeof formSchema>>({
+        resolver: zodResolver(formSchema),
+        // mode: "onSubmit",
+        defaultValues: {
+            date: new Date(),
+            time: "",
+            guests: 2,
+            firstName: "",
+            lastName: "",
+            mobile: "",
+            emailAddress: "",
+            specialRequest: "",
+            occasion: false,
+            occasionType: "",
+            occasionSelectedItems: [],
+            occasionItemsPrice: 0,
+            cardContent: "",
+            allergic: false,
+            allergies: [],
+            paymentPolicyAccepted: false,
+            termsAccepted: false,
+            deposite: 0
+        }
+    })
 
-// Form watchers
-const occasion = form.watch("occasion");
-const occasionSelectedItems = form.watch("occasionSelectedItems");
-const allergic = form.watch("allergic");
-const date = form.watch("date");
-const guests = form.watch("guests");
-const time = form.watch("time");
-const termsAccepted = form.getValues("termsAccepted");
-const paymentPolicyAccepted = form.getValues("paymentPolicyAccepted");
+    // Form watchers
+    const occasion = form.watch("occasion");
+    const occasionSelectedItems = form.watch("occasionSelectedItems");
+    const allergic = form.watch("allergic");
+    const date = form.watch("date");
+    const guests = form.watch("guests");
+    const time = form.watch("time");
+    const termsAccepted = form.getValues("termsAccepted");
+    const paymentPolicyAccepted = form.getValues("paymentPolicyAccepted");
 
 
-// Define refs to scroll behavior
-const bookingNotice = useRef<HTMLDivElement>(null);
-const bookingForm = useRef<HTMLDivElement>(null);
-const bookingSuccess = useRef<HTMLDivElement>(null);
+    // Define refs to scroll behavior
+    const bookingNotice = useRef<HTMLDivElement>(null);
+    const bookingForm = useRef<HTMLDivElement>(null);
+    const bookingSuccess = useRef<HTMLDivElement>(null);
 
-const [debouncedDate] = useDebounce(date, 300);
-const [debouncedGuests] = useDebounce(guests, 800);
-useEffect(()=> {
-    check(debouncedDate, debouncedGuests);
-}, [debouncedDate, debouncedGuests]);
+    const [debouncedDate] = useDebounce(date, 300);
+    const [debouncedGuests] = useDebounce(guests, 800);
+    useEffect(() => {
+        check(debouncedDate, debouncedGuests);
+    }, [debouncedDate, debouncedGuests]);
 
-// Calculate total price of selected occasion items
-useEffect(()=> {
-    let itemsPrice = 0;
-    let itemsTotalPrice = 0;
-    setOrderItems([]);
-    occasionSelectedItems.forEach((itemId: any) => {
-        occasionItems.forEach((category: any) => {
-            const item:any = category.items.find((item: any) => item.id == itemId);
-            if (item) {
-                itemsPrice += item.price;
-                setOrderItems((prevItems) => [...prevItems, { title: item[`name_${locale}`], value: item.price }]);
-            }
+    // Calculate total price of selected occasion items
+    useEffect(() => {
+        let itemsPrice = 0;
+        let itemsTotalPrice = 0;
+        setOrderItems([]);
+        occasionSelectedItems.forEach((itemId: any) => {
+            occasionItems.forEach((category: any) => {
+                const item: any = category.items.find((item: any) => item.id == itemId);
+                if (item) {
+                    itemsPrice += item.price;
+                    setOrderItems((prevItems) => [...prevItems, { title: item[`name_${locale}`], value: item.price }]);
+                }
+            });
         });
-    });
-    setPrice(itemsPrice);
-    // Update form value
-    const clacVat = (itemsPrice * settings.settings.vat_value) / 100;
-    if (addVat) {
-        setVat(clacVat);
         setPrice(itemsPrice);
-        itemsTotalPrice = downPayment > 0 ? itemsPrice + clacVat + downPayment : itemsPrice + clacVat;
-        setTotalPrice(itemsTotalPrice);
-        form.setValue("occasionItemsPrice", totalPrice);
-    } else {
-        setTotalPrice(downPayment > 0 ? itemsPrice + downPayment : itemsPrice);
-        form.setValue("occasionItemsPrice", itemsPrice);
+        // Update form value
+        const clacVat = (itemsPrice * settings.settings.vat_value) / 100;
+        if (addVat) {
+            setVat(clacVat);
+            setPrice(itemsPrice);
+            itemsTotalPrice = downPayment > 0 ? itemsPrice + clacVat + downPayment : itemsPrice + clacVat;
+            setTotalPrice(itemsTotalPrice);
+            form.setValue("occasionItemsPrice", totalPrice);
+        } else {
+            setTotalPrice(downPayment > 0 ? itemsPrice + downPayment : itemsPrice);
+            form.setValue("occasionItemsPrice", itemsPrice);
+        }
+
+    }, [occasionSelectedItems, downPayment]);
+
+    // Time selection effect
+    useEffect(() => {
+        if (!time) {
+            setShowSummary(false);
+            setShowTimer(false);
+            return
+        };
+        if (settings.settings?.enable_booking_notice) {
+            setShowReservationNotice(true);
+            setTimeout(() => {
+                bookingNotice.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+            }, 100);
+        } else {
+            setShowSummary(true);
+            startBookingTimer();
+        }
+
+        // Setup seating time
+        const timeItem: any = availability.find((item: any) => item.time === time);
+        let seatingT = 0;
+        timeItem.duration[guests] ? seatingT = timeItem.duration[guests] : seatingT = 120; // default duration 2 hours
+        if (guests > 9) seatingT = 210; // default duration for more than 9 guests is 3.5 hours
+
+        // Set seating time based on number of guests
+        let seatingDuration = Math.floor(seatingT / 60) + "h";
+        (seatingT % 60) > 0 ? seatingDuration += " : " + (seatingT % 60) + "mins" : "";
+        setSeatingTime(seatingDuration);
+
+        // Set down payment if applicable
+        if (timeItem.payment && timeItem.payment > 0) {
+            setDownPayment(parseInt(timeItem.payment));
+            setTotalPrice(parseInt(timeItem.payment));
+            form.setValue("deposite", parseInt(timeItem.payment));
+        } else {
+            setDownPayment(0);
+        }
+
+    }, [time]);
+
+    useEffect(() => {
+        if (showReservationNotice === false) {
+            setShowSummary(true);
+            startBookingTimer();
+            setTimeout(() => {
+                bookingForm.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+            }, 100);
+        }
+    }, [showReservationNotice]);
+
+
+    // Check if selected occasion items are available for the selected date
+    function itemIsAvailable(item: any) {
+        const today = new Date();
+        const currentHour = today.getHours();
+        const reservationDay = date.getDate();
+        const reservationMonth = date.getMonth();
+        const toDay = today.getDate();
+        const currentMonth = today.getMonth();
+        if ((reservationDay - toDay) >= item.reservation_availability_period || (reservationMonth > currentMonth)) {
+            if (reservationDay == toDay && item.available_before_time <= currentHour) {
+                return false;
+            }
+            return true;
+        }
+        return false;
     }
 
-}, [occasionSelectedItems, downPayment]);
+    async function book(values: z.infer<typeof formSchema>) {
 
-// Time selection effect
-useEffect(() => {
-    if (!time) {
+        setLoading(true);
+        const response = await makeReservation(values);
+        setLoading(false);
+        if (response.success) {
+
+            // Set reservation data to local storage and state
+            const reservation = JSON.parse(response.data.reservation);
+            localStorage.setItem("reservation", JSON.stringify(reservation));
+            setReservationSuccess(true);
+            setReservation(reservation);
+            setTimeout(() => {
+                bookingSuccess.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+            }, 100);
+            // Hide form and summary
+            resetBookingForm();
+        }
+    }
+
+    const startBookingTimer = () => {
+
+        // setRemainingTime(bookingWindow);
+        localStorage.setItem("bookingStartTime", Date.now().toString());
+        setShowTimer(true);
+    }
+
+    const handleFormTimeOut = () => {
         setShowSummary(false);
         setShowTimer(false);
-        return
+        form.setValue("time", "");
+        check(date, guests);
+    }
+    const resetBookingForm = () => {
+        // setReservationSuccess(true);
+        setShowForm(false);
+        setShowTimer(false);
+    }
+    const resetBookingNotice = () => {
+        setShowReservationNotice(false);
     };
-    if (settings.settings?.enable_booking_notice) {
-        setShowReservationNotice(true);
-        setTimeout(() => {
-            bookingNotice.current?.scrollIntoView({ behavior: "smooth", block: "center" });
-        }, 100);
-    } else {
-        setShowSummary(true);
-        startBookingTimer();
-    }
+    // useEffect(() => {
+    //     if (reservation && reservation.id) {
+    //         // Navigate after reservation state is set
+    //         window.history.pushState({}, '', `?id=${reservation.id}`);
+    //     }
+    // }, [reservation]);
 
-    // Setup seating time
-    const timeItem: any = availability.find((item: any) => item.time === time);
-    let seatingT = 0;
-    timeItem.duration[guests] ? seatingT = timeItem.duration[guests] : seatingT = 120; // default duration 2 hours
-    if (guests > 9) seatingT = 210; // default duration for more than 9 guests is 3.5 hours
-
-    // Set seating time based on number of guests
-    let seatingDuration = Math.floor(seatingT / 60) + "h";
-    (seatingT % 60) > 0 ?  seatingDuration += " : " + (seatingT % 60)  + "mins" : "";
-    setSeatingTime(seatingDuration);
-
-    // Set down payment if applicable
-    if (timeItem.payment && timeItem.payment > 0) {
-        setDownPayment(parseInt(timeItem.payment));
-        setTotalPrice(parseInt(timeItem.payment));
-        form.setValue("deposite", parseInt(timeItem.payment));
-    } else {
-        setDownPayment(0);
-    }
-
-}, [time]);
-
-useEffect(() => {
-    if (showReservationNotice === false) {
-        setShowSummary(true);
-        startBookingTimer();
-        setTimeout(() => {
-            bookingForm.current?.scrollIntoView({ behavior: "smooth", block: "center" });
-        }, 100);
-    }
-}, [showReservationNotice]);
-
-
-// Check if selected occasion items are available for the selected date
-function itemIsAvailable(item: any) {
-    const today = new Date();
-    const currentHour = today.getHours();
-    const reservationDay = date.getDate();
-    const reservationMonth = date.getMonth();
-    const toDay = today.getDate();
-    const currentMonth = today.getMonth();
-    if ((reservationDay - toDay) >= item.reservation_availability_period || (reservationMonth > currentMonth)) {
-        if (reservationDay == toDay && item.available_before_time <= currentHour) {
-            return false;
-        }
-        return true;
-    }
-    return false; 
-}
-
-async function book(values: z.infer<typeof formSchema>) {
-    
-    setLoading(true);
-    const response = await makeReservation(values);
-    setLoading(false);
-    if (response.success) {
-
-        // Set reservation data to local storage and state
-        const reservation = JSON.parse(response.data.reservation);
-        localStorage.setItem("reservation", JSON.stringify(reservation));
-        setReservationSuccess(true);
-        setReservation(reservation);
-        setTimeout(() => {
-            bookingSuccess.current?.scrollIntoView({ behavior: "smooth", block: "center" });
-        }, 100);
-        // Hide form and summary
-        resetBookingForm();
-  }
-}
-
-const startBookingTimer = () => {
-    
-    // setRemainingTime(bookingWindow);
-    localStorage.setItem("bookingStartTime", Date.now().toString());
-    setShowTimer(true);
-}
-
-const handleFormTimeOut = () => {
-    setShowSummary(false);
-    setShowTimer(false);
-    form.setValue("time", "");
-    check(date, guests);
-}
-const resetBookingForm = () => {
-    // setReservationSuccess(true);
-    setShowForm(false);
-    setShowTimer(false);
-}
-const resetBookingNotice = () => {
-  setShowReservationNotice(false);
-};
-// useEffect(() => {
-//     if (reservation && reservation.id) {
-//         // Navigate after reservation state is set
-//         window.history.pushState({}, '', `?id=${reservation.id}`);
-//     }
-// }, [reservation]);
-
-  return (
-    <div className="content w-[90vw] max-w-[800px] flex flex-col items-center justify-center my-[104px] gap-12 clg:my-5">
-        <div className="theme-border bg-[#e5cbbd] flex flex-col gap-4 p-8 tablet:p-0 w-full reservation-widget relative">
-            <h2 className="text-3xl text-center font-Rufina font-semibold">{t("widgetTitle")}</h2>
-            {settings.settings[`booking_intro_${locale}`] && (
-                <p className="text-center text-base mb-4">{settings.settings[`booking_intro_${locale}`]}</p>
-            )}
-            {showTimer && <ReservationTimer title={t("remainingTime")} time={bookingWindow} showTimer={showTimer} onTimeOut={handleFormTimeOut} />}
-            {showSummary && (
-                <div ref={bookingForm} className="w-full flex flex-col gap-1 mb-4 animated zoomIn">
-                    <h4 className="text-xl font-semibold text-center mb-4">{t("bookingDetails")}</h4>
-                    <div className="w-full flex flex-col gap-1">
-                        <div className="w-full flex flex-wrap gap-1 justify-center">
-                            <ReservationSummaryWidget title={t("guests")} value={guests.toString()} subtitle={""} icon={<UsersRoundIcon />} />
-                            <ReservationSummaryWidget title={t("date")} value={date?.toLocaleDateString()} subtitle={''} icon={<CalendarDaysIcon />} />
-                            <ReservationSummaryWidget title={t("time")} value={time} subtitle={""} icon={<ClockIcon />}/>
-                            <ReservationSummaryWidget title={t("seating")} value={seatingTime} subtitle={""} icon={<ArmchairIcon />}/>
-                            {specialDay && <ReservationSummaryWidget title={t("specialDay")} value={specialDay[`name_${locale}`]} subtitle={""} icon={<GemIcon />} />}
-                        </div>
-                    </div>
-                    {showTimer && <Button variant="default" className="mt-4 mx-auto" onClick={()=> form.setValue("time", "")}>{t("editBooking")}</Button>}
-                </div>
-            )}
-            {reservation && 
-                <div ref={bookingSuccess} className="w-full"><ReservationSuccessWidget title={t('reservationSuccessTitle')} reservation={reservation} /></div>
-            }
-            {showForm && 
-            <Form {...form} >
-
-                <form onSubmit={form.handleSubmit(book)} className="flex flex-col w-full gap-4 animated zoomIn">
-                {!showSummary && 
-                <div className="gap-4 flex flex-col">
-                   <div className="flex gap-4 tablet:flex-col">
-                    <FormField control={form.control} name="guests" render={({field}) => {
-                        return <FormItem>
-                            <FormLabel>{t("guests")}</FormLabel>
-                            <FormControl>
-                                <Input type="number" min={settings.settings.booking_min_guests || 2} max={settings.settings.booking_max_guests || 12} step="1" {...field} value={field.value ?? ""} className="w-24"/>
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    }} 
-                    />
-                    <FormField control={form.control} name="date" render={({field}) => {
-                        return <FormItem className="">
-                            <div>
-                            <FormLabel>{t("selectDate")}</FormLabel>
+    return (
+        <div className="content w-[90vw] max-w-[800px] flex flex-col items-center justify-center my-[104px] gap-12 clg:my-5">
+            <div className="theme-border bg-[#e5cbbd] flex flex-col gap-4 p-8 tablet:p-0 w-full reservation-widget relative">
+                <h2 className="text-3xl text-center font-Rufina font-semibold">{t("widgetTitle")}</h2>
+                {settings.settings[`booking_intro_${locale}`] && (
+                    <p className="text-center text-base mb-4">{settings.settings[`booking_intro_${locale}`]}</p>
+                )}
+                {showTimer && <ReservationTimer title={t("remainingTime")} time={bookingWindow} showTimer={showTimer} onTimeOut={handleFormTimeOut} />}
+                {showSummary && (
+                    <div ref={bookingForm} className="w-full flex flex-col gap-1 mb-4 animated zoomIn">
+                        <h4 className="text-xl font-semibold text-center mb-4">{t("bookingDetails")}</h4>
+                        <div className="w-full flex flex-col gap-1">
+                            <div className="w-full flex flex-wrap gap-1 justify-center">
+                                <ReservationSummaryWidget title={t("guests")} value={guests.toString()} subtitle={""} icon={<UsersRoundIcon />} />
+                                <ReservationSummaryWidget title={t("date")} value={date?.toLocaleDateString()} subtitle={''} icon={<CalendarDaysIcon />} />
+                                <ReservationSummaryWidget title={t("time")} value={time} subtitle={""} icon={<ClockIcon />} />
+                                <ReservationSummaryWidget title={t("seating")} value={seatingTime} subtitle={""} icon={<ArmchairIcon />} />
+                                {specialDay && <ReservationSummaryWidget title={t("specialDay")} value={specialDay[`name_${locale}`]} subtitle={""} icon={<GemIcon />} />}
                             </div>
-                            <FormControl>
-                                <Popover open={open} onOpenChange={setOpen}>
-                                    <PopoverTrigger asChild>
-                                    <Button
-                                        variant="outline"
-                                        id="date"
-                                        className="w-48 justify-between font-normal"
-                                    >
-                                        {field.value ? field.value.toLocaleDateString() : "Select date"}
-                                        <ChevronDownIcon />
-                                    </Button>
-                                    </PopoverTrigger>
-                                    <PopoverContent className="w-auto overflow-hidden p-0" align="start">
-                                    <Calendar
-                                        mode="single"
-                                        selected={field.value}
-                                        defaultMonth={date}
-                                        onSelect={(date) => {
-                                            field.onChange(date ?? field.value);
-                                            // check(date, guests);
-                                            setOpen(false)
-                                        }}
-                                        disabled={{ before: new Date() }}
-                                        showOutsideDays={false}
-                                        // timeZone='Asia/Riyadh'
-                                        className="rounded-lg border"
-                                    />
-                                    </PopoverContent>
-                                </Popover>
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    }} 
-                    />
-                    {specialDay && <div className="flex items-end font-Rufina text-xl pb-[4px] font-semibold"><div className="flex items-center gap-4"><CelebrationSymbol size={32}/>{specialDay[`name_${locale}`]}</div></div>}
+                        </div>
+                        {showTimer && <Button variant="default" className="mt-4 mx-auto" onClick={() => form.setValue("time", "")}>{t("editBooking")}</Button>}
                     </div>
-                    <FormField control={form.control} name="time" render={({field}) => {
-                        return <FormItem>
-                            <FormLabel>{t("selectTime")}</FormLabel>
-                            <FormControl>
-                                <ToggleGroup type="single" variant="outline" className="flex-wrap justify-start gap-2" value={field.value} onValueChange={(value)=>{
-                                    field.onChange(value); 
-                                    }}>
-                                    {availability.length > 0 ? 
-                                        availability.map((item: { time: string, payment?: number }, index) => (
-                                            <ToggleGroupItem key={index} value={item?.time} className="h-auto p-0 select-none">
-                                                <div className="flex flex-col items-center justify-center">
-                                                    <p className="w-full text-sm flex p-2">{item?.time}</p>
-                                                    {item.payment && 
-                                                        <p className="w-full flex justify-center text-xs flex p-2 gap-1 border-t border-black bg-[#fa9898] hover:text-black rounded-b-md"><CurrencySymbol/> {item.payment} <DownPaymentSymbol/></p>
-                                                    }
-                                                </div>
-                                                </ToggleGroupItem>
-                                        ))
-                                        : <h3>{t("noAppointment")}</h3>
-                                    }
-                                    
-                                </ToggleGroup>
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    }} 
-                    />
-                    {showReservationNotice && <div ref={bookingNotice} className="bg-white text-base p-8 rounded-lg mt-4 flex flex-col items-center whitespace-pre-wrap shadow-lg animated zoomIn" >
-                        <p className="pb-4">{settings.settings[`booking_notice_${locale}`]}</p>
-                        <Button className="mt-4" onClick={resetBookingNotice}>{t("agree")}</Button>
-                    </div>}
-                </div>}
-                    {showTimer && <div className="flex flex-col gap-4 tablet:flex-col justify-items-stretch animated zoomIn">
+                )}
+                {reservation &&
+                    <div ref={bookingSuccess} className="w-full"><ReservationSuccessWidget title={t('reservationSuccessTitle')} reservation={reservation} /></div>
+                }
+                {showForm &&
+                    <Form {...form} >
 
-                    <div className="flex gap-4 tablet:flex-col justify-items-stretch">
-                            <FormField control={form.control} name="firstName" render={({field}) => {
-                                return <FormItem className="w-full">
-                                    <FormLabel>{t("firstName")}</FormLabel>
-                                    <FormControl>
-                                        <Input {...field} value={field.value ?? ""}/>
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            }} 
-                            />
-                        <FormField control={form.control} name="lastName" render={({field}) => {
-                            return <FormItem className="w-full">
-                                <FormLabel>{t("lastName")}</FormLabel>
-                                <FormControl>
-                                    <Input {...field} value={field.value ?? ""}/>
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        }} 
-                        />
-                    </div>
-                    <div className="flex gap-4 tablet:flex-col justify-items-stretch w-full">
-                    <FormField
-                        control={form.control}
-                        name="mobile"
-                        render={({ field }) => (
-                            <FormItem className="w-full">
-                            <FormLabel className="text-left">Phone Number</FormLabel>
-                            <FormControl className="w-full">
-                                <PhoneInput placeholder="Enter a phone number" {...field} className="w-full" defaultCountry="SA" />
-                            </FormControl>
-                            <FormMessage />
-                            </FormItem>
-                        )}
-                        />
-                    <FormField control={form.control} name="emailAddress" render={({field}) => {
-                        return <FormItem className="w-full">
-                            <FormLabel>{t("email")}</FormLabel>
-                            <FormControl>
-                                <Input {...field} value={field.value ?? ""}/>
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    }} 
-                    />
-                    </div>
-                    <FormField control={form.control} name="specialRequest" render={({field}) => {
-                        return <FormItem className="w-full">
-                            <FormLabel>{t("specialRequest")}</FormLabel>
-                            <FormControl>
-                                <Textarea {...field} value={field.value ?? ""}/>
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    }} 
-                    />
-                    <FormField control={form.control} name="occasion" render={({field}) => {
-                        return <FormItem className="flex items-center gap-2">
-                            <FormControl>
-                                <Switch checked={field.value} onCheckedChange={(checked)=> {field.onChange(checked)}}/>
-                            </FormControl>
-                            <FormLabel className="!mt-0">{t("specialOccasion")}</FormLabel>
-                            <FormMessage />
-                        </FormItem>
-                    }} 
-                    />
-                    {occasion === true && 
-                    <div className="flex flex-col gap-2 border-b border-black boder-b-0">
-                        <FormField control={form.control} name="occasionType" render={({field}) => {
-                            return <FormItem className="w-full">
-                                <FormLabel>{t('occasion')}</FormLabel>
-                                <FormControl>
-                                    <ToggleGroup type="single" variant="outline" className="flex-wrap justify-start gap-2" value={field.value} onValueChange={(value)=>{field.onChange(value)}}>
-                                    {occasions && 
-                                        occasions.map((item: any, index: number) => (
-                                            <ToggleGroupItem key={index} value={item.key}>{item[`name_${locale}`]}</ToggleGroupItem>
-                                        ))
-                                    }
-                                    </ToggleGroup>
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        }} 
-                        />
-                        {/* Occasion items */}
-                        {settings.settings?.enable_occasion_items && 
-                            <div className="pb-4">
-                                <h4 className="py-4 text-base font-bold">{settings.settings[`occasion_items_title_${locale}`]}</h4>
-                                <FormField control={form.control} name="occasionSelectedItems" render={({field}) => {
-                            return <FormItem className="w-full">
-                                <FormControl>
-                                <ToggleGroup type="multiple" dir={locale === 'en' ? 'ltr' : 'rtl'} variant="outline" className="flex-wrap justify-start gap-4" value={field.value} onValueChange={(value)=>{field.onChange(value)}}>
-                                    {occasionItems.map((category: any, index: number) => (
-                                        category.items.length > 0 && (
-                                            <div key={index} className="flex flex-col w-full gap-4 pb-8 border-b border-mainColor">
-                                            <h4 className="font-normal text-mainColor ss:text-[1.5rem] text-[2rem] text-center pt-2">{category[`name_${locale}`]}</h4>
-                                            {category.items.map((item: any, index: number) => (
-                                                <ToggleGroupItem disabled={!itemIsAvailable(item)} key={index} value={item.id.toString()} className="w-full h-auto justify-start rtl:justify-end relative occasion-item bg-white theme-border">
-                                                    {!itemIsAvailable(item) && (
-                                                        <div className="absolute top-0 left-0 w-full h-full bg-white/90 z-10 flex items-center justify-center">
-                                                            <p className="text-red-600 font-bold">{t('notAvailableForSelectedDate')}</p>
-                                                        </div>
-                                                    )}
-                                                    <div className="w-full flex flex-row ss:flex-col justify-start gap-4">
-                                                        <Image
-                                                        src={'https://fls-9e8f049b-831e-4138-b0b6-1ce5ada62bd6.laravel.cloud/' + item.image}
-                                                        // alt={lang === "en" ? item.name_en : item.name_ar}
-                                                        alt={"image"}
-                                                        height={80}
-                                                        width={80}
-                                                        style={{width: 80, height: 80}}
-                                                        />
-                                                        <div className="flex flex-col w-full justify-start">
-                                                            <div className="flex justify-between items-center w-full">
-                                                                <h2 className="font-Rufina text-xl font-bold ltr:text-left rtl:text-right leading-none">{item[`name_${locale}`]}</h2>
-                                                                <p className="flex text-lg gap-1">
-                                                                    <CurrencySymbol />
-                                                                    {item.price}
-                                                                </p>
-                                                            </div>
-                                                            <p className={locale === 'en' ? 'text-left pt-2' : 'text-right pt-2'}>{item[`description_${locale}`]}</p>
-                                                            {/* <p className="text-left">Notes</p> */}
-                                                        </div>
-                                                    </div>
-                                                </ToggleGroupItem>
-                                            ))}
-                                        </div>
-                                    )))}
-                                </ToggleGroup>
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        }} 
-                        />
-                                { occasionSelectedItems.length > 0  && 
-                                <div className="flex justify-center w-full">
-                                    <Button type="button" variant="default" className="mt-4 mx-auto" onClick={()=> {setCardEnabled(true)}}>{t("addCardButton")}</Button>
-                                </div>
-                                }
-                                { cardEnabled && 
-                                    <FormField control={form.control} name="cardContent" render={({field}) => {
-                                        return <FormItem className="w-full mt-4">
-                                            <FormLabel>{t("cardTitle")}</FormLabel>
+                        <form onSubmit={form.handleSubmit(book)} className="flex flex-col w-full gap-4 animated zoomIn">
+                            {!showSummary &&
+                                <div className="gap-4 flex flex-col">
+                                    <div className="flex gap-4 tablet:flex-col">
+                                        <FormField control={form.control} name="guests" render={({ field }) => {
+                                            return <FormItem>
+                                                <FormLabel>{t("guests")}</FormLabel>
+                                                <FormControl>
+                                                    <Input type="number" min={settings.settings.booking_min_guests || 2} max={settings.settings.booking_max_guests || 12} step="1" {...field} value={field.value ?? ""} className="w-24" />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        }}
+                                        />
+                                        <FormField control={form.control} name="date" render={({ field }) => {
+                                            return <FormItem className="">
+                                                <div>
+                                                    <FormLabel>{t("selectDate")}</FormLabel>
+                                                </div>
+                                                <FormControl>
+                                                    <Popover open={open} onOpenChange={setOpen}>
+                                                        <PopoverTrigger asChild>
+                                                            <Button
+                                                                variant="outline"
+                                                                id="date"
+                                                                className="w-48 justify-between font-normal"
+                                                            >
+                                                                {field.value ? field.value.toLocaleDateString() : "Select date"}
+                                                                <ChevronDownIcon />
+                                                            </Button>
+                                                        </PopoverTrigger>
+                                                        <PopoverContent className="w-auto overflow-hidden p-0" align="start">
+                                                            <Calendar
+                                                                mode="single"
+                                                                selected={field.value}
+                                                                defaultMonth={date}
+                                                                onSelect={(date) => {
+                                                                    field.onChange(date ?? field.value);
+                                                                    // check(date, guests);
+                                                                    setOpen(false)
+                                                                }}
+                                                                disabled={{ before: new Date() }}
+                                                                showOutsideDays={false}
+                                                                // timeZone='Asia/Riyadh'
+                                                                className="rounded-lg border"
+                                                            />
+                                                        </PopoverContent>
+                                                    </Popover>
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        }}
+                                        />
+                                        {specialDay && <div className="flex items-end font-Rufina text-xl pb-[4px] font-semibold"><div className="flex items-center gap-4"><CelebrationSymbol size={32} />{specialDay[`name_${locale}`]}</div></div>}
+                                    </div>
+                                    <FormField control={form.control} name="time" render={({ field }) => {
+                                        return <FormItem>
+                                            <FormLabel>{t("selectTime")}</FormLabel>
                                             <FormControl>
-                                                <Textarea {...field} placeholder={t("cardPlaceholder")} rows={5}/>
+                                                <ToggleGroup type="single" variant="outline" className="flex-wrap justify-start gap-2" value={field.value} onValueChange={(value) => {
+                                                    field.onChange(value);
+                                                }}>
+                                                    {availability.length > 0 ?
+                                                        availability.map((item: { time: string, payment?: number }, index) => (
+                                                            <ToggleGroupItem key={index} value={item?.time} className="h-auto p-0 select-none">
+                                                                <div className="flex flex-col items-center justify-center">
+                                                                    <p className="w-full text-sm flex p-2">{item?.time}</p>
+                                                                    {item.payment &&
+                                                                        <p className="w-full flex justify-center text-xs flex p-2 gap-1 border-t border-black bg-[#fa9898] hover:text-black rounded-b-md"><CurrencySymbol /> {item.payment} <DownPaymentSymbol /></p>
+                                                                    }
+                                                                </div>
+                                                            </ToggleGroupItem>
+                                                        ))
+                                                        : <h3>{t("noAppointment")}</h3>
+                                                    }
+
+                                                </ToggleGroup>
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
-                                    }} 
+                                    }}
+                                    />
+                                    {showReservationNotice && <div ref={bookingNotice} className="bg-white text-base p-8 rounded-lg mt-4 flex flex-col items-center whitespace-pre-wrap shadow-lg animated zoomIn" >
+                                        <p className="pb-4">{settings.settings[`booking_notice_${locale}`]}</p>
+                                        <Button className="mt-4" onClick={resetBookingNotice}>{t("agree")}</Button>
+                                    </div>}
+                                </div>}
+                            {showTimer && <div className="flex flex-col gap-4 tablet:flex-col justify-items-stretch animated zoomIn">
+
+                                <div className="flex gap-4 tablet:flex-col justify-items-stretch">
+                                    <FormField control={form.control} name="firstName" render={({ field }) => {
+                                        return <FormItem className="w-full">
+                                            <FormLabel>{t("firstName")}</FormLabel>
+                                            <FormControl>
+                                                <Input {...field} value={field.value ?? ""} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    }}
+                                    />
+                                    <FormField control={form.control} name="lastName" render={({ field }) => {
+                                        return <FormItem className="w-full">
+                                            <FormLabel>{t("lastName")}</FormLabel>
+                                            <FormControl>
+                                                <Input {...field} value={field.value ?? ""} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    }}
+                                    />
+                                </div>
+                                <div className="flex gap-4 tablet:flex-col justify-items-stretch w-full">
+                                    <FormField
+                                        control={form.control}
+                                        name="mobile"
+                                        render={({ field }) => (
+                                            <FormItem className="w-full">
+                                                <FormLabel className="text-left">Phone Number</FormLabel>
+                                                <FormControl className="w-full">
+                                                    <PhoneInput placeholder="Enter a phone number" {...field} className="w-full" defaultCountry="SA" />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <FormField control={form.control} name="emailAddress" render={({ field }) => {
+                                        return <FormItem className="w-full">
+                                            <FormLabel>{t("email")}</FormLabel>
+                                            <FormControl>
+                                                <Input {...field} value={field.value ?? ""} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    }}
+                                    />
+                                </div>
+                                <FormField control={form.control} name="specialRequest" render={({ field }) => {
+                                    return <FormItem className="w-full">
+                                        <FormLabel>{t("specialRequest")}</FormLabel>
+                                        <FormControl>
+                                            <Textarea {...field} value={field.value ?? ""} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                }}
+                                />
+                                <FormField control={form.control} name="occasion" render={({ field }) => {
+                                    return <FormItem className="flex items-center gap-2">
+                                        <FormControl>
+                                            <Switch checked={field.value} onCheckedChange={(checked) => { field.onChange(checked) }} />
+                                        </FormControl>
+                                        <FormLabel className="!mt-0">{t("specialOccasion")}</FormLabel>
+                                        <FormMessage />
+                                    </FormItem>
+                                }}
+                                />
+                                {occasion === true &&
+                                    <div className="flex flex-col gap-2 border-b border-black boder-b-0">
+                                        <FormField control={form.control} name="occasionType" render={({ field }) => {
+                                            return <FormItem className="w-full">
+                                                <FormLabel>{t('occasion')}</FormLabel>
+                                                <FormControl>
+                                                    <ToggleGroup type="single" variant="outline" className="flex-wrap justify-start gap-2" value={field.value} onValueChange={(value) => { field.onChange(value) }}>
+                                                        {occasions &&
+                                                            occasions.map((item: any, index: number) => (
+                                                                <ToggleGroupItem key={index} value={item.key}>{item[`name_${locale}`]}</ToggleGroupItem>
+                                                            ))
+                                                        }
+                                                    </ToggleGroup>
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        }}
+                                        />
+                                        {/* Occasion items */}
+                                        {settings.settings?.enable_occasion_items &&
+                                            <div className="pb-4">
+                                                <h4 className="py-4 text-base font-bold">{settings.settings[`occasion_items_title_${locale}`]}</h4>
+                                                <FormField control={form.control} name="occasionSelectedItems" render={({ field }) => {
+                                                    return <FormItem className="w-full">
+                                                        <FormControl>
+                                                            <ToggleGroup type="multiple" dir={locale === 'en' ? 'ltr' : 'rtl'} variant="outline" className="flex-wrap justify-start gap-4" value={field.value} onValueChange={(value) => { field.onChange(value) }}>
+                                                                {occasionItems.map((category: any, index: number) => (
+                                                                    category.items.length > 0 && (
+                                                                        <div key={index} className="flex flex-col w-full gap-4 pb-8 border-b border-mainColor">
+                                                                            <h4 className="font-normal text-mainColor ss:text-[1.5rem] text-[2rem] text-center pt-2">{category[`name_${locale}`]}</h4>
+                                                                            {category.items.map((item: any, index: number) => (
+                                                                                <ToggleGroupItem disabled={!itemIsAvailable(item)} key={index} value={item.id.toString()} className="w-full h-auto justify-start rtl:justify-end relative occasion-item bg-white theme-border">
+                                                                                    {!itemIsAvailable(item) && (
+                                                                                        <div className="absolute top-0 left-0 w-full h-full bg-white/90 z-10 flex items-center justify-center">
+                                                                                            <p className="text-red-600 font-bold">{t('notAvailableForSelectedDate')}</p>
+                                                                                        </div>
+                                                                                    )}
+                                                                                    <div className="w-full flex flex-row ss:flex-col justify-start gap-4">
+                                                                                        <Image
+                                                                                            src={'https://fls-9e8f049b-831e-4138-b0b6-1ce5ada62bd6.laravel.cloud/' + item.image}
+                                                                                            // alt={lang === "en" ? item.name_en : item.name_ar}
+                                                                                            alt={"image"}
+                                                                                            height={80}
+                                                                                            width={80}
+                                                                                            style={{ width: 80, height: 80 }}
+                                                                                        />
+                                                                                        <div className="flex flex-col w-full justify-start">
+                                                                                            <div className="flex justify-between items-center w-full">
+                                                                                                <h2 className="font-Rufina text-xl font-bold ltr:text-left rtl:text-right leading-none">{item[`name_${locale}`]}</h2>
+                                                                                                <p className="flex text-lg gap-1">
+                                                                                                    <CurrencySymbol />
+                                                                                                    {item.price}
+                                                                                                </p>
+                                                                                            </div>
+                                                                                            <p className={locale === 'en' ? 'text-left pt-2' : 'text-right pt-2'}>{item[`description_${locale}`]}</p>
+                                                                                            {/* <p className="text-left">Notes</p> */}
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </ToggleGroupItem>
+                                                                            ))}
+                                                                        </div>
+                                                                    )))}
+                                                            </ToggleGroup>
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                }}
+                                                />
+                                                {occasionSelectedItems.length > 0 &&
+                                                    <div className="flex justify-center w-full">
+                                                        <Button type="button" variant="default" className="mt-4 mx-auto" onClick={() => { setCardEnabled(true) }}>{t("addCardButton")}</Button>
+                                                    </div>
+                                                }
+                                                {cardEnabled &&
+                                                    <FormField control={form.control} name="cardContent" render={({ field }) => {
+                                                        return <FormItem className="w-full mt-4">
+                                                            <FormLabel>{t("cardTitle")}</FormLabel>
+                                                            <FormControl>
+                                                                <Textarea {...field} placeholder={t("cardPlaceholder")} rows={5} />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    }}
+                                                    />
+                                                }
+                                                <h4 className="py-4 text-sm">{settings.settings[`occasion_items_notice_${locale}`]}</h4>
+                                            </div>
+                                        }
+
+                                    </div>
+
+                                }
+                                <FormField control={form.control} name="allergic" render={({ field }) => {
+                                    return <FormItem className="flex items-center gap-2">
+                                        <FormControl>
+                                            <Switch checked={field.value} onCheckedChange={(checked) => { field.onChange(checked) }} />
+                                        </FormControl>
+                                        <FormLabel className="!mt-0">{t('foodAllergies')}</FormLabel>
+                                        <FormMessage />
+                                    </FormItem>
+                                }}
+                                />
+                                {allergic === true &&
+                                    <FormField control={form.control} name="allergies" render={({ field }) => {
+                                        return <FormItem className="w-full">
+                                            <FormControl>
+                                                <ToggleGroup type="multiple" variant="outline" className="flex-wrap justify-start gap-2" value={field.value} onValueChange={(value) => { field.onChange(value) }}>
+                                                    {allergies &&
+                                                        allergies.map((item: any, index: number) => (
+                                                            <ToggleGroupItem key={index} value={item.key}>{item[`name_${locale}`]}</ToggleGroupItem>
+                                                        ))
+                                                    }
+                                                </ToggleGroup>
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    }}
                                     />
                                 }
-                                <h4 className="py-4 text-sm">{settings.settings[`occasion_items_notice_${locale}`]}</h4>
-                            </div>
-                        }
-                        
-                    </div>
-                    
-                    }
-                    <FormField control={form.control} name="allergic" render={({field}) => {
-                        return <FormItem className="flex items-center gap-2">
-                            <FormControl>
-                                <Switch checked={field.value} onCheckedChange={(checked)=> {field.onChange(checked)}}/>
-                            </FormControl>
-                            <FormLabel className="!mt-0">{t('foodAllergies')}</FormLabel>
-                            <FormMessage />
-                        </FormItem>
-                    }} 
-                    />
-                    {allergic === true && 
-                    <FormField control={form.control} name="allergies" render={({field}) => {
-                        return <FormItem className="w-full">
-                            <FormControl>
-                                <ToggleGroup type="multiple" variant="outline" className="flex-wrap justify-start gap-2" value={field.value} onValueChange={(value)=>{field.onChange(value)}}>
-                                {allergies && 
-                                    allergies.map((item: any, index: number) => (
-                                        <ToggleGroupItem key={index} value={item.key}>{item[`name_${locale}`]}</ToggleGroupItem>
-                                    ))
-                                }
-                                </ToggleGroup>
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    }} 
-                    />
-                    }
-                    </div>}
-                    {(orderItems.length > 0 || downPayment > 0) && showTimer && 
-                        <div className="bg-white px-2 py-4 rounded-lg shadow-md flex-1 flex flex-col justify-center items-center text-center w-full px-6 mt-4">
-                        <h3 className="text-xl font-semibold">{t('paymentTitle')}</h3>
-                        
-                        { orderItems &&
-                            orderItems.map((item, index) => (
-                                <PaymentItem key={index} title={item.title} value={item.value} />
-                            ))
-                        }
-                        {addVat && vat > 0 && 
-                            <PaymentItem title={`${t('vat')} (${settings.settings.vat_value}%)`} value={vat} />
-                        }
-                        { downPayment > 0 &&
-                            <PaymentItem title={t('downPayment')} value={downPayment} />
-                        }
-                        {totalPrice > 0 && <div className="w-full flex justify-between text-xl font-semibold sm:text-base pt-4 pb-2 text-left rtl:text-right">
-                            <p className=" ">Total</p>
-                            <p className="flex items-center gap-2"><CurrencySymbol size={20}/>{totalPrice}</p>
-                        </div>}
-                    </div>
-                    }
-                    <div className="w-full flex flex-col gap-4 pt-4">
-                    {(downPayment > 0 || price > 0) && showTimer &&    
-                        <FormField control={form.control} name="paymentPolicyAccepted" render={({field}) => {
-                            return <FormItem className="w-full">
-                                <FormControl>
-                                    <div className="flex items-start gap-3">
-                                        <Checkbox id="termsAccepted" checked={field.value} onCheckedChange={field.onChange}/>
-                                        <Label htmlFor="termsAccepted"><Link href={`/${locale}/payment-policy`} target="_blank">{t('paymentPolicy')}</Link></Label>
-                                    </div>
-                                </FormControl>
-                            </FormItem>
-                        }}
-                        />
-                    }
-                    {showTimer && 
-                    <FormField control={form.control} name="termsAccepted" render={({field}) => {
-                        return <FormItem className="w-full">
-                            <FormControl>
-                                <div className="flex items-start gap-3">
-                                    <Checkbox id="termsAccepted" checked={field.value} onCheckedChange={field.onChange}/>
-                                    <Label htmlFor="termsAccepted"><Link href={`/${locale}/terms`} target="_blank">{t('termsAndService')}</Link></Label>
+                            </div>}
+                            {(orderItems.length > 0 || downPayment > 0) && showTimer &&
+                                <div className="bg-white px-2 py-4 rounded-lg shadow-md flex-1 flex flex-col justify-center items-center text-center w-full px-6 mt-4">
+                                    <h3 className="text-xl font-semibold">{t('paymentTitle')}</h3>
+
+                                    {orderItems &&
+                                        orderItems.map((item, index) => (
+                                            <PaymentItem key={index} title={item.title} value={item.value} />
+                                        ))
+                                    }
+                                    {addVat && vat > 0 &&
+                                        <PaymentItem title={`${t('vat')} (${settings.settings.vat_value}%)`} value={vat} />
+                                    }
+                                    {downPayment > 0 &&
+                                        <PaymentItem title={t('downPayment')} value={downPayment} />
+                                    }
+                                    {totalPrice > 0 && <div className="w-full flex justify-between text-xl font-semibold sm:text-base pt-4 pb-2 text-left rtl:text-right">
+                                        <p className=" ">Total</p>
+                                        <p className="flex items-center gap-2"><CurrencySymbol size={20} />{totalPrice}</p>
+                                    </div>}
                                 </div>
-                            </FormControl>
-                        </FormItem>
-                    }}
-                    />
-                    }
-                    </div>
-                    {availability.length > 0 ? 
-                    <Button type="submit" disabled={!termsAccepted || time == '' || (downPayment > 0 &&!paymentPolicyAccepted) } className="mt-4">{t('book')}</Button>
-                    : ''}
-                </form>
-            </Form>
-            }
-            {loading && 
-            <div className="">
-                <div className="loader"></div>
-                <div className="loader-container flex">
-                </div>
-            </div>}
-            
+                            }
+                            <div className="w-full flex flex-col gap-4 pt-4">
+                                {(downPayment > 0 || price > 0) && showTimer &&
+                                    <FormField control={form.control} name="paymentPolicyAccepted" render={({ field }) => {
+                                        return <FormItem className="w-full">
+                                            <FormControl>
+                                                <div className="flex items-start gap-3">
+                                                    <Checkbox id="termsAccepted" checked={field.value} onCheckedChange={field.onChange} />
+                                                    <Label htmlFor="termsAccepted"><Link href={`/${locale}/payment-policy`} target="_blank">{t('paymentPolicy')}</Link></Label>
+                                                </div>
+                                            </FormControl>
+                                        </FormItem>
+                                    }}
+                                    />
+                                }
+                                {showTimer &&
+                                    <FormField control={form.control} name="termsAccepted" render={({ field }) => {
+                                        return <FormItem className="w-full">
+                                            <FormControl>
+                                                <div className="flex items-start gap-3">
+                                                    <Checkbox id="termsAccepted" checked={field.value} onCheckedChange={field.onChange} />
+                                                    <Label htmlFor="termsAccepted"><Link href={`/${locale}/terms`} target="_blank">{t('termsAndService')}</Link></Label>
+                                                </div>
+                                            </FormControl>
+                                        </FormItem>
+                                    }}
+                                    />
+                                }
+                            </div>
+                            {availability.length > 0 ?
+                                <Button type="submit" disabled={!termsAccepted || time == '' || (downPayment > 0 && !paymentPolicyAccepted)} className="mt-4">{t('book')}</Button>
+                                : ''}
+                        </form>
+                    </Form>
+                }
+                {loading &&
+                    <div className="">
+                        <div className="loader"></div>
+                        <div className="loader-container flex">
+                        </div>
+                    </div>}
+
+            </div>
         </div>
-    </div>
-  )
+    )
 }

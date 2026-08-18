@@ -72,11 +72,11 @@
     "featured": "Featured",
     "ramadanMeals": "Ramadan Meals",
     "defaultMeals": "Default Meals",
-    "inclusive":"VAT inclusive",
+    "inclusive": "VAT inclusive",
     "choose": "Choose one",
     "ramadanMenu": "Ramadan Set Menu",
-    "ramadan":"Ramadan",
-    "setMenu":"Set Menu"
+    "ramadan": "Ramadan",
+    "setMenu": "Set Menu"
   },
   "venuePage": {
     "tab": "Venue",
@@ -132,7 +132,7 @@
     "terms": "Accept Terms",
     "termsAndService": "Accept Terms of Service",
     "paymentPolicy": "Accept Payment Policy",
-    "book" : "Book Now",
+    "book": "Book Now",
     "price": "Price",
     "vat": "VAT",
     "totalPrice": "Total Price",
@@ -147,7 +147,7 @@
     "cardTitle": "Your Complimentary Gift Card Message",
     "cardContentPattern": "Card message is too long, please reduce message",
     "mobilePattern": "Please enter a valid mobile number",
-    "paymentTitle": "Payment Summary",
+    "paymentTitle": "Ordder Summary",
     "downPayment": "Reservation Deposit",
     "specialDay": "Special Day",
     "reservationSuccessTitle": "Congratulations",

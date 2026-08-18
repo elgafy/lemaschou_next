@@ -30,9 +30,9 @@ import Link from "next/link";
 import { PaymentItem, ReservationSuccessWidget, ReservationSummaryWidget, ReservationTimer } from "./ReservationWidgetComponents";
 import CelebrationSymbol from "@/components/ui/celebrationSymbol";
 
-export default function ReservationEditWidget(props: {settings: any, reservationId?: string}) {
-const {settings, reservationId} = props;
-console.log(reservationId);
+export default function ReservationEditWidget(props: {settings: any, reservationData: any}) {
+const {settings, reservationData} = props;
+console.log(reservationData);
 const locale = useLocale();
 
 const bookingWindow = settings.settings.booking_time_window ? settings.settings.booking_time_window * 60000 : 300000; // 5 minutes in milliseconds

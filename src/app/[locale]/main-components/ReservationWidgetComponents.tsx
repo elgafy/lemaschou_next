@@ -73,7 +73,7 @@ const ReservationTimer = (props: {title: string, time: number, showTimer: boolea
                 setRemainingTime(time);
             }
         }, 1000);
-        console.log(remainingTime);
+        // console.log(remainingTime);
         return () => clearInterval(interval);
     }, [showTimer]);
     
