@@ -2,12 +2,19 @@
 import { useDebounce } from "use-debounce";
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
-import { ChevronDownIcon, UsersRoundIcon, CalendarDaysIcon, ClockIcon, ArmchairIcon, GemIcon } from "lucide-react";
+import { ChevronDownIcon, UsersRoundIcon, CalendarDaysIcon, ClockIcon, ArmchairIcon, GemIcon, Plus, Minus } from "lucide-react";
 import {
     Popover,
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
 import { Calendar } from "@/components/ui/calendar";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -54,9 +61,108 @@ export default function ReservationWidget(props: { settings: any }) {
     const [totalPrice, setTotalPrice] = useState(0);
     const [downPayment, setDownPayment] = useState<number>(0);
     const [orderItems, setOrderItems] = useState<Array<{ title: string, value: number }>>([]);
+    const [selectedOccasionItems, setSelectedOccasionItems] = useState<Array<{
+        uniqueKey: string;
+        itemId: number;
+        itemNameEn: string;
+        itemNameAr: string;
+        hasVariations: boolean;
+        variationNameEn?: string;
+        variationNameAr?: string;
+        variationValueEn?: string;
+        variationValueAr?: string;
+        unitPrice: number;
+        count: number;
+    }>>([]);
+    const [selectedVariationOptions, setSelectedVariationOptions] = useState<Record<number, string>>({});
     const occasions: Array<string> = Object.values(settings.occasions) ?? [];
     const allergies: Array<string> = Object.values(settings.foodAllergies) ?? [];
-    const occasionItems: Array<string> = Object.values(settings.occasionItems) ?? [];
+    const occasionItems: Array<any> = Object.values(settings.occasionItems) ?? [];
+    const giftCards: Array<any> = settings?.giftCards ?? [];
+
+    const handleAddVariation = (item: any, variationGroup: any, valObj: any) => {
+        const unitPrice = (valObj.price !== null && valObj.price !== undefined && valObj.price !== "")
+            ? parseFloat(valObj.price)
+            : (item.price != null ? parseFloat(item.price) : 0);
+        const uniqueKey = `${item.id}-${valObj.value_en}`;
+
+        setSelectedOccasionItems(prev => {
+            const existingIndex = prev.findIndex(i => i.uniqueKey === uniqueKey);
+            if (existingIndex > -1) {
+                const updated = [...prev];
+                updated[existingIndex] = {
+                    ...updated[existingIndex],
+                    count: updated[existingIndex].count + 1
+                };
+                return updated;
+            } else {
+                return [
+                    ...prev,
+                    {
+                        uniqueKey,
+                        itemId: item.id,
+                        itemNameEn: item.name_en,
+                        itemNameAr: item.name_ar,
+                        hasVariations: true,
+                        variationNameEn: variationGroup?.name_en,
+                        variationNameAr: variationGroup?.name_ar,
+                        variationValueEn: valObj.value_en,
+                        variationValueAr: valObj.value_ar,
+                        unitPrice,
+                        count: 1
+                    }
+                ];
+            }
+        });
+    };
+
+    const handleAddNonVariation = (item: any) => {
+        const unitPrice = item.price != null ? parseFloat(item.price) : 0;
+        const uniqueKey = `${item.id}-default`;
+
+        setSelectedOccasionItems(prev => {
+            const existingIndex = prev.findIndex(i => i.uniqueKey === uniqueKey);
+            if (existingIndex > -1) {
+                const updated = [...prev];
+                updated[existingIndex] = {
+                    ...updated[existingIndex],
+                    count: updated[existingIndex].count + 1
+                };
+                return updated;
+            } else {
+                return [
+                    ...prev,
+                    {
+                        uniqueKey,
+                        itemId: item.id,
+                        itemNameEn: item.name_en,
+                        itemNameAr: item.name_ar,
+                        hasVariations: false,
+                        unitPrice,
+                        count: 1
+                    }
+                ];
+            }
+        });
+    };
+
+    const handleIncrement = (uniqueKey: string) => {
+        setSelectedOccasionItems(prev =>
+            prev.map(i => i.uniqueKey === uniqueKey ? { ...i, count: i.count + 1 } : i)
+        );
+    };
+
+    const handleDecrement = (uniqueKey: string) => {
+        setSelectedOccasionItems(prev => {
+            const item = prev.find(i => i.uniqueKey === uniqueKey);
+            if (!item) return prev;
+            if (item.count > 1) {
+                return prev.map(i => i.uniqueKey === uniqueKey ? { ...i, count: i.count - 1 } : i);
+            } else {
+                return prev.filter(i => i.uniqueKey !== uniqueKey);
+            }
+        });
+    };
 
     console.log("occasionItems:", occasionItems);
     console.log("allergies:", allergies);
@@ -106,7 +212,7 @@ export default function ReservationWidget(props: { settings: any }) {
         }),
         occasion: z.boolean(),
         occasionType: z.string(),
-        occasionSelectedItems: z.array(z.string()),
+        occasionSelectedItems: z.array(z.any()),
         occasionItemsPrice: z.number(),
         cardContent: z.string().max(255, {
             message: t('cardContentPattern')
@@ -164,35 +270,56 @@ export default function ReservationWidget(props: { settings: any }) {
         check(debouncedDate, debouncedGuests);
     }, [debouncedDate, debouncedGuests]);
 
+    // Clear selected occasion items when occasion toggle is turned off
+    useEffect(() => {
+        if (!occasion) {
+            setSelectedOccasionItems([]);
+            setCardEnabled(false);
+        }
+    }, [occasion]);
+
     // Calculate total price of selected occasion items
     useEffect(() => {
         let itemsPrice = 0;
-        let itemsTotalPrice = 0;
-        setOrderItems([]);
-        occasionSelectedItems.forEach((itemId: any) => {
-            occasionItems.forEach((category: any) => {
-                const item: any = category.items.find((item: any) => item.id == itemId);
-                if (item) {
-                    itemsPrice += item.price;
-                    setOrderItems((prevItems) => [...prevItems, { title: item[`name_${locale}`], value: item.price }]);
-                }
+        const summaryList: Array<{ title: string; value: number }> = [];
+
+        selectedOccasionItems.forEach((sel) => {
+            const lineTotal = sel.unitPrice * sel.count;
+            itemsPrice += lineTotal;
+            const itemName = locale === 'ar' ? (sel.itemNameAr || sel.itemNameEn) : (sel.itemNameEn || sel.itemNameAr);
+            let title = itemName;
+            if (sel.hasVariations && (sel.variationValueEn || sel.variationValueAr)) {
+                const varVal = locale === 'ar' ? (sel.variationValueAr || sel.variationValueEn) : (sel.variationValueEn || sel.variationValueAr);
+                title = `${itemName} (${varVal})`;
+            }
+            if (sel.count > 1) {
+                title = `${title} × ${sel.count}`;
+            }
+            summaryList.push({
+                title,
+                value: lineTotal
             });
         });
+
+        setOrderItems(summaryList);
         setPrice(itemsPrice);
-        // Update form value
-        const clacVat = (itemsPrice * settings.settings.vat_value) / 100;
+
+        // Update form value & VAT
+        const clacVat = (itemsPrice * (settings.settings?.vat_value || 0)) / 100;
         if (addVat) {
             setVat(clacVat);
             setPrice(itemsPrice);
-            itemsTotalPrice = downPayment > 0 ? itemsPrice + clacVat + downPayment : itemsPrice + clacVat;
+            const itemsTotalPrice = downPayment > 0 ? itemsPrice + clacVat + downPayment : itemsPrice + clacVat;
             setTotalPrice(itemsTotalPrice);
-            form.setValue("occasionItemsPrice", totalPrice);
+            form.setValue("occasionItemsPrice", itemsTotalPrice);
         } else {
-            setTotalPrice(downPayment > 0 ? itemsPrice + downPayment : itemsPrice);
+            const itemsTotalPrice = downPayment > 0 ? itemsPrice + downPayment : itemsPrice;
+            setTotalPrice(itemsTotalPrice);
             form.setValue("occasionItemsPrice", itemsPrice);
         }
 
-    }, [occasionSelectedItems, downPayment]);
+        form.setValue("occasionSelectedItems", selectedOccasionItems.map(i => i.uniqueKey));
+    }, [selectedOccasionItems, downPayment, locale]);
 
     // Time selection effect
     useEffect(() => {
@@ -516,53 +643,220 @@ export default function ReservationWidget(props: { settings: any }) {
                                         {settings.settings?.enable_occasion_items &&
                                             <div className="pb-4">
                                                 <h4 className="py-4 text-base font-bold">{settings.settings[`occasion_items_title_${locale}`]}</h4>
-                                                <FormField control={form.control} name="occasionSelectedItems" render={({ field }) => {
-                                                    return <FormItem className="w-full">
-                                                        <FormControl>
-                                                            <ToggleGroup type="multiple" dir={locale === 'en' ? 'ltr' : 'rtl'} variant="outline" className="flex-wrap justify-start gap-4" value={field.value} onValueChange={(value) => { field.onChange(value) }}>
-                                                                {occasionItems.map((category: any, index: number) => (
-                                                                    category.items.length > 0 && (
-                                                                        <div key={index} className="flex flex-col w-full gap-4 pb-8 border-b border-mainColor">
-                                                                            <h4 className="font-normal text-mainColor ss:text-[1.5rem] text-[2rem] text-center pt-2">{category[`name_${locale}`]}</h4>
-                                                                            {category.items.map((item: any, index: number) => (
-                                                                                <ToggleGroupItem disabled={!itemIsAvailable(item)} key={index} value={item.id.toString()} className="w-full h-auto justify-start rtl:justify-end relative occasion-item bg-white theme-border">
-                                                                                    {!itemIsAvailable(item) && (
-                                                                                        <div className="absolute top-0 left-0 w-full h-full bg-white/90 z-10 flex items-center justify-center">
-                                                                                            <p className="text-red-600 font-bold">{t('notAvailableForSelectedDate')}</p>
-                                                                                        </div>
-                                                                                    )}
-                                                                                    <div className="w-full flex flex-row ss:flex-col justify-start gap-4">
-                                                                                        <Image
-                                                                                            src={'https://fls-9e8f049b-831e-4138-b0b6-1ce5ada62bd6.laravel.cloud/' + item.image}
-                                                                                            // alt={lang === "en" ? item.name_en : item.name_ar}
-                                                                                            alt={"image"}
-                                                                                            height={80}
-                                                                                            width={80}
-                                                                                            style={{ width: 80, height: 80 }}
-                                                                                        />
-                                                                                        <div className="flex flex-col w-full justify-start">
-                                                                                            <div className="flex justify-between items-center w-full">
-                                                                                                <h2 className="font-Rufina text-xl font-bold ltr:text-left rtl:text-right leading-none">{item[`name_${locale}`]}</h2>
-                                                                                                <p className="flex text-lg gap-1">
-                                                                                                    <CurrencySymbol />
-                                                                                                    {item.price}
-                                                                                                </p>
-                                                                                            </div>
-                                                                                            <p className={locale === 'en' ? 'text-left pt-2' : 'text-right pt-2'}>{item[`description_${locale}`]}</p>
-                                                                                            {/* <p className="text-left">Notes</p> */}
-                                                                                        </div>
+                                                <div className="flex flex-col w-full gap-6">
+                                                    {occasionItems.map((category: any, catIndex: number) => (
+                                                        category.items && category.items.length > 0 && (
+                                                            <div key={catIndex} className="flex flex-col w-full gap-4 pb-6 border-b border-mainColor">
+                                                                <h4 className="font-normal text-mainColor ss:text-[1.5rem] text-[2rem] text-center pt-2">
+                                                                    {category[`name_${locale}`]}
+                                                                </h4>
+                                                                <div className="grid grid-cols-1 gap-4 w-full">
+                                                                    {category.items.map((item: any, itemIndex: number) => {
+                                                                        const isAvailable = itemIsAvailable(item);
+                                                                        const hasVariations = item.has_variations && item.variations && item.variations.length > 0;
+                                                                        const firstVarGroup = hasVariations ? item.variations[0] : null;
+                                                                        const itemSelectedOptions = selectedOccasionItems.filter(s => s.itemId === item.id);
+
+                                                                        return (
+                                                                            <div
+                                                                                key={item.id || itemIndex}
+                                                                                className="w-full relative occasion-item bg-white theme-border rounded-lg p-4 flex flex-col gap-3 shadow-sm"
+                                                                            >
+                                                                                {!isAvailable && (
+                                                                                    <div className="absolute inset-0 bg-white/90 z-10 flex items-center justify-center rounded-lg">
+                                                                                        <p className="text-red-600 font-bold text-sm">{t('notAvailableForSelectedDate')}</p>
                                                                                     </div>
-                                                                                </ToggleGroupItem>
-                                                                            ))}
-                                                                        </div>
-                                                                    )))}
-                                                            </ToggleGroup>
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                }}
-                                                />
-                                                {occasionSelectedItems.length > 0 &&
+                                                                                )}
+                                                                                <div className="w-full flex flex-row ss:flex-col justify-start gap-4">
+                                                                                    <Image
+                                                                                        src={'https://fls-9e8f049b-831e-4138-b0b6-1ce5ada62bd6.laravel.cloud/' + item.image}
+                                                                                        alt={item[`name_${locale}`] || "occasion item"}
+                                                                                        height={80}
+                                                                                        width={80}
+                                                                                        className="rounded-md object-cover flex-shrink-0"
+                                                                                        style={{ width: 80, height: 80 }}
+                                                                                    />
+                                                                                    <div className="flex flex-col w-full justify-between">
+                                                                                        <div className="flex justify-between items-start w-full gap-2">
+                                                                                            <h2 className="font-Rufina text-xl font-bold ltr:text-left rtl:text-right leading-none">
+                                                                                                {item[`name_${locale}`]}
+                                                                                            </h2>
+                                                                                            <div className="flex items-center text-lg font-semibold whitespace-nowrap gap-1 text-mainColor">
+                                                                                                <CurrencySymbol />
+                                                                                                <span>
+                                                                                                    {hasVariations && firstVarGroup?.values?.length > 0
+                                                                                                        ? (firstVarGroup.values.some((v: any) => v.price != null && v.price !== "")
+                                                                                                            ? `${Math.min(...firstVarGroup.values.map((v: any) => parseFloat(v.price || item.price || 0)))}`
+                                                                                                            : `${item.price || 0}`)
+                                                                                                        : `${item.price || 0}`
+                                                                                                    }
+                                                                                                </span>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                        {item[`description_${locale}`] && (
+                                                                                            <p className={`text-sm text-gray-600 ${locale === 'en' ? 'text-left pt-2' : 'text-right pt-2'}`}>
+                                                                                                {item[`description_${locale}`]}
+                                                                                            </p>
+                                                                                        )}
+                                                                                    </div>
+                                                                                </div>
+
+                                                                                {/* Action / Variation Controls */}
+                                                                                {hasVariations && firstVarGroup ? (
+                                                                                    <div className="w-full pt-3 border-t border-stone-200 flex flex-col gap-3">
+                                                                                        <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+                                                                                            <div className="flex-1 min-w-[200px]">
+                                                                                                <Select
+                                                                                                    dir={locale === 'ar' ? 'rtl' : 'ltr'}
+                                                                                                    value={selectedVariationOptions[item.id]}
+                                                                                                    onValueChange={(val) => {
+                                                                                                        setSelectedVariationOptions(prev => ({ ...prev, [item.id]: val }));
+                                                                                                    }}
+                                                                                                    disabled={!isAvailable}
+                                                                                                >
+                                                                                                    <SelectTrigger className="w-full bg-stone-50 border-stone-300 text-sm h-9">
+                                                                                                        <SelectValue placeholder={`${t("select")} ${locale === 'ar' ? (firstVarGroup.name_ar || firstVarGroup.name_en) : (firstVarGroup.name_en || firstVarGroup.name_ar)}`} />
+                                                                                                    </SelectTrigger>
+                                                                                                    <SelectContent dir={locale === 'ar' ? 'rtl' : 'ltr'}>
+                                                                                                        {firstVarGroup.values.map((valObj: any, vIdx: number) => {
+                                                                                                            const vPrice = valObj.price != null && valObj.price !== ""
+                                                                                                                ? parseFloat(valObj.price)
+                                                                                                                : (item.price != null ? parseFloat(item.price) : 0);
+                                                                                                            const vLabel = locale === 'ar' ? (valObj.value_ar || valObj.value_en) : (valObj.value_en || valObj.value_ar);
+                                                                                                            return (
+                                                                                                                <SelectItem key={vIdx} value={valObj.value_en}>
+                                                                                                                    <div className="flex items-center justify-between w-full gap-4">
+                                                                                                                        <span>{vLabel}</span>
+                                                                                                                        <span className="font-semibold text-xs text-mainColor">
+                                                                                                                            {vPrice} {locale === 'ar' ? 'ر.س' : 'SAR'}
+                                                                                                                        </span>
+                                                                                                                    </div>
+                                                                                                                </SelectItem>
+                                                                                                            );
+                                                                                                        })}
+                                                                                                    </SelectContent>
+                                                                                                </Select>
+                                                                                            </div>
+                                                                                            <Button
+                                                                                                type="button"
+                                                                                                size="sm"
+                                                                                                disabled={!isAvailable || !selectedVariationOptions[item.id]}
+                                                                                                className="h-9 px-4 gap-1.5 flex items-center bg-[#381112] hover:bg-[#4d191b] text-white disabled:opacity-50"
+                                                                                                onClick={() => {
+                                                                                                    const currentValEn = selectedVariationOptions[item.id];
+                                                                                                    if (!currentValEn) return;
+                                                                                                    const valObj = firstVarGroup.values.find((v: any) => v.value_en === currentValEn);
+                                                                                                    if (valObj) {
+                                                                                                        handleAddVariation(item, firstVarGroup, valObj);
+                                                                                                    }
+                                                                                                }}
+                                                                                            >
+                                                                                                <Plus className="w-4 h-4" />
+                                                                                                <span>{t("addOption")}</span>
+                                                                                            </Button>
+                                                                                        </div>
+
+                                                                                        {/* Selected variation list with quantity steppers */}
+                                                                                        {itemSelectedOptions.length > 0 && (
+                                                                                            <div className="flex flex-col gap-2 pt-2 border-t border-dashed border-stone-200">
+                                                                                                {itemSelectedOptions.map((selItem) => (
+                                                                                                    <div
+                                                                                                        key={selItem.uniqueKey}
+                                                                                                        className="flex items-center justify-between bg-stone-50 border border-stone-200 rounded-md px-3 py-2 text-sm"
+                                                                                                    >
+                                                                                                        <div className="flex flex-col">
+                                                                                                            <span className="font-medium text-stone-800">
+                                                                                                                {locale === 'ar' ? (selItem.variationValueAr || selItem.variationValueEn) : (selItem.variationValueEn || selItem.variationValueAr)}
+                                                                                                            </span>
+                                                                                                            <span className="text-xs text-stone-500 flex items-center gap-1">
+                                                                                                                <CurrencySymbol size={12} /> {selItem.unitPrice} {selItem.count > 1 ? `× ${selItem.count} = ${selItem.unitPrice * selItem.count}` : ''}
+                                                                                                            </span>
+                                                                                                        </div>
+                                                                                                        <div className="flex items-center gap-2">
+                                                                                                            <Button
+                                                                                                                type="button"
+                                                                                                                size="icon"
+                                                                                                                variant="outline"
+                                                                                                                className="h-7 w-7 rounded-full bg-white hover:bg-stone-100 p-0 border-stone-300"
+                                                                                                                onClick={() => handleDecrement(selItem.uniqueKey)}
+                                                                                                            >
+                                                                                                                <Minus className="w-3.5 h-3.5" />
+                                                                                                            </Button>
+                                                                                                            <span className="w-6 text-center font-semibold text-sm select-none">
+                                                                                                                {selItem.count}
+                                                                                                            </span>
+                                                                                                            <Button
+                                                                                                                type="button"
+                                                                                                                size="icon"
+                                                                                                                variant="outline"
+                                                                                                                className="h-7 w-7 rounded-full bg-white hover:bg-stone-100 p-0 border-stone-300"
+                                                                                                                onClick={() => handleIncrement(selItem.uniqueKey)}
+                                                                                                            >
+                                                                                                                <Plus className="w-3.5 h-3.5" />
+                                                                                                            </Button>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                ))}
+                                                                                            </div>
+                                                                                        )}
+                                                                                    </div>
+                                                                                ) : (
+                                                                                    /* Non-variation item controls */
+                                                                                    <div className="w-full pt-3 border-t border-stone-200 flex items-center justify-end">
+                                                                                        {(() => {
+                                                                                            const uniqueKey = `${item.id}-default`;
+                                                                                            const added = selectedOccasionItems.find(s => s.uniqueKey === uniqueKey);
+                                                                                            if (!added) {
+                                                                                                return (
+                                                                                                    <Button
+                                                                                                        type="button"
+                                                                                                        size="sm"
+                                                                                                        disabled={!isAvailable}
+                                                                                                        className="h-9 px-4 gap-1.5 flex items-center bg-[#381112] hover:bg-[#4d191b] text-white"
+                                                                                                        onClick={() => handleAddNonVariation(item)}
+                                                                                                    >
+                                                                                                        <Plus className="w-4 h-4" />
+                                                                                                        <span>{t("addItem")}</span>
+                                                                                                    </Button>
+                                                                                                );
+                                                                                            }
+                                                                                            return (
+                                                                                                <div className="flex items-center gap-2 bg-stone-50 border border-stone-200 rounded-md px-3 py-1">
+                                                                                                    <Button
+                                                                                                        type="button"
+                                                                                                        size="icon"
+                                                                                                        variant="outline"
+                                                                                                        className="h-7 w-7 rounded-full bg-white hover:bg-stone-100 p-0 border-stone-300"
+                                                                                                        onClick={() => handleDecrement(uniqueKey)}
+                                                                                                    >
+                                                                                                        <Minus className="w-3.5 h-3.5" />
+                                                                                                    </Button>
+                                                                                                    <span className="w-6 text-center font-semibold text-sm select-none">
+                                                                                                        {added.count}
+                                                                                                    </span>
+                                                                                                    <Button
+                                                                                                        type="button"
+                                                                                                        size="icon"
+                                                                                                        variant="outline"
+                                                                                                        className="h-7 w-7 rounded-full bg-white hover:bg-stone-100 p-0 border-stone-300"
+                                                                                                        onClick={() => handleIncrement(uniqueKey)}
+                                                                                                    >
+                                                                                                        <Plus className="w-3.5 h-3.5" />
+                                                                                                    </Button>
+                                                                                                </div>
+                                                                                            );
+                                                                                        })()}
+                                                                                    </div>
+                                                                                )}
+                                                                            </div>
+                                                                        );
+                                                                    })}
+                                                                </div>
+                                                            </div>
+                                                        )
+                                                    ))}
+                                                </div>
+                                                {selectedOccasionItems.length > 0 &&
                                                     <div className="flex justify-center w-full">
                                                         <Button type="button" variant="default" className="mt-4 mx-auto" onClick={() => { setCardEnabled(true) }}>{t("addCardButton")}</Button>
                                                     </div>

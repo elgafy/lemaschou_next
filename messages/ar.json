@@ -144,9 +144,14 @@
     "cardContentPattern": "رسالة البطاقة طويلة جدًا، يرجى تقليل الرسالة",
     "mobilePattern": "يرجى إدخال رقم جوال صالح.",
     "paymentTitle": "ملخص الطلب",
+    "select": "اختر",
     "downPayment": "دفعة الحجز",
     "specialDay": "يوم مميز",
     "reservationSuccessTitle": "تهانينا",
-    "agree": "أوافق"
+    "agree": "أوافق",
+    "addItem": "إضافة",
+    "selectOption": "اختر الخيار",
+    "addOption": "إضافة",
+    "remove": "حذف"
   }
 }

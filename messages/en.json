@@ -147,10 +147,15 @@
     "cardTitle": "Your Complimentary Gift Card Message",
     "cardContentPattern": "Card message is too long, please reduce message",
     "mobilePattern": "Please enter a valid mobile number",
-    "paymentTitle": "Ordder Summary",
+    "paymentTitle": "Order Summary",
+    "select": "Select",
     "downPayment": "Reservation Deposit",
     "specialDay": "Special Day",
     "reservationSuccessTitle": "Congratulations",
-    "agree": "I Agree"
+    "agree": "I Agree",
+    "addItem": "Add",
+    "selectOption": "Select an option",
+    "addOption": "Add",
+    "remove": "Remove"
   }
 }
