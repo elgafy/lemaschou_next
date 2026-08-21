@@ -138,6 +138,7 @@
     "invalidEmail": "يرجى تقديم عنوان بريد إلكتروني صالح.",
     "emptyFieldError": "لا يمكن أن يكون هذا الحقل فارغًا.",
     "addCardButton": "أضف بطاقة هدية مجانية",
+    "chooseGiftCard": "اختر تصميم بطاقة الهدية",
     "cardPlaceholder": "اكتب رسالة البطاقة هنا",
     "cardTitle": "رسالة بطاقة الهدية المجانية",
     "cardContentValidation": "رسالة البطاقة مطلوبة",

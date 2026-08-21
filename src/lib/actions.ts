@@ -92,6 +92,7 @@ export async function makeReservation(formData: any) {
         cardContent: z.string().max(255, {
             message: "Card content is too long, please reduce message"
         }),
+        giftCard: z.string().optional(),
         allergic: z.boolean(),
         allergies: z.array(z.string()),
         paymentPolicyAccepted: z.boolean(),

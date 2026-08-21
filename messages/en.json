@@ -143,6 +143,7 @@
     "invalidEmail": "Please provide a valid email address.",
     "emptyFieldError": "This field cannot be empty.",
     "addCardButton": "Add Complimentary Gift Card",
+    "chooseGiftCard": "Choose your gift card design",
     "cardPlaceholder": "Write your card message here",
     "cardTitle": "Your Complimentary Gift Card Message",
     "cardContentPattern": "Card message is too long, please reduce message",
