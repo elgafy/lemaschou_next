@@ -293,7 +293,6 @@ export default function ReservationWidget(props: { settings: any }) {
 
   // Form watchers
   const occasion = form.watch("occasion");
-  const occasionSelectedItems = form.watch("occasionSelectedItems");
   const allergic = form.watch("allergic");
   const date = form.watch("date");
   const guests = form.watch("guests");
@@ -373,7 +372,11 @@ export default function ReservationWidget(props: { settings: any }) {
 
     form.setValue(
       "occasionSelectedItems",
-      selectedOccasionItems.map((i) => i.uniqueKey),
+      selectedOccasionItems.map((i) => ({
+        itemId: i.itemId,
+        itemName: i.itemNameEn,
+        variationValue: i.variationValueEn || null,
+      })),
     );
   }, [selectedOccasionItems, downPayment, locale]);
 

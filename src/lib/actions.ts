@@ -72,7 +72,7 @@ export async function checkAvailability(date: Date, guests: number = 2) {
 
 export async function makeReservation(formData: any) {
     // console.log("Raw date: " + formData.date);
-    // console.log("JSON data: " + JSON.stringify(formData));
+    console.log("JSON data: " + JSON.stringify(formData));
     // Validating form data before sending
     const schema = z.object({
         date: z.date() || z.undefined(),
@@ -104,15 +104,17 @@ export async function makeReservation(formData: any) {
         const parsedData = schema.parse(formData);
         console.log("Parsed Data: " + JSON.stringify(parsedData));
         formData.date = convertDate(formData.date);
-        const urlencodedData = new URLSearchParams(formData);
+        console.log("Occasion selected items: " + JSON.stringify(formData.occasionSelectedItems));
+        // const urlencodedData = new URLSearchParams(formData);
+        console.log('Form data in json: ' + JSON.stringify(formData));
         try {
             const response = await fetch(process.env.BASE_URL +'reservations/book/', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Content-Type': 'application/application/json',
                     'Accept': 'application/json',
                 },
-                body: urlencodedData,
+                body: JSON.stringify(formData),
             });
             if (response.ok) {
                 const data = await response.json();
