@@ -104,9 +104,9 @@ export async function makeReservation(formData: any) {
         const parsedData = schema.parse(formData);
         console.log("Parsed Data: " + JSON.stringify(parsedData));
         formData.date = convertDate(formData.date);
-        console.log("Occasion selected items: " + JSON.stringify(formData.occasionSelectedItems));
-        // const urlencodedData = new URLSearchParams(formData);
-        console.log('Form data in json: ' + JSON.stringify(formData));
+        // console.log("Occasion selected items: " + JSON.stringify(formData.occasionSelectedItems));
+        // // const urlencodedData = new URLSearchParams(formData);
+        // console.log('Form data in json: ' + JSON.stringify(formData));
         try {
             const response = await fetch(process.env.BASE_URL +'reservations/book/', {
                 method: 'POST',
@@ -118,6 +118,7 @@ export async function makeReservation(formData: any) {
             });
             if (response.ok) {
                 const data = await response.json();
+                console.log('Server make reservation response' + JSON.stringify(data));
                 return data;
             }
             if (!response.ok) {

@@ -376,6 +376,7 @@ export default function ReservationWidget(props: { settings: any }) {
         itemId: i.itemId,
         itemName: i.itemNameEn,
         variationValue: i.variationValueEn || null,
+        quantity: i.count,
       })),
     );
   }, [selectedOccasionItems, downPayment, locale]);
