@@ -52,6 +52,15 @@ import { PhoneInput } from "@/components/ui/phone-input";
 import { isValidPhoneNumber } from "react-phone-number-input";
 import Link from "next/link";
 import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+  DialogClose,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import {
   PaymentItem,
   ReservationSuccessWidget,
   ReservationSummaryWidget,
@@ -948,23 +957,84 @@ export default function ReservationWidget(props: { settings: any }) {
                                                 </div>
                                               )}
                                               <div className="w-full flex flex-row ss:flex-col justify-start gap-4">
-                                                <Image
-                                                  src={
-                                                    "https://fls-9e8f049b-831e-4138-b0b6-1ce5ada62bd6.laravel.cloud/" +
-                                                    item.image
-                                                  }
-                                                  alt={
-                                                    item[`name_${locale}`] ||
-                                                    "occasion item"
-                                                  }
-                                                  height={80}
-                                                  width={80}
-                                                  className="rounded-md object-cover flex-shrink-0"
-                                                  style={{
-                                                    width: 80,
-                                                    height: 80,
-                                                  }}
-                                                />
+                                                <Dialog>
+                                                  <DialogTrigger asChild>
+                                                    <Image
+                                                      src={
+                                                        "https://fls-9e8f049b-831e-4138-b0b6-1ce5ada62bd6.laravel.cloud/" +
+                                                        item.image
+                                                      }
+                                                      alt={
+                                                        item[`name_${locale}`] ||
+                                                        "occasion item"
+                                                      }
+                                                      height={80}
+                                                      width={80}
+                                                      className="rounded-md object-cover flex-shrink-0 cursor-pointer"
+                                                      style={{
+                                                        width: 80,
+                                                        height: 80,
+                                                      }}
+                                                    />
+                                                  </DialogTrigger>
+                                                  <DialogContent
+                                                    aria-describedby="occasion-item-modal"
+                                                    className="w-[529px] h-[606px] lMobile:h-[60%] lMobile:w-[90%] bxs:w-[290px] blg:h-[90%] bg-transparent border-none bg-[url('/assets/mealCard.png')] bg-[length:100%_100%] px-[45px] flex flex-col gap-0 items-center justify-center mobile:gap-5 pb-12 bxs:pb-0 bxs:h-[390px] lg:h-[500px]"
+                                                  >
+                                                    <DialogHeader className="hidden">
+                                                      <DialogTitle>{item[`name_${locale}`]}</DialogTitle>
+                                                      <DialogDescription id="occasion-item-modal">
+                                                        {item[`name_${locale}`]}
+                                                      </DialogDescription>
+                                                    </DialogHeader>
+                                                    <DialogClose
+                                                      className="!absolute top-5 text-mainColor left-14 w-7 h-7 bxs:w-5 bxs:h-5 bxs:text-xs border border-mainColor rounded-full bxs:left-7"
+                                                      aria-label="Close"
+                                                    >
+                                                      X
+                                                    </DialogClose>
+                                                    {item?.image !== "" && (
+                                                      <div className="w-[270px] h-[270px] blg:h-[200px] blg:w-[200px] rounded-full overflow-hidden relative lMobile:w-[250px] lMobile:h-[250px] bxs:w-[160px] bxs:h-[160px] lg:w-[200px] lg:h-[200px]">
+                                                        <Image
+                                                          src={
+                                                            "https://fls-9e8f049b-831e-4138-b0b6-1ce5ada62bd6.laravel.cloud/" +
+                                                            item.image
+                                                          }
+                                                          alt={
+                                                            item[`name_${locale}`] ||
+                                                            "occasion item"
+                                                          }
+                                                          fill
+                                                          sizes="(max-width: 768px) 200px, (max-width: 1200px) 100px, 397px"
+                                                        />
+                                                      </div>
+                                                    )}
+                                                    <div className="w-full flex flex-col gap-2">
+                                                      <header>
+                                                        <h1
+                                                          dir={locale === "en" ? "ltr" : "rtl"}
+                                                          className="text-[32px] font-bold font-Rufina text-mainColor lMobile:text-xl blg:text-2xl bxs:text-sm"
+                                                        >
+                                                          {item[`name_${locale}`]}
+                                                        </h1>
+                                                      </header>
+                                                      {item[`description_${locale}`] && (
+                                                        <p
+                                                          dir={locale === "en" ? "ltr" : "rtl"}
+                                                          className="text-[#5C6574] font-normal text-sm lMobile:text-xs leading-[26.5px]"
+                                                        >
+                                                          {item[`description_${locale}`]}
+                                                        </p>
+                                                      )}
+                                                      <div className="w-full flex items-center justify-between text-base ss:text-xs">
+                                                        <div className="font-semibold text-mainColor flex gap-2 items-center">
+                                                          <CurrencySymbol />
+                                                          <span>{item.price}</span>
+                                                        </div>
+                                                      </div>
+                                                    </div>
+                                                  </DialogContent>
+                                                </Dialog>
                                                 <div className="flex flex-col w-full justify-between">
                                                   <div className="flex justify-between items-start w-full gap-2">
                                                     <h2 className="font-Rufina text-xl font-bold ltr:text-left rtl:text-right leading-none">
