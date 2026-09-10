@@ -309,6 +309,22 @@ export default function ReservationWidget(props: { settings: any }) {
   const termsAccepted = form.getValues("termsAccepted");
   const paymentPolicyAccepted = form.getValues("paymentPolicyAccepted");
 
+  // Minimum occasion items purchase validation
+  const minimumOccasionAmount = settings.settings
+    ?.minimum_occasion_items_purchase_amount
+    ? parseFloat(settings.settings.minimum_occasion_items_purchase_amount)
+    : null;
+  const hasOccasionItems = selectedOccasionItems.length > 0;
+  const isBelowMinimumOccasionAmount =
+    occasion === true &&
+    hasOccasionItems &&
+    minimumOccasionAmount !== null &&
+    price < minimumOccasionAmount;
+  const minimumOccasionErrorMessage =
+    settings.settings?.[
+      `minimum_occasion_items_purchase_amount_error_message_${locale}`
+    ];
+
   // Define refs to scroll behavior
   const bookingNotice = useRef<HTMLDivElement>(null);
   const bookingForm = useRef<HTMLDivElement>(null);
@@ -1562,6 +1578,17 @@ export default function ReservationWidget(props: { settings: any }) {
                       </p>
                     </div>
                   )}
+                  {isBelowMinimumOccasionAmount && (
+                    <div className="w-full flex justify-between items-center text-sm pt-2 gap-2">
+                      <p className="text-red-600 text-left rtl:text-right">
+                        {minimumOccasionErrorMessage}
+                      </p>
+                      <p className="flex items-center gap-1 font-semibold whitespace-nowrap">
+                        <CurrencySymbol size={14} />
+                        {minimumOccasionAmount}
+                      </p>
+                    </div>
+                  )}
                 </div>
               )}
               <div className="w-full flex flex-col gap-4 pt-4">
@@ -1627,7 +1654,8 @@ export default function ReservationWidget(props: { settings: any }) {
                   disabled={
                     !termsAccepted ||
                     time == "" ||
-                    (downPayment > 0 && !paymentPolicyAccepted)
+                    (downPayment > 0 && !paymentPolicyAccepted) ||
+                    isBelowMinimumOccasionAmount
                   }
                   className="mt-4"
                 >
