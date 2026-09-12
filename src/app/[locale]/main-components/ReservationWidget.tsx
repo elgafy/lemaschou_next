@@ -51,6 +51,7 @@ import { Label } from "@/components/ui/label";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { isValidPhoneNumber } from "react-phone-number-input";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Dialog,
   DialogContent,
@@ -71,6 +72,7 @@ import CelebrationSymbol from "@/components/ui/celebrationSymbol";
 export default function ReservationWidget(props: { settings: any }) {
   const { settings } = props;
   const locale = useLocale();
+  const router = useRouter();
 
   const bookingWindow = settings.settings.booking_time_window
     ? settings.settings.booking_time_window * 60000
@@ -495,6 +497,9 @@ export default function ReservationWidget(props: { settings: any }) {
       // Set reservation data to local storage and state
       const reservation = JSON.parse(response.data.reservation);
       localStorage.setItem("reservation", JSON.stringify(reservation));
+      router.push(
+        `/${locale}/reservation/${reservation.reservation_id}/confirmation`,
+      );
       setReservationSuccess(true);
       setReservation(reservation);
       setTimeout(() => {

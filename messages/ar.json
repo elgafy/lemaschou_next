@@ -153,6 +153,7 @@
     "addItem": "إضافة",
     "selectOption": "اختر الخيار",
     "addOption": "إضافة",
-    "remove": "حذف"
+    "remove": "حذف",
+    "reservationNotFound": "الحجز غير موجود"
   }
 }

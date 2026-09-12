@@ -157,6 +157,7 @@
     "addItem": "Add",
     "selectOption": "Select an option",
     "addOption": "Add",
-    "remove": "Remove"
+    "remove": "Remove",
+    "reservationNotFound": "Reservation not found"
   }
 }
