@@ -158,6 +158,11 @@
     "selectOption": "Select an option",
     "addOption": "Add",
     "remove": "Remove",
-    "reservationNotFound": "Reservation not found"
+    "reservationNotFound": "Reservation not found",
+    "orderDetails": "Order Details",
+    "subtotal": "Subtotal",
+    "discount": "Discount",
+    "deposit": "Deposit",
+    "paymentStatus": "Payment Status"
   }
 }

@@ -53,6 +53,8 @@ export default async function ReservationConfirmationPage({
   const reservation = reservationData?.data ?? reservationData;
   const t = await getTranslations({ locale, namespace: "reservationPage" });
 
+  console.log(reservation.order.items);
+
   const hasReservation = Boolean(reservation && Object.keys(reservation).length > 0 && reservation?.id);
 
   return (
@@ -68,13 +70,12 @@ export default async function ReservationConfirmationPage({
       {hasReservation ? (
         <ReservationConfirmation reservation={reservation} />
       ) : (
-        <div
-          dir={locale === "en" ? "ltr" : "rtl"}
-          className="flex flex-col items-center justify-center w-full gap-4 p-6 text-center"
-        >
-          <h4 className="text-3xl font-Rufina font-semibold text-mainColor">
-            {t("reservationNotFound")}
-          </h4>
+        <div className="content w-[90vw] max-w-[800px] flex flex-col items-center justify-center my-[104px] gap-12 clg:my-5">
+          <div className="theme-border bg-[#e5cbbd] flex flex-col gap-4 p-8 tablet:p-0 w-full reservation-widget relative">
+            <h2 className="text-3xl text-center font-Rufina font-semibold">
+              {t("reservationNotFound")}
+            </h2>
+          </div>
         </div>
       )}
     </main>

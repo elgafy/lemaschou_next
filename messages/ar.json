@@ -154,6 +154,11 @@
     "selectOption": "اختر الخيار",
     "addOption": "إضافة",
     "remove": "حذف",
-    "reservationNotFound": "الحجز غير موجود"
+    "reservationNotFound": "الحجز غير موجود",
+    "orderDetails": "تفاصيل الطلب",
+    "subtotal": "المجموع الفرعي",
+    "discount": "الخصم",
+    "deposit": "العربون",
+    "paymentStatus": "حالة الدفع"
   }
 }
