@@ -1,5 +1,4 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { routing } from "@/i18n/routing";
 import { Metadata } from "next";
 import { getData, requestData } from "../../../actions";
 import { ReservationType } from "../../../AppTypes";
@@ -7,7 +6,10 @@ import Image from "next/image";
 import logoWord from "/public/assets/logo-word.svg";
 import ReservationConfirmation from "../../../main-components/ReservationConfirmation";
 
-export const revalidate = 10;
+// Reservation ids are only known at request time, so this route must be
+// rendered on demand. Without this it is treated as SSG with no
+// pre-generated pages, which 404s on some Node hosts (e.g. Plesk).
+export const dynamic = "force-dynamic";
 
 type pageProps = {
   params: {
@@ -18,9 +20,6 @@ type pageProps = {
 type MetaDataProps = {
   params: { locale: string };
 };
-export async function generateStaticParams() {
-  return routing.locales.map((locale) => ({ locale }));
-}
 export async function generateMetadata({
   params: { locale },
 }: MetaDataProps): Promise<Metadata> {
