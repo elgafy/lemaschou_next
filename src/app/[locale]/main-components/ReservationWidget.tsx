@@ -533,12 +533,6 @@ export default function ReservationWidget(props: { settings: any }) {
   const resetBookingNotice = () => {
     setShowReservationNotice(false);
   };
-  // useEffect(() => {
-  //     if (reservation && reservation.id) {
-  //         // Navigate after reservation state is set
-  //         window.history.pushState({}, '', `?id=${reservation.id}`);
-  //     }
-  // }, [reservation]);
 
   return (
     <div className="content w-[90vw] max-w-[800px] flex flex-col items-center justify-center my-[104px] gap-12 clg:my-5">
