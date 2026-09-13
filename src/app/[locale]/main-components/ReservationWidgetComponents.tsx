@@ -25,36 +25,6 @@ const PaymentItem = (props: { title: string, value: number }) => {
 }
 
 // Display booking success or failure message
-const ReservationSuccessWidget = (props: { title: string, reservation: any }) => {
-    const { title, reservation } = props;
-    return (
-        <div className="flex flex-col items-center justify-center w-full gap-4 bg-white theme-border rounded-lg shadow-md flex-1">
-            <h4 className="text-3xl text-center font-Rufina font-semibold">{title}</h4>
-            <div className="flex justify-start w-full sm:flex-col">
-                <p className="font-semibold text-base sm:text-base w-[30%] sm:w-full">Reservation for: </p>
-                <p className="text-base sm:text-base">{`${reservation?.first_name} ${reservation.last_name}`}</p>
-            </div>
-            <div className="flex justify-start w-full sm:flex-col">
-                <p className="font-semibold text-base sm:text-base w-[30%] sm:w-full">Reservation Reference: </p>
-                <p className="text-base sm:text-base">{reservation?.sevenrooms_reservation_id}</p>
-            </div>
-            <div className="flex justify-start w-full sm:flex-col">
-                <p className="font-semibold text-base sm:text-base w-[30%] sm:w-full">Reservation Date: </p>
-                <p className="text-base sm:text-base">{reservation?.date}</p>
-            </div>
-            <div className="flex justify-start w-full sm:flex-col">
-                <p className="font-semibold text-base sm:text-base w-[30%] sm:w-full">Reservation Time: </p>
-                <p className="text-base sm:text-base">{reservation?.time}</p>
-            </div>
-            <div className="flex justify-start w-full sm:flex-col">
-                <p className="font-semibold text-base sm:text-base w-[30%] sm:w-full">Guests: </p>
-                <p className="text-base sm:text-base">{reservation?.guests_count}</p>
-            </div>
-        </div>
-    );
-}
-
-// Display booking success or failure message
 const ReservationTimer = (props: {title: string, time: number, showTimer: boolean, onTimeOut: any }) => {
     const { title, time, showTimer, onTimeOut } = props;
     const [remainingTime, setRemainingTime] = useState(time);
@@ -87,4 +57,4 @@ const ReservationTimer = (props: {title: string, time: number, showTimer: boolea
     );
 }
 
-export { ReservationSummaryWidget, PaymentItem, ReservationSuccessWidget, ReservationTimer };
+export { ReservationSummaryWidget, PaymentItem, ReservationTimer };

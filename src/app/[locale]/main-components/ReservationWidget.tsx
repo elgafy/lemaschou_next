@@ -63,7 +63,6 @@ import {
 } from "@/components/ui/dialog";
 import {
   PaymentItem,
-  ReservationSuccessWidget,
   ReservationSummaryWidget,
   ReservationTimer,
 } from "./ReservationWidgetComponents";
@@ -85,15 +84,13 @@ export default function ReservationWidget(props: { settings: any }) {
     useState<Boolean | null>(null);
   const [showSummary, setShowSummary] = useState<Boolean>(false);
   const [showTimer, setShowTimer] = useState(false);
-  const [showForm, setShowForm] = useState(true);
+  const [showForm] = useState(true);
   const [cardEnabled, setCardEnabled] = useState<Boolean>(false);
   const [seatingTime, setSeatingTime] = useState("0");
   const [availability, setAvailability] = useState([]);
   const [specialDay, setSpecialDay] = useState(null);
   const [price, setPrice] = useState(0);
   const [vat, setVat] = useState(0);
-  const [reservationSuccess, setReservationSuccess] = useState<Boolean>(false);
-  const [reservation, setReservation] = useState<any | null>(null);
   const [totalPrice, setTotalPrice] = useState(0);
   const [downPayment, setDownPayment] = useState<number>(0);
   const [orderItems, setOrderItems] = useState<
@@ -219,7 +216,6 @@ export default function ReservationWidget(props: { settings: any }) {
 
   // Availability check function
   const check = async function (date: Date, guests?: number) {
-    if (reservationSuccess == true) return;
     setLoading(true);
     const availability = await checkAvailability(date, guests);
     if (availability?.success == true) {
@@ -330,7 +326,6 @@ export default function ReservationWidget(props: { settings: any }) {
   // Define refs to scroll behavior
   const bookingNotice = useRef<HTMLDivElement>(null);
   const bookingForm = useRef<HTMLDivElement>(null);
-  const bookingSuccess = useRef<HTMLDivElement>(null);
 
   const [debouncedDate] = useDebounce(date, 300);
   const [debouncedGuests] = useDebounce(guests, 800);
@@ -492,25 +487,25 @@ export default function ReservationWidget(props: { settings: any }) {
   async function book(values: z.infer<typeof formSchema>) {
     setLoading(true);
     const response = await makeReservation({ ...values, seatingTime }, locale);
-    setLoading(false);
     if (response.success) {
       // Set reservation data to local storage and state
       const reservation = JSON.parse(response.data.reservation);
       localStorage.setItem("reservation", JSON.stringify(reservation));
+      // If the backend returned a payment redirect (e.g. payment gateway),
+      // send the user there instead of the confirmation page.
+      const paymentRedirectUrl = response?.data?.payment?.redirect_url;
+      if (paymentRedirectUrl) {
+        window.location.href = paymentRedirectUrl;
+        return;
+      }
       router.push(
         `/${locale}/reservation/${reservation.reservation_id}/confirmation`,
       );
-      setReservationSuccess(true);
-      setReservation(reservation);
-      setTimeout(() => {
-        bookingSuccess.current?.scrollIntoView({
-          behavior: "smooth",
-          block: "center",
-        });
-      }, 100);
-      // Hide form and summary
-      resetBookingForm();
+      // Return early: skip further state updates so no re-render blocks the
+      // navigation transition (we're leaving this page anyway).
+      return;
     }
+    setLoading(false);
   }
 
   const startBookingTimer = () => {
@@ -524,11 +519,6 @@ export default function ReservationWidget(props: { settings: any }) {
     setShowTimer(false);
     form.setValue("time", "");
     check(date, guests);
-  };
-  const resetBookingForm = () => {
-    // setReservationSuccess(true);
-    setShowForm(false);
-    setShowTimer(false);
   };
   const resetBookingNotice = () => {
     setShowReservationNotice(false);
@@ -606,14 +596,6 @@ export default function ReservationWidget(props: { settings: any }) {
                 {t("editBooking")}
               </Button>
             )}
-          </div>
-        )}
-        {reservation && (
-          <div ref={bookingSuccess} className="w-full">
-            <ReservationSuccessWidget
-              title={t("reservationSuccessTitle")}
-              reservation={reservation}
-            />
           </div>
         )}
         {showForm && (
