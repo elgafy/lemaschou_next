@@ -262,7 +262,7 @@ function itemIsAvailable(item: any) {
 async function book(values: z.infer<typeof formSchema>) {
     
     setLoading(true);
-    const response = await makeReservation(values);
+    const response = await makeReservation(values, locale);
     setLoading(false);
     if (response.success) {
 

@@ -491,7 +491,7 @@ export default function ReservationWidget(props: { settings: any }) {
 
   async function book(values: z.infer<typeof formSchema>) {
     setLoading(true);
-    const response = await makeReservation(values);
+    const response = await makeReservation(values, locale);
     setLoading(false);
     if (response.success) {
       // Set reservation data to local storage and state

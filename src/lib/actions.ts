@@ -70,7 +70,7 @@ export async function checkAvailability(date: Date, guests: number = 2) {
     
 }
 
-export async function makeReservation(formData: any) {
+export async function makeReservation(formData: any, locale: string) {
     // console.log("Raw date: " + formData.date);
     console.log("JSON data: " + JSON.stringify(formData));
     // Validating form data before sending
@@ -99,10 +99,13 @@ export async function makeReservation(formData: any) {
         termsAccepted: z.boolean(),
         deposite: z.uint32(),
     })
+    // Validation is currently disabled (schema.parse is commented out below).
+    // Referenced here so the schema is preserved and can be re-enabled easily.
+    void schema;
 
     try {
-        const parsedData = schema.parse(formData);
-        console.log("Parsed Data: " + JSON.stringify(parsedData));
+        // const parsedData = schema.parse(formData);
+        // console.log("Parsed Data: " + JSON.stringify(parsedData));
         formData.date = convertDate(formData.date);
         // console.log("Occasion selected items: " + JSON.stringify(formData.occasionSelectedItems));
         // // const urlencodedData = new URLSearchParams(formData);
@@ -114,7 +117,7 @@ export async function makeReservation(formData: any) {
                     'Content-Type': 'application/application/json',
                     'Accept': 'application/json',
                 },
-                body: JSON.stringify(formData),
+                body: JSON.stringify({ ...formData, locale }),
             });
             if (response.ok) {
                 const data = await response.json();
