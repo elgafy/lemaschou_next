@@ -1,5 +1,7 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Metadata } from "next";
+import { redirect } from "next/navigation";
+import { isFailedStatus } from "@/lib/reservationStatus";
 import { getData, requestData } from "../../../actions";
 import { ReservationType } from "../../../AppTypes";
 import Image from "next/image";
@@ -55,6 +57,12 @@ export default async function ReservationConfirmationPage({
   // console.log(reservation.order.items);
 
   const hasReservation = Boolean(reservation && Object.keys(reservation).length > 0 && reservation?.id);
+
+  // Payment failed -> send the user to the payment-failed page.
+  // Any other status (pending/unknown) renders here as-is.
+  if (hasReservation && isFailedStatus(reservation?.order?.status)) {
+    redirect(`/${locale}/reservation/${reservation_id}/payment-failed`);
+  }
 
   return (
     <main className="flex flex-col justify-center items-center reservation-container pt-32">
