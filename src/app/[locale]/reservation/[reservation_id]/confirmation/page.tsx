@@ -52,7 +52,7 @@ export default async function ReservationConfirmationPage({
   const reservation = reservationData?.data ?? reservationData;
   const t = await getTranslations({ locale, namespace: "reservationPage" });
 
-  console.log(reservation.order.items);
+  // console.log(reservation.order.items);
 
   const hasReservation = Boolean(reservation && Object.keys(reservation).length > 0 && reservation?.id);
 
