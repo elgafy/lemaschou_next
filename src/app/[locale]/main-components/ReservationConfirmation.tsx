@@ -10,7 +10,19 @@ import {
 import { useLocale, useTranslations } from "next-intl";
 import { ReservationSummaryWidget } from "./ReservationWidgetComponents";
 
-const ReservationConfirmation = ({ reservation }: { reservation: any }) => {
+const ReservationConfirmation = ({
+  reservation,
+  title,
+  hint,
+  showRetry = false,
+  retryHref,
+}: {
+  reservation: any;
+  title?: string;
+  hint?: string;
+  showRetry?: boolean;
+  retryHref?: string;
+}) => {
   const t = useTranslations("reservationPage");
   const locale = useLocale();
 
@@ -31,7 +43,6 @@ const ReservationConfirmation = ({ reservation }: { reservation: any }) => {
 
   const order = reservation?.order ?? null;
   const orderItems = Array.isArray(order?.items) ? order?.items : [];
-  const orderCurrency = order?.currency;
 
   const hasValue = (value: any) => {
     if (value === null || value === undefined) return false;
@@ -112,13 +123,32 @@ const ReservationConfirmation = ({ reservation }: { reservation: any }) => {
           className="flex flex-col items-center justify-center w-full gap-4 bg-white theme-border rounded-lg shadow-md flex-1 p-2"
         >
           <h4 className="text-3xl text-center font-Rufina font-semibold text-mainColor">
-            {t("reservationSuccessTitle")}
+            {title ?? t("reservationSuccessTitle")}
           </h4>
+
+          {hint ? (
+            <p
+              dir={dir}
+              className="text-base text-center text-[#5C6574] sm:text-sm"
+            >
+              {hint}
+            </p>
+          ) : null}
+
+          {showRetry ? (
+            // TODO: replace with the real payment retry link once provided.
+            <a
+              href={retryHref ?? "#"}
+              className="inline-flex items-center justify-center px-6 py-2 rounded bg-mainColor text-white text-base font-semibold hover:opacity-90 transition"
+            >
+              {t("retryPayment")}
+            </a>
+          ) : null}
 
           {reference ? (
             <div dir={dir} className="flex justify-start w-full sm:flex-col gap-2">
               <p className="font-semibold text-base sm:text-base w-[30%] sm:w-full">
-                Reservation Reference:{" "}
+                {t("reservationReference")}
               </p>
               <p className="text-base sm:text-base">{reference}</p>
             </div>
@@ -127,7 +157,7 @@ const ReservationConfirmation = ({ reservation }: { reservation: any }) => {
           {guestName ? (
             <div dir={dir} className="flex justify-start w-full sm:flex-col gap-2">
               <p className="font-semibold text-base sm:text-base w-[30%] sm:w-full">
-                Reservation for:{" "}
+                {t("reservationFor")}
               </p>
               <p className="text-base sm:text-base">{guestName}</p>
             </div>
@@ -136,7 +166,7 @@ const ReservationConfirmation = ({ reservation }: { reservation: any }) => {
           {reservation?.date ? (
             <div dir={dir} className="flex justify-start w-full sm:flex-col gap-2">
               <p className="font-semibold text-base sm:text-base w-[30%] sm:w-full">
-                Reservation Date:{" "}
+                {t("reservationDate")}
               </p>
               <p className="text-base sm:text-base">{reservation?.date}</p>
             </div>
@@ -145,7 +175,7 @@ const ReservationConfirmation = ({ reservation }: { reservation: any }) => {
           {reservation?.time ? (
             <div dir={dir} className="flex justify-start w-full sm:flex-col gap-2">
               <p className="font-semibold text-base sm:text-base w-[30%] sm:w-full">
-                Reservation Time:{" "}
+                {t("reservationTime")}
               </p>
               <p className="text-base sm:text-base">{reservation?.time}</p>
             </div>
@@ -154,7 +184,7 @@ const ReservationConfirmation = ({ reservation }: { reservation: any }) => {
           {reservation?.guests_count ? (
             <div dir={dir} className="flex justify-start w-full sm:flex-col gap-2">
               <p className="font-semibold text-base sm:text-base w-[30%] sm:w-full">
-                Guests:{" "}
+                {t("guests")}
               </p>
               <p className="text-base sm:text-base">
                 {reservation?.guests_count}
@@ -165,7 +195,7 @@ const ReservationConfirmation = ({ reservation }: { reservation: any }) => {
           {email ? (
             <div dir={dir} className="flex justify-start w-full sm:flex-col gap-2">
               <p className="font-semibold text-base sm:text-base w-[30%] sm:w-full">
-                Email:{" "}
+                {t("email")}
               </p>
               <p className="text-base sm:text-base">{email}</p>
             </div>
@@ -174,7 +204,7 @@ const ReservationConfirmation = ({ reservation }: { reservation: any }) => {
           {phone ? (
             <div dir={dir} className="flex justify-start w-full sm:flex-col gap-2">
               <p className="font-semibold text-base sm:text-base w-[30%] sm:w-full">
-                Phone:{" "}
+                {t("phone")}
               </p>
               <p className="text-base sm:text-base">{phone}</p>
             </div>
@@ -183,7 +213,7 @@ const ReservationConfirmation = ({ reservation }: { reservation: any }) => {
           {specialRequest ? (
             <div dir={dir} className="flex justify-start w-full sm:flex-col gap-2">
               <p className="font-semibold text-base sm:text-base w-[30%] sm:w-full">
-                Special Request:{" "}
+                {t("specialRequest")}
               </p>
               <p className="text-base sm:text-base">{specialRequest}</p>
             </div>
@@ -192,7 +222,7 @@ const ReservationConfirmation = ({ reservation }: { reservation: any }) => {
           {occasion ? (
             <div dir={dir} className="flex justify-start w-full sm:flex-col gap-2">
               <p className="font-semibold text-base sm:text-base w-[30%] sm:w-full">
-                Occasion:{" "}
+                {t("occasion")}
               </p>
               <p className="text-base sm:text-base">{occasion}</p>
             </div>
@@ -211,14 +241,13 @@ const ReservationConfirmation = ({ reservation }: { reservation: any }) => {
                       key={`${item?.name ?? "item"}-${index}`}
                       className="flex justify-between items-center w-full sm:flex-col sm:items-start gap-2"
                     >
-                      <p className="text-base sm:text-base">{item?.name ?? ""}</p>
                       <p className="text-base sm:text-base flex items-center gap-1">
+                        <span>{item?.name ?? ""}</span>
                         <span>x{item?.quantity ?? 0}</span>
-                        <span className="flex items-center gap-1">
-                          <CurrencySymbol />
-                          {formatAmount(item?.total ?? item?.sub_total)}
-                          {orderCurrency ? ` ${orderCurrency}` : ""}
-                        </span>
+                      </p>
+                      <p className="text-base sm:text-base flex items-center gap-1">
+                        <CurrencySymbol />
+                        {formatAmount(item?.total ?? item?.sub_total)}
                       </p>
                     </div>
                   ))}
@@ -236,7 +265,6 @@ const ReservationConfirmation = ({ reservation }: { reservation: any }) => {
                   <p className="text-base sm:text-base flex items-center gap-1">
                     <CurrencySymbol />
                     {formatAmount(order?.subtotal)}
-                    {orderCurrency ? ` ${orderCurrency}` : ""}
                   </p>
                 </div>
               ) : null}
@@ -252,7 +280,6 @@ const ReservationConfirmation = ({ reservation }: { reservation: any }) => {
                   <p className="text-base sm:text-base flex items-center gap-1">
                     <CurrencySymbol />
                     {formatAmount(order?.discount)}
-                    {orderCurrency ? ` ${orderCurrency}` : ""}
                   </p>
                 </div>
               ) : null}
@@ -268,7 +295,6 @@ const ReservationConfirmation = ({ reservation }: { reservation: any }) => {
                   <p className="text-base sm:text-base flex items-center gap-1">
                     <CurrencySymbol />
                     {formatAmount(order?.deposit)}
-                    {orderCurrency ? ` ${orderCurrency}` : ""}
                   </p>
                 </div>
               ) : null}
@@ -284,7 +310,6 @@ const ReservationConfirmation = ({ reservation }: { reservation: any }) => {
                   <p className="font-semibold text-base sm:text-base flex items-center gap-1">
                     <CurrencySymbol />
                     {formatAmount(order?.total)}
-                    {orderCurrency ? ` ${orderCurrency}` : ""}
                   </p>
                 </div>
               ) : null}
@@ -310,6 +335,7 @@ const ReservationConfirmation = ({ reservation }: { reservation: any }) => {
               ) : null}
             </div>
           ) : null}
+
         </div>
       </div>
     </div>

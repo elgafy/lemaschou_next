@@ -159,6 +159,13 @@
     "subtotal": "المجموع الفرعي",
     "discount": "الخصم",
     "deposit": "العربون",
-    "paymentStatus": "حالة الدفع"
+    "paymentStatus": "حالة الدفع",
+    "reservationReference": "رقم الحجز",
+    "reservationFor": "الحجز باسم",
+    "reservationDate": "تاريخ الحجز",
+    "reservationTime": "وقت الحجز",
+    "paymentFailed": "فشل الدفع",
+    "paymentFailedHint": "سيتم إلغاء الحجز خلال 5 دقائق إذا لم يتم إتمام الدفع",
+    "retryPayment": "إعادة الدفع"
   }
 }

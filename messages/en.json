@@ -163,6 +163,13 @@
     "subtotal": "Subtotal",
     "discount": "Discount",
     "deposit": "Deposit",
-    "paymentStatus": "Payment Status"
+    "paymentStatus": "Payment Status",
+    "reservationReference": "Reservation Reference",
+    "reservationFor": "Reservation for",
+    "reservationDate": "Reservation Date",
+    "reservationTime": "Reservation Time",
+    "paymentFailed": "Payment Failed",
+    "paymentFailedHint": "Reservation will be cancelled in 5 minutes if payment is not fulfilled",
+    "retryPayment": "Retry Payment"
   }
 }
