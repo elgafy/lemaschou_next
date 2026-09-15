@@ -80,6 +80,7 @@ export default function ReservationWidget(props: { settings: any }) {
   const t = useTranslations("reservationPage");
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState<Boolean>(true);
+  const [bookingError, setBookingError] = useState<string | null>(null);
   const [showReservationNotice, setShowReservationNotice] =
     useState<Boolean | null>(null);
   const [showSummary, setShowSummary] = useState<Boolean>(false);
@@ -486,8 +487,9 @@ export default function ReservationWidget(props: { settings: any }) {
 
   async function book(values: z.infer<typeof formSchema>) {
     setLoading(true);
+    setBookingError(null);
     const response = await makeReservation({ ...values, seatingTime }, locale);
-    console.log(response);
+    console.log("makeReservation response:", response);
     if (response.success) {
       // Set reservation data to local storage and state
       const reservation = JSON.parse(response.data.reservation);
@@ -506,6 +508,13 @@ export default function ReservationWidget(props: { settings: any }) {
       // navigation transition (we're leaving this page anyway).
       return;
     }
+    // Booking failed — surface the reason instead of silently stopping.
+    console.error("Booking failed:", response);
+    setBookingError(
+      response?.message ||
+        response?.response?.message ||
+        t("bookingFailed"),
+    );
     setLoading(false);
   }
 
@@ -1648,6 +1657,11 @@ export default function ReservationWidget(props: { settings: any }) {
               )}
             </form>
           </Form>
+        )}
+        {bookingError && (
+          <p className="w-full text-center text-base font-semibold text-red-600">
+            {bookingError}
+          </p>
         )}
         {loading && (
           <div className="">

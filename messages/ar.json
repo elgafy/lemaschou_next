@@ -166,6 +166,7 @@
     "reservationTime": "وقت الحجز",
     "paymentFailed": "فشل الدفع",
     "paymentFailedHint": "سيتم إلغاء الحجز خلال 5 دقائق إذا لم يتم إتمام الدفع",
-    "retryPayment": "إعادة الدفع"
+    "retryPayment": "إعادة الدفع",
+    "bookingFailed": "فشل في إتمام الحجز. يرجى المحاولة مرة أخرى."
   }
 }

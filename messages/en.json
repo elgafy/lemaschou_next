@@ -170,6 +170,7 @@
     "reservationTime": "Reservation Time",
     "paymentFailed": "Payment Failed",
     "paymentFailedHint": "Reservation will be cancelled in 5 minutes if payment is not fulfilled",
-    "retryPayment": "Retry Payment"
+    "retryPayment": "Retry Payment",
+    "bookingFailed": "Failed to make reservation. Please try again."
   }
 }
