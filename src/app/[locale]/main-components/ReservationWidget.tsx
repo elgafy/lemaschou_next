@@ -1107,6 +1107,21 @@ export default function ReservationWidget(props: { settings: any }) {
                                                               [item.id]: val,
                                                             }),
                                                           );
+                                                          // Add the variation immediately on selection —
+                                                          // no separate "Add" click required.
+                                                          const valObj =
+                                                            firstVarGroup.values.find(
+                                                              (v: any) =>
+                                                                v.value_en ===
+                                                                val,
+                                                            );
+                                                          if (valObj) {
+                                                            handleAddVariation(
+                                                              item,
+                                                              firstVarGroup,
+                                                              valObj,
+                                                            );
+                                                          }
                                                         }}
                                                         disabled={!isAvailable}
                                                       >
@@ -1173,43 +1188,6 @@ export default function ReservationWidget(props: { settings: any }) {
                                                         </SelectContent>
                                                       </Select>
                                                     </div>
-                                                    <Button
-                                                      type="button"
-                                                      size="sm"
-                                                      disabled={
-                                                        !isAvailable ||
-                                                        !selectedVariationOptions[
-                                                          item.id
-                                                        ]
-                                                      }
-                                                      className="h-9 px-4 gap-1.5 flex items-center bg-[#381112] hover:bg-[#4d191b] text-white disabled:opacity-50"
-                                                      onClick={() => {
-                                                        const currentValEn =
-                                                          selectedVariationOptions[
-                                                            item.id
-                                                          ];
-                                                        if (!currentValEn)
-                                                          return;
-                                                        const valObj =
-                                                          firstVarGroup.values.find(
-                                                            (v: any) =>
-                                                              v.value_en ===
-                                                              currentValEn,
-                                                          );
-                                                        if (valObj) {
-                                                          handleAddVariation(
-                                                            item,
-                                                            firstVarGroup,
-                                                            valObj,
-                                                          );
-                                                        }
-                                                      }}
-                                                    >
-                                                      <Plus className="w-4 h-4" />
-                                                      <span>
-                                                        {t("addOption")}
-                                                      </span>
-                                                    </Button>
                                                   </div>
 
                                                   {/* Selected variation list with quantity steppers */}
