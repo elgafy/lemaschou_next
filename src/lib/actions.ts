@@ -131,7 +131,8 @@ export async function makeReservation(formData: any, locale: string) {
                 console.log(res);
                 const data = {
                     success: false,
-                    message: 'Failed to make reservation'
+                    message: 'Failed to make reservation',
+                    response: res,
                 }
                 return data;
             }
