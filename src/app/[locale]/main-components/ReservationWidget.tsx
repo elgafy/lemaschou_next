@@ -487,6 +487,7 @@ export default function ReservationWidget(props: { settings: any }) {
   async function book(values: z.infer<typeof formSchema>) {
     setLoading(true);
     const response = await makeReservation({ ...values, seatingTime }, locale);
+    console.log(response);
     if (response.success) {
       // Set reservation data to local storage and state
       const reservation = JSON.parse(response.data.reservation);
