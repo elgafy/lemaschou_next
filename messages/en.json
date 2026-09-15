@@ -171,6 +171,14 @@
     "paymentFailed": "Payment Failed",
     "paymentFailedHint": "Reservation will be cancelled in 5 minutes if payment is not fulfilled",
     "retryPayment": "Retry Payment",
-    "bookingFailed": "Failed to make reservation. Please try again."
+    "bookingFailed": "Failed to make reservation. Please try again.",
+    "statusPaid": "Paid",
+    "statusCompleted": "Completed",
+    "statusSuccess": "Success",
+    "statusPending": "Pending",
+    "statusFailed": "Failed",
+    "statusUnpaid": "Unpaid",
+    "statusCancelled": "Cancelled",
+    "statusExpired": "Expired"
   }
 }

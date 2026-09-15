@@ -77,6 +77,28 @@ const ReservationConfirmation = ({
     }
   };
 
+  // Map raw payment statuses to translation keys. Unknown statuses fall back
+  // to the raw value with its first letter capitalised.
+  const PAYMENT_STATUS_KEYS: Record<string, string> = {
+    paid: "statusPaid",
+    completed: "statusCompleted",
+    success: "statusSuccess",
+    pending: "statusPending",
+    failed: "statusFailed",
+    unpaid: "statusUnpaid",
+    cancelled: "statusCancelled",
+    canceled: "statusCancelled",
+    expired: "statusExpired",
+  };
+
+  const statusLabel = (status: any) => {
+    const raw = String(status ?? "").trim();
+    if (!raw) return "";
+    const key = PAYMENT_STATUS_KEYS[raw.toLowerCase()];
+    if (key) return t(key);
+    return raw.charAt(0).toUpperCase() + raw.slice(1);
+  };
+
   return (
     <div className="content w-[90vw] max-w-[800px] flex flex-col items-center justify-center my-[104px] gap-12 clg:my-5">
       <div className="theme-border bg-[#e5cbbd] flex flex-col gap-4 p-8 tablet:p-0 w-full reservation-widget relative">
@@ -324,11 +346,11 @@ const ReservationConfirmation = ({
                   </p>
                   <p className="text-base sm:text-base">
                     <span
-                      className={`px-2 py-1 rounded-full text-xs font-semibold ${statusClasses(
+                      className={`px-3 py-1 rounded-full text-base font-semibold ${statusClasses(
                         order?.status
                       )}`}
                     >
-                      {order?.status}
+                      {statusLabel(order?.status)}
                     </span>
                   </p>
                 </div>

@@ -167,6 +167,14 @@
     "paymentFailed": "فشل الدفع",
     "paymentFailedHint": "سيتم إلغاء الحجز خلال 5 دقائق إذا لم يتم إتمام الدفع",
     "retryPayment": "إعادة الدفع",
-    "bookingFailed": "فشل في إتمام الحجز. يرجى المحاولة مرة أخرى."
+    "bookingFailed": "فشل في إتمام الحجز. يرجى المحاولة مرة أخرى.",
+    "statusPaid": "مدفوع",
+    "statusCompleted": "مكتمل",
+    "statusSuccess": "ناجح",
+    "statusPending": "قيد الانتظار",
+    "statusFailed": "فاشل",
+    "statusUnpaid": "غير مدفوع",
+    "statusCancelled": "ملغي",
+    "statusExpired": "منتهي"
   }
 }
