@@ -975,12 +975,12 @@ export default function ReservationWidget(props: { settings: any }) {
                                                         item[`name_${locale}`] ||
                                                         "occasion item"
                                                       }
-                                                      height={80}
-                                                      width={80}
+                                                      height={120}
+                                                      width={120}
                                                       className="rounded-md object-cover flex-shrink-0 cursor-pointer ss:self-center"
                                                       style={{
-                                                        width: 80,
-                                                        height: 80,
+                                                        width: 120,
+                                                        height: 120,
                                                       }}
                                                     />
                                                   </DialogTrigger>
