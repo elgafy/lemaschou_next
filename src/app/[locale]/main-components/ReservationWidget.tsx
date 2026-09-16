@@ -977,7 +977,7 @@ export default function ReservationWidget(props: { settings: any }) {
                                                       }
                                                       height={80}
                                                       width={80}
-                                                      className="rounded-md object-cover flex-shrink-0 cursor-pointer"
+                                                      className="rounded-md object-cover flex-shrink-0 cursor-pointer ss:self-center"
                                                       style={{
                                                         width: 80,
                                                         height: 80,
