@@ -172,7 +172,7 @@
     "statusCompleted": "مكتمل",
     "statusSuccess": "ناجح",
     "statusPending": "قيد الانتظار",
-    "statusFailed": "فاشل",
+    "statusFailed": "فشل",
     "statusUnpaid": "غير مدفوع",
     "statusCancelled": "ملغي",
     "statusExpired": "منتهي"

@@ -1168,17 +1168,19 @@ export default function ReservationWidget(props: { settings: any }) {
                                                                   value={
                                                                     valObj.value_en
                                                                   }
+                                                                  className="group"
                                                                 >
                                                                   <div className="flex items-center justify-between w-full gap-4">
                                                                     <span>
                                                                       {vLabel}
                                                                     </span>
-                                                                    <span className="font-semibold text-xs text-mainColor">
-                                                                      {vPrice}{" "}
-                                                                      {locale ===
-                                                                      "ar"
-                                                                        ? "ر.س"
-                                                                        : "SAR"}
+                                                                    <span className="font-semibold text-xs text-mainColor group-hover:text-white flex items-center gap-1">
+                                                                      <CurrencySymbol
+                                                                        size={
+                                                                          12
+                                                                        }
+                                                                      />
+                                                                      {vPrice}
                                                                     </span>
                                                                   </div>
                                                                 </SelectItem>
