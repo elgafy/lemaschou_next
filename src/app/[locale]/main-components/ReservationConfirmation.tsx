@@ -157,10 +157,9 @@ const ReservationConfirmation = ({
             </p>
           ) : null}
 
-          {showRetry ? (
-            // TODO: replace with the real payment retry link once provided.
+          {showRetry && retryHref ? (
             <a
-              href={retryHref ?? "#"}
+              href={retryHref}
               className="inline-flex items-center justify-center px-6 py-2 rounded bg-mainColor text-white text-base font-semibold hover:opacity-90 transition"
             >
               {t("retryPayment")}

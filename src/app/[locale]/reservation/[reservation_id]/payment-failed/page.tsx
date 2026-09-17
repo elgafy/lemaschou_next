@@ -52,6 +52,8 @@ export default async function ReservationPaymentFailedPage({
   setRequestLocale(locale);
   const reservationData = await requestData(`reservations/${reservation_id}`);
   const reservation = reservationData?.data ?? reservationData;
+  // retryPaymentUrl is a top-level sibling of `data` in the API response.
+  const retryPaymentUrl = reservationData?.retryPaymentUrl;
   const t = await getTranslations({ locale, namespace: "reservationPage" });
 
   const hasReservation = Boolean(
@@ -80,8 +82,7 @@ export default async function ReservationPaymentFailedPage({
           title={t("paymentFailed")}
           hint={t("paymentFailedHint")}
           showRetry
-          // TODO: supply the real payment retry link when available.
-          retryHref="#"
+          retryHref={retryPaymentUrl}
         />
       ) : (
         <div className="content w-[90vw] max-w-[800px] flex flex-col items-center justify-center my-[104px] gap-12 clg:my-5">
