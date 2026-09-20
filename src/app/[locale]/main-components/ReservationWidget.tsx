@@ -955,12 +955,23 @@ export default function ReservationWidget(props: { settings: any }) {
                                               className="w-full relative occasion-item bg-white theme-item-border rounded-lg p-4 flex flex-col gap-3 shadow-sm"
                                             >
                                               {!isAvailable && (
-                                                <div className="absolute inset-0 bg-white/90 z-10 flex items-center justify-center rounded-lg">
+                                                <div className="absolute inset-0 bg-white/90 z-10 flex flex-col items-center justify-center gap-2 rounded-lg p-4 text-center">
                                                   <p className="text-red-600 font-bold text-sm">
                                                     {t(
                                                       "notAvailableForSelectedDate",
                                                     )}
                                                   </p>
+                                                  {item[
+                                                    `unavailable_message_${locale}`
+                                                  ] && (
+                                                    <p className="text-red-600 text-sm">
+                                                      {
+                                                        item[
+                                                          `unavailable_message_${locale}`
+                                                        ]
+                                                      }
+                                                    </p>
+                                                  )}
                                                 </div>
                                               )}
                                               <div className="w-full flex flex-row ss:flex-col justify-start gap-4">
