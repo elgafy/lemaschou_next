@@ -108,11 +108,24 @@
 }
 
 .theme-border {
-  /* background-color: #e5cbbd; */
   border: 30px solid transparent;
   /* border-image: url("/assets/theme-border.png") 20% stretch; */
   border-image: url("/assets/theme-border.png") 18% round;
   border-radius: 40px;
+}
+.theme-item-border {
+  border: 20px solid transparent;
+  /* border-image: url("/assets/theme-border.png") 20% stretch; */
+  border-image: url("/assets/theme-border.png") 18% round;
+  border-radius: 40px;
+}
+.reservation-notice {
+  h3 {
+    @apply text-xl font-semibold my-4 leading-6 tracking-tight text-center;
+  }
+  p {
+    @apply mb-2 tracking-tight;
+  }
 }
 .reservation-container {
   /* background-image: url("/assets/le-maschou-indoor.jpg");

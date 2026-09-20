@@ -753,10 +753,10 @@ export default function ReservationWidget(props: { settings: any }) {
                   {showReservationNotice && (
                     <div
                       ref={bookingNotice}
-                      className="bg-white text-base p-8 rounded-lg mt-4 flex flex-col items-center whitespace-pre-wrap shadow-lg animated zoomIn"
+                      className="reservation-notice theme-item-border bg-white text-base p-2 rounded-lg mt-4 flex flex-col items-center whitespace-pre-wrap shadow-lg animated zoomIn"
                     >
-                      <p className="pb-4">
-                        {settings.settings[`booking_notice_${locale}`]}
+                      <p className="pb-4" dangerouslySetInnerHTML={{__html:settings.settings[`booking_notice_${locale}`]}}>
+                        
                       </p>
                       <Button className="mt-4" onClick={resetBookingNotice}>
                         {t("agree")}
@@ -874,7 +874,7 @@ export default function ReservationWidget(props: { settings: any }) {
                     }}
                   />
                   {occasion === true && (
-                    <div className="flex flex-col gap-2 border-b border-black boder-b-0">
+                    <div className="flex flex-col gap-2 pb-4 ">
                       <FormField
                         control={form.control}
                         name="occasionType"
@@ -952,7 +952,7 @@ export default function ReservationWidget(props: { settings: any }) {
                                           return (
                                             <div
                                               key={item.id || itemIndex}
-                                              className="w-full relative occasion-item bg-white theme-border rounded-lg p-4 flex flex-col gap-3 shadow-sm"
+                                              className="w-full relative occasion-item bg-white theme-item-border rounded-lg p-4 flex flex-col gap-3 shadow-sm"
                                             >
                                               {!isAvailable && (
                                                 <div className="absolute inset-0 bg-white/90 z-10 flex items-center justify-center rounded-lg">
