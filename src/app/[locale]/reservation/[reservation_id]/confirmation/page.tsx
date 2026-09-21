@@ -1,12 +1,12 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Metadata } from "next";
-import { redirect } from "next/navigation";
 import { isFailedStatus } from "@/lib/reservationStatus";
 import { getData, requestData } from "../../../actions";
 import { ReservationType } from "../../../AppTypes";
 import Image from "next/image";
 import logoWord from "/public/assets/logo-word.svg";
 import ReservationConfirmation from "../../../main-components/ReservationConfirmation";
+import ReservationRedirect from "../../../main-components/ReservationRedirect";
 
 // Reservation ids are only known at request time, so this route must be
 // rendered on demand. Without this it is treated as SSG with no
@@ -58,10 +58,15 @@ export default async function ReservationConfirmationPage({
 
   const hasReservation = Boolean(reservation && Object.keys(reservation).length > 0 && reservation?.id);
 
-  // Payment failed -> send the user to the payment-failed page.
+  // Payment failed -> render a spinner and navigate to the payment-failed page
+  // client-side (avoids the blank screen caused by a server-side HTTP redirect).
   // Any other status (pending/unknown) renders here as-is.
   if (hasReservation && isFailedStatus(reservation?.order?.status)) {
-    redirect(`/${locale}/reservation/${reservation_id}/payment-failed`);
+    return (
+      <ReservationRedirect
+        href={`/${locale}/reservation/${reservation_id}/payment-failed`}
+      />
+    );
   }
 
   return (
