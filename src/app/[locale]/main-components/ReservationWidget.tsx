@@ -501,9 +501,7 @@ export default function ReservationWidget(props: { settings: any }) {
         window.location.href = paymentRedirectUrl;
         return;
       }
-      router.push(
-        `/${locale}/reservation/${reservation.reservation_id}/confirmation`,
-      );
+      router.push(`/${locale}/reservation/${reservation.reservation_id}`);
       // Return early: skip further state updates so no re-render blocks the
       // navigation transition (we're leaving this page anyway).
       return;
@@ -1461,12 +1459,7 @@ export default function ReservationWidget(props: { settings: any }) {
                               />
                             </div>
                           )}
-                          <h4 className="py-4 text-sm">
-                            {
-                              settings.settings[
-                                `occasion_items_notice_${locale}`
-                              ]
-                            }
+                          <h4 className="py-4 text-sm" dangerouslySetInnerHTML={{ __html: settings.settings[`occasion_items_notice_${locale}`] }} >
                           </h4>
                         </div>
                       )}

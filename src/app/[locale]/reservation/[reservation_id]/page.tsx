@@ -1,12 +1,11 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Metadata } from "next";
-import { isPaidStatus } from "@/lib/reservationStatus";
-import { getData, requestData } from "../../../actions";
-import { ReservationType } from "../../../AppTypes";
+import { isFailedStatus, isPaidStatus } from "@/lib/reservationStatus";
+import { getData, requestData } from "../../actions";
+import { ReservationType } from "../../AppTypes";
 import Image from "next/image";
 import logoWord from "/public/assets/logo-word.svg";
-import ReservationConfirmation from "../../../main-components/ReservationConfirmation";
-import ReservationRedirect from "../../../main-components/ReservationRedirect";
+import ReservationConfirmation from "../../main-components/ReservationConfirmation";
 
 // Reservation ids are only known at request time, so this route must be
 // rendered on demand. Without this it is treated as SSG with no
@@ -46,7 +45,7 @@ export async function generateMetadata({
     },
   };
 }
-export default async function ReservationPaymentFailedPage({
+export default async function ReservationPage({
   params: { locale, reservation_id },
 }: pageProps) {
   setRequestLocale(locale);
@@ -60,16 +59,11 @@ export default async function ReservationPaymentFailedPage({
     reservation && Object.keys(reservation).length > 0 && reservation?.id
   );
 
-  // Payment succeeded -> render a spinner and navigate to the confirmation page
-  // client-side (avoids the blank screen caused by a server-side HTTP redirect).
-  // Any other status (pending/unknown) renders here as-is.
-  if (hasReservation && isPaidStatus(reservation?.order?.status)) {
-    return (
-      <ReservationRedirect
-        href={`/${locale}/reservation/${reservation_id}/confirmation`}
-      />
-    );
-  }
+  // Single route renders the state that matches the payment status:
+  // paid -> success, failed -> failure (+ retry), anything else -> pending.
+  const status = reservation?.order?.status;
+  const paid = isPaidStatus(status);
+  const failed = isFailedStatus(status);
 
   return (
     <main className="flex flex-col justify-center items-center reservation-container pt-32">
@@ -84,10 +78,16 @@ export default async function ReservationPaymentFailedPage({
       {hasReservation ? (
         <ReservationConfirmation
           reservation={reservation}
-          title={t("paymentFailed")}
-          hint={t("paymentFailedHint")}
-          failed
-          showRetry
+          title={
+            paid
+              ? t("reservationSuccessTitle")
+              : failed
+                ? t("paymentFailed")
+                : t("paymentPending")
+          }
+          hint={failed ? t("paymentFailedHint") : undefined}
+          failed={failed}
+          showRetry={!paid}
           retryHref={retryPaymentUrl}
         />
       ) : (

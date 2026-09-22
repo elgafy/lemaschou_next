@@ -180,6 +180,7 @@
     "statusUnpaid": "Unpaid",
     "statusCancelled": "Cancelled",
     "statusExpired": "Expired",
-    "bookingFailedTitle": "Booking Failed"
+    "bookingFailedTitle": "Booking Failed",
+    "paymentPending": "Payment Pending"
   }
 }

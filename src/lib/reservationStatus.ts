@@ -1,9 +1,8 @@
-// Payment status classification shared by the reservation confirmation and
-// payment-failed pages.
+// Payment status classification used by the reservation page to decide which
+// state to render (paid / failed / pending).
 //
-// Redirects only happen on a *clear* mismatch (paid vs failed). Any other
-// status (e.g. "pending" or unknown) renders in place, which avoids an
-// infinite redirect loop between the two pages.
+// Only "paid" and known failure values are classified explicitly; anything
+// else (e.g. "pending" or unknown) falls through to the pending state.
 
 export const PAID_PAYMENT_STATUSES = ["paid", "completed", "success"];
 

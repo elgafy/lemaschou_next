@@ -176,6 +176,7 @@
     "statusUnpaid": "غير مدفوع",
     "statusCancelled": "ملغي",
     "statusExpired": "منتهي",
-    "bookingFailedTitle": "فشل الحجز"
+    "bookingFailedTitle": "فشل الحجز",
+    "paymentPending": "الدفع قيد الانتظار"
   }
 }
