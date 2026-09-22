@@ -179,6 +179,7 @@
     "statusFailed": "Failed",
     "statusUnpaid": "Unpaid",
     "statusCancelled": "Cancelled",
-    "statusExpired": "Expired"
+    "statusExpired": "Expired",
+    "bookingFailedTitle": "Booking Failed"
   }
 }

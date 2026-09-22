@@ -86,6 +86,7 @@ export default async function ReservationPaymentFailedPage({
           reservation={reservation}
           title={t("paymentFailed")}
           hint={t("paymentFailedHint")}
+          failed
           showRetry
           retryHref={retryPaymentUrl}
         />

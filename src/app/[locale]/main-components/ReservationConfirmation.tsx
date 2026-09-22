@@ -14,12 +14,14 @@ const ReservationConfirmation = ({
   reservation,
   title,
   hint,
+  failed = false,
   showRetry = false,
   retryHref,
 }: {
   reservation: any;
   title?: string;
   hint?: string;
+  failed?: boolean;
   showRetry?: boolean;
   retryHref?: string;
 }) => {
@@ -107,8 +109,12 @@ const ReservationConfirmation = ({
         </h2>
 
         <div className="w-full flex flex-col gap-1 mb-4 animated zoomIn">
-          <h4 className="text-xl font-semibold text-center mb-4">
-            {t("bookingDetails")}
+          <h4
+            className={`text-xl font-semibold text-center mb-4 ${
+              failed ? "text-red-600" : ""
+            }`}
+          >
+            {failed ? t("bookingFailedTitle") : t("bookingDetails")}
           </h4>
           <div className="w-full flex flex-col gap-1">
             <div className="w-full flex flex-wrap gap-1 justify-center">
