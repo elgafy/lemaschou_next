@@ -30,6 +30,8 @@ const ReservationConfirmation = ({
 
   const dir = locale === "en" ? "ltr" : "rtl";
 
+  console.log("Reservation object:", reservation);
+
   const reference =
     reservation?.reservation_id ??
     reservation?.sevenrooms_reservation_id ??
@@ -269,7 +271,9 @@ const ReservationConfirmation = ({
                       className="flex justify-between items-center w-full sm:flex-col sm:items-start gap-2"
                     >
                       <p className="text-base sm:text-base flex items-center gap-1">
-                        <span>{item?.name ?? ""}</span>
+                        <span>
+                          {item?.[`name_${locale}`] ?? item?.name ?? ""}
+                        </span>
                         <span>x{item?.quantity ?? 0}</span>
                       </p>
                       <p className="text-base sm:text-base flex items-center gap-1">
