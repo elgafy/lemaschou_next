@@ -1459,8 +1459,7 @@ export default function ReservationWidget(props: { settings: any }) {
                               />
                             </div>
                           )}
-                          <h4 className="py-4 text-sm" dangerouslySetInnerHTML={{ __html: settings.settings[`occasion_items_notice_${locale}`] }} >
-                          </h4>
+                          
                         </div>
                       )}
                     </div>
@@ -1524,6 +1523,9 @@ export default function ReservationWidget(props: { settings: any }) {
                 </div>
               )}
               {(orderItems.length > 0 || downPayment > 0) && showTimer && (
+                <div>
+                <h4 className="p-4 text-base bg-white rounded-lg my-6 shadow-md" dangerouslySetInnerHTML={{ __html: settings.settings[`occasion_items_notice_${locale}`] }} >
+                </h4>
                 <div className="bg-white px-2 py-4 rounded-lg shadow-md flex-1 flex flex-col justify-center items-center text-center w-full px-6 mt-4">
                   <h3 className="text-xl font-semibold">{t("paymentTitle")}</h3>
 
@@ -1564,6 +1566,7 @@ export default function ReservationWidget(props: { settings: any }) {
                       </p>
                     </div>
                   )}
+                </div>
                 </div>
               )}
               <div className="w-full flex flex-col gap-4 pt-4">

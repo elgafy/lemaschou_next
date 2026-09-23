@@ -117,7 +117,7 @@
   border: 20px solid transparent;
   /* border-image: url("/assets/theme-border.png") 20% stretch; */
   border-image: url("/assets/theme-border.png") 18% round;
-  border-radius: 40px;
+  border-radius: 30px;
 }
 .reservation-notice {
   h3 {
