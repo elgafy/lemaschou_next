@@ -995,7 +995,7 @@ export default function ReservationWidget(props: { settings: any }) {
                                                   </DialogTrigger>
                                                   <DialogContent
                                                     aria-describedby="occasion-item-modal"
-                                                    className="w-[529px] h-[606px] lMobile:h-[60%] lMobile:w-[90%] bxs:w-[290px] blg:h-[90%] bg-transparent border-none bg-[url('/assets/mealCard.png')] bg-[length:100%_100%] px-[45px] flex flex-col gap-0 items-center justify-center mobile:gap-5 pb-12 bxs:pb-0 bxs:h-[390px] lg:h-[500px]"
+                                                    className="w-[529px] h-[606px] lMobile:h-[60%] lMobile:w-[90%] bxs:w-[290px] blg:h-[90%] bg-[#e5cbbd] theme-item-border flex flex-col gap-0 items-center justify-center mobile:gap-5 bxs:h-[390px] lg:h-[500px] p-2"
                                                   >
                                                     <DialogHeader className="hidden">
                                                       <DialogTitle>{item[`name_${locale}`]}</DialogTitle>
@@ -1004,7 +1004,7 @@ export default function ReservationWidget(props: { settings: any }) {
                                                       </DialogDescription>
                                                     </DialogHeader>
                                                     <DialogClose
-                                                      className="!absolute top-5 text-mainColor left-14 w-7 h-7 bxs:w-5 bxs:h-5 bxs:text-xs border border-mainColor rounded-full bxs:left-7"
+                                                      className="!absolute top-2 text-mainColor left-2 w-7 h-7 bxs:w-5 bxs:h-5 bxs:text-xs border border-mainColor rounded-full"
                                                       aria-label="Close"
                                                     >
                                                       X
