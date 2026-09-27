@@ -32,7 +32,7 @@ function LanguageChanger({ className }: Props) {
       <SelectTrigger
         aria-label="Change language"
         className={cn(
-          "text-white bg-transparent uppercase cmd:gap-1 gap-2 border-none w-fit  focus:ring-0 focus:border-none ",
+          "text-white bg-transparent uppercase cmd:gap-1 gap-2 border-none w-fit  focus:ring-0 focus:border-none [&>svg.lucide-chevron-down]:hidden",
           className
         )}
       >

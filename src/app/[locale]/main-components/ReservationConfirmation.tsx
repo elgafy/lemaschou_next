@@ -8,6 +8,10 @@ import {
   UsersRoundIcon,
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
+import {
+  formatStoredSeatingDuration,
+  formatTimeDisplay,
+} from "@/lib/timeFormat";
 import { ReservationSummaryWidget } from "./ReservationWidgetComponents";
 
 const ReservationConfirmation = ({
@@ -134,13 +138,15 @@ const ReservationConfirmation = ({
               />
               <ReservationSummaryWidget
                 title={t("time")}
-                value={reservation?.time ?? ""}
+                value={formatTimeDisplay(reservation?.time ?? "", locale) ?? ""}
                 subtitle={""}
                 icon={<ClockIcon />}
               />
               <ReservationSummaryWidget
                 title={t("seating")}
-                value={seatingTime}
+                value={
+                  formatStoredSeatingDuration(seatingTime, locale) ?? ""
+                }
                 subtitle={""}
                 icon={<ArmchairIcon />}
               />
@@ -206,7 +212,9 @@ const ReservationConfirmation = ({
               <p className="font-semibold text-base sm:text-base w-[30%] sm:w-full">
                 {t("reservationTime")}
               </p>
-              <p className="text-base sm:text-base">{reservation?.time}</p>
+              <p className="text-base sm:text-base">
+                {formatTimeDisplay(reservation?.time, locale)}
+              </p>
             </div>
           ) : null}
 

@@ -2,7 +2,9 @@
 
 import * as React from "react";
 import { CheckIcon, ChevronsUpDown } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import * as RPNInput from "react-phone-number-input";
+import arLabels from "react-phone-number-input/locale/ar.json";
 import flags from "react-phone-number-input/flags";
 
 import { Button } from "@/components/ui/button";
@@ -34,6 +36,7 @@ type PhoneInputProps = Omit<
 const PhoneInput: React.ForwardRefExoticComponent<PhoneInputProps> =
   React.forwardRef<React.ElementRef<typeof RPNInput.default>, PhoneInputProps>(
     ({ className, onChange, value, ...props }, ref) => {
+      const locale = useLocale();
       return (
         <RPNInput.default
           ref={ref}
@@ -43,6 +46,7 @@ const PhoneInput: React.ForwardRefExoticComponent<PhoneInputProps> =
           inputComponent={InputComponent}
           smartCaret={false}
           value={value || undefined}
+          labels={locale === "ar" ? arLabels : undefined}
           /**
            * Handles the onChange event.
            *
@@ -87,6 +91,7 @@ const CountrySelect = ({
   options: countryList,
   onChange,
 }: CountrySelectProps) => {
+  const t = useTranslations("reservationPage");
   const scrollAreaRef = React.useRef<HTMLDivElement>(null);
   const [searchValue, setSearchValue] = React.useState("");
   const [isOpen, setIsOpen] = React.useState(false);
@@ -136,11 +141,11 @@ const CountrySelect = ({
                 }
               }, 0);
             }}
-            placeholder="Search country..."
+            placeholder={t("searchCountry")}
           />
           <CommandList>
             <ScrollArea ref={scrollAreaRef} className="h-72">
-              <CommandEmpty>No country found.</CommandEmpty>
+              <CommandEmpty>{t("noCountryFound")}</CommandEmpty>
               <CommandGroup>
                 {countryList.map(({ value, label }) =>
                   value ? (

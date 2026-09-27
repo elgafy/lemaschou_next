@@ -177,6 +177,14 @@
     "statusCancelled": "ملغي",
     "statusExpired": "منتهي",
     "bookingFailedTitle": "فشل الحجز",
-    "paymentPending": "الدفع قيد الانتظار"
+    "paymentPending": "الدفع قيد الانتظار",
+    "largeGroupsContact": "للمجموعات الكبيرة، يرجى التواصل معنا.",
+    "guestsMinError": "عدد الضيوف أقل من الحد الأدنى",
+    "guestsMaxError": "عدد الضيوف يتجاوز الحد الأقصى",
+    "requestTooLong": "الطلب طويل جدًا، يرجى تقصير الرسالة",
+    "enterPhoneNumber": "أدخل رقم الهاتف",
+    "searchCountry": "ابحث عن دولة...",
+    "noCountryFound": "لا توجد دولة.",
+    "startingFrom": "يبدأ من"
   }
 }

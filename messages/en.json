@@ -181,6 +181,14 @@
     "statusCancelled": "Cancelled",
     "statusExpired": "Expired",
     "bookingFailedTitle": "Booking Failed",
-    "paymentPending": "Payment Pending"
+    "paymentPending": "Payment Pending",
+    "largeGroupsContact": "For large groups, please contact us.",
+    "guestsMinError": "Guests count is below the minimum",
+    "guestsMaxError": "Guests count exceeds the maximum",
+    "requestTooLong": "Request is too long, please reduce message",
+    "enterPhoneNumber": "Enter a phone number",
+    "searchCountry": "Search country...",
+    "noCountryFound": "No country found.",
+    "startingFrom": "Starting from"
   }
 }

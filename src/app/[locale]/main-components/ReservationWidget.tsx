@@ -43,6 +43,11 @@ import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { checkAvailability, makeReservation } from "@/lib/actions";
+import {
+  formatSeatingDuration,
+  formatTimeDisplay,
+} from "@/lib/timeFormat";
+import { ar } from "react-day-picker/locale";
 import Image from "next/image";
 import CurrencySymbol from "@/components/ui/currencySymbol";
 import DownPaymentSymbol from "@/components/ui/downPaymentSymbol";
@@ -85,6 +90,7 @@ export default function ReservationWidget(props: { settings: any }) {
     useState<Boolean | null>(null);
   const [showSummary, setShowSummary] = useState<Boolean>(false);
   const [showTimer, setShowTimer] = useState(false);
+  const [guestsRangeHint, setGuestsRangeHint] = useState(false);
   const [showForm] = useState(true);
   const [cardEnabled, setCardEnabled] = useState<Boolean>(false);
   const [seatingTime, setSeatingTime] = useState("0");
@@ -249,15 +255,22 @@ export default function ReservationWidget(props: { settings: any }) {
   const formSchema = z.object({
     date: z.date(),
     time: z.string(),
-    guests: z.coerce.number<number>().min(2).max(12),
+    guests: z.coerce
+      .number<number>()
+      .min(settings.settings.booking_min_guests || 2, {
+        message: t("guestsMinError"),
+      })
+      .max(settings.settings.booking_max_guests || 12, {
+        message: t("guestsMaxError"),
+      }),
     firstName: z.string().min(1, { message: t("emptyFieldError") }),
     lastName: z.string().min(1, { message: t("emptyFieldError") }),
     mobile: z
       .string()
-      .refine(isValidPhoneNumber, { message: "Invalid phone number" }),
+      .refine(isValidPhoneNumber, { message: t("mobilePattern") }),
     emailAddress: z.email({ message: t("invalidEmail") }),
     specialRequest: z.string().max(255, {
-      message: "Request is too long, please reduce message",
+      message: t("requestTooLong"),
     }),
     occasion: z.boolean(),
     occasionType: z.string(),
@@ -275,7 +288,7 @@ export default function ReservationWidget(props: { settings: any }) {
   });
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    // mode: "onSubmit",
+    mode: "onBlur",
     defaultValues: {
       date: new Date(),
       time: "",
@@ -305,8 +318,8 @@ export default function ReservationWidget(props: { settings: any }) {
   const date = form.watch("date");
   const guests = form.watch("guests");
   const time = form.watch("time");
-  const termsAccepted = form.getValues("termsAccepted");
-  const paymentPolicyAccepted = form.getValues("paymentPolicyAccepted");
+  const termsAccepted = form.watch("termsAccepted");
+  const paymentPolicyAccepted = form.watch("paymentPolicyAccepted");
 
   // Minimum occasion items purchase validation
   const minimumOccasionAmount = settings.settings
@@ -433,11 +446,7 @@ export default function ReservationWidget(props: { settings: any }) {
     if (guests > 9) seatingT = 210; // default duration for more than 9 guests is 3.5 hours
 
     // Set seating time based on number of guests
-    let seatingDuration = Math.floor(seatingT / 60) + "h";
-    seatingT % 60 > 0
-      ? (seatingDuration += " : " + (seatingT % 60) + "mins")
-      : "";
-    setSeatingTime(seatingDuration);
+    setSeatingTime(formatSeatingDuration(seatingT, locale));
 
     // Set down payment if applicable
     if (timeItem.payment && timeItem.payment > 0) {
@@ -569,13 +578,17 @@ export default function ReservationWidget(props: { settings: any }) {
                 />
                 <ReservationSummaryWidget
                   title={t("date")}
-                  value={date?.toLocaleDateString()}
+                  value={
+                    date?.toLocaleDateString(
+                      locale === "ar" ? "ar-u-ca-gregory-nu-latn" : "en-US",
+                    ) ?? ""
+                  }
                   subtitle={""}
                   icon={<CalendarDaysIcon />}
                 />
                 <ReservationSummaryWidget
                   title={t("time")}
-                  value={time}
+                  value={formatTimeDisplay(time, locale) ?? ""}
                   subtitle={""}
                   icon={<ClockIcon />}
                 />
@@ -631,9 +644,45 @@ export default function ReservationWidget(props: { settings: any }) {
                                 {...field}
                                 value={field.value ?? ""}
                                 className="w-24"
+                                onChange={(e) => {
+                                  const max =
+                                    settings.settings.booking_max_guests || 12;
+                                  const v =
+                                    e.target.value === ""
+                                      ? ""
+                                      : Number(e.target.value);
+                                  if (v !== "" && v > max) {
+                                    field.onChange(max);
+                                    setGuestsRangeHint(true);
+                                  } else {
+                                    field.onChange(v);
+                                    setGuestsRangeHint(false);
+                                  }
+                                }}
+                                onBlur={() => {
+                                  const min =
+                                    settings.settings.booking_min_guests || 2;
+                                  const v = field.value as
+                                    | number
+                                    | ""
+                                    | undefined;
+                                  if (
+                                    v !== "" &&
+                                    v !== undefined &&
+                                    v < min
+                                  ) {
+                                    field.onChange(min);
+                                  }
+                                  field.onBlur();
+                                }}
                               />
                             </FormControl>
                             <FormMessage />
+                            {guestsRangeHint && (
+                              <p className="text-sm text-red-600">
+                                {t("largeGroupsContact")}
+                              </p>
+                            )}
                           </FormItem>
                         );
                       }}
@@ -656,8 +705,12 @@ export default function ReservationWidget(props: { settings: any }) {
                                     className="w-48 justify-between font-normal"
                                   >
                                     {field.value
-                                      ? field.value.toLocaleDateString()
-                                      : "Select date"}
+                                      ? field.value.toLocaleDateString(
+                                          locale === "ar"
+                                            ? "ar-u-ca-gregory-nu-latn"
+                                            : "en-US",
+                                        )
+                                      : t("selectDate")}
                                     <ChevronDownIcon />
                                   </Button>
                                 </PopoverTrigger>
@@ -669,6 +722,7 @@ export default function ReservationWidget(props: { settings: any }) {
                                     mode="single"
                                     selected={field.value}
                                     defaultMonth={date}
+                                    locale={locale === "ar" ? ar : undefined}
                                     onSelect={(date) => {
                                       field.onChange(date ?? field.value);
                                       // check(date, guests);
@@ -725,8 +779,14 @@ export default function ReservationWidget(props: { settings: any }) {
                                       className="h-auto p-0 select-none"
                                     >
                                       <div className="flex flex-col items-center justify-center">
-                                        <p className="w-full text-sm flex p-2">
-                                          {item?.time}
+                                        <p
+                                          className="w-full text-sm flex p-2"
+                                          style={{
+                                            direction:
+                                              locale === "ar" ? "rtl" : "ltr",
+                                          }}
+                                        >
+                                          {formatTimeDisplay(item?.time, locale)}
                                         </p>
                                         {item.payment && (
                                           <p className="w-full flex justify-center text-xs flex p-2 gap-1 border-t border-black bg-[#fa9898] hover:text-black rounded-b-md">
@@ -772,9 +832,16 @@ export default function ReservationWidget(props: { settings: any }) {
                       render={({ field }) => {
                         return (
                           <FormItem className="w-full">
-                            <FormLabel>{t("firstName")}</FormLabel>
+                            <FormLabel>
+                              {t("firstName")}
+                              <span className="text-red-500"> *</span>
+                            </FormLabel>
                             <FormControl>
-                              <Input {...field} value={field.value ?? ""} />
+                              <Input
+                                {...field}
+                                value={field.value ?? ""}
+                                autoComplete="given-name"
+                              />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -787,9 +854,16 @@ export default function ReservationWidget(props: { settings: any }) {
                       render={({ field }) => {
                         return (
                           <FormItem className="w-full">
-                            <FormLabel>{t("lastName")}</FormLabel>
+                            <FormLabel>
+                              {t("lastName")}
+                              <span className="text-red-500"> *</span>
+                            </FormLabel>
                             <FormControl>
-                              <Input {...field} value={field.value ?? ""} />
+                              <Input
+                                {...field}
+                                value={field.value ?? ""}
+                                autoComplete="family-name"
+                              />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -804,14 +878,16 @@ export default function ReservationWidget(props: { settings: any }) {
                       render={({ field }) => (
                         <FormItem className="w-full">
                           <FormLabel className="text-left">
-                            Phone Number
+                            {t("mobile")}
+                            <span className="text-red-500"> *</span>
                           </FormLabel>
                           <FormControl className="w-full">
                             <PhoneInput
-                              placeholder="Enter a phone number"
+                              placeholder={t("enterPhoneNumber")}
                               {...field}
                               className="w-full"
                               defaultCountry="SA"
+                              autoComplete="tel"
                             />
                           </FormControl>
                           <FormMessage />
@@ -824,9 +900,17 @@ export default function ReservationWidget(props: { settings: any }) {
                       render={({ field }) => {
                         return (
                           <FormItem className="w-full">
-                            <FormLabel>{t("email")}</FormLabel>
+                            <FormLabel>
+                              {t("email")}
+                              <span className="text-red-500"> *</span>
+                            </FormLabel>
                             <FormControl>
-                              <Input {...field} value={field.value ?? ""} />
+                              <Input
+                                {...field}
+                                value={field.value ?? ""}
+                                type="email"
+                                autoComplete="email"
+                              />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -942,6 +1026,20 @@ export default function ReservationWidget(props: { settings: any }) {
                                           const firstVarGroup = hasVariations
                                             ? item.variations[0]
                                             : null;
+                                          const showStartingFrom =
+                                            hasVariations &&
+                                            firstVarGroup?.values?.length > 0 &&
+                                            firstVarGroup.values.some(
+                                              (v: any) =>
+                                                v.price != null &&
+                                                v.price !== "",
+                                            ) &&
+                                            new Set(
+                                              firstVarGroup.values.map(
+                                                (v: any) =>
+                                                  String(v.price ?? ""),
+                                              ),
+                                            ).size > 1;
                                           const itemSelectedOptions =
                                             selectedOccasionItems.filter(
                                               (s) => s.itemId === item.id,
@@ -1057,6 +1155,11 @@ export default function ReservationWidget(props: { settings: any }) {
                                                       {item[`name_${locale}`]}
                                                     </h2>
                                                     <div className="flex items-center text-lg font-semibold whitespace-nowrap gap-1 text-mainColor">
+                                                      {showStartingFrom && (
+                                                        <span className="text-xs font-normal">
+                                                          {t("startingFrom")}
+                                                        </span>
+                                                      )}
                                                       <CurrencySymbol />
                                                       <span>
                                                         {hasVariations &&
@@ -1376,7 +1479,7 @@ export default function ReservationWidget(props: { settings: any }) {
                                           {t("chooseGiftCard")}
                                         </FormLabel>
                                         <FormControl>
-                                          <div className="grid grid-cols-2 gap-4">
+                                          <div className="grid grid-cols-2 sm:grid-cols-1 gap-4">
                                             {giftCards.map((card: any) => {
                                               const isSelected =
                                                 field.value ===
@@ -1548,7 +1651,7 @@ export default function ReservationWidget(props: { settings: any }) {
                   )}
                   {totalPrice > 0 && (
                     <div className="w-full flex justify-between text-xl font-semibold sm:text-base pt-4 pb-2 text-left rtl:text-right">
-                      <p className=" ">Total</p>
+                      <p className=" ">{t("totalPrice")}</p>
                       <p className="flex items-center gap-2">
                         <CurrencySymbol size={20} />
                         {totalPrice}
@@ -1578,13 +1681,17 @@ export default function ReservationWidget(props: { settings: any }) {
                       return (
                         <FormItem className="w-full">
                           <FormControl>
-                            <div className="flex items-start gap-3">
+                            <div className="flex items-center gap-3 cursor-pointer">
                               <Checkbox
-                                id="termsAccepted"
+                                id="paymentPolicyAccepted"
+                                className="h-6 w-6 cursor-pointer"
                                 checked={field.value}
                                 onCheckedChange={field.onChange}
                               />
-                              <Label htmlFor="termsAccepted">
+                              <Label
+                                htmlFor="paymentPolicyAccepted"
+                                className="cursor-pointer"
+                              >
                                 <Link
                                   href={`/${locale}/payment-policy`}
                                   target="_blank"
@@ -1607,13 +1714,17 @@ export default function ReservationWidget(props: { settings: any }) {
                       return (
                         <FormItem className="w-full">
                           <FormControl>
-                            <div className="flex items-start gap-3">
+                            <div className="flex items-center gap-3 cursor-pointer">
                               <Checkbox
                                 id="termsAccepted"
+                                className="h-6 w-6 cursor-pointer"
                                 checked={field.value}
                                 onCheckedChange={field.onChange}
                               />
-                              <Label htmlFor="termsAccepted">
+                              <Label
+                                htmlFor="termsAccepted"
+                                className="cursor-pointer"
+                              >
                                 <Link href={`/${locale}/terms`} target="_blank">
                                   {t("termsAndService")}
                                 </Link>
