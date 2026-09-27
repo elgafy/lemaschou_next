@@ -1237,7 +1237,7 @@ export default function ReservationWidget(props: { settings: any }) {
                                                         }}
                                                         disabled={!isAvailable}
                                                       >
-                                                        <SelectTrigger className="w-full bg-stone-50 border-stone-300 text-sm h-9">
+                                                        <SelectTrigger className="w-full bg-stone-50 border-stone-300 text-sm h-9 flex justify-between">
                                                           <SelectValue
                                                             placeholder={`${t("select")} ${locale === "ar" ? firstVarGroup.name_ar || firstVarGroup.name_en : firstVarGroup.name_en || firstVarGroup.name_ar}`}
                                                           />
@@ -1627,8 +1627,8 @@ export default function ReservationWidget(props: { settings: any }) {
               )}
               {(orderItems.length > 0 || downPayment > 0) && showTimer && (
                 <div>
-                <h4 className="p-4 text-base bg-white rounded-lg my-6 shadow-md" dangerouslySetInnerHTML={{ __html: settings.settings[`occasion_items_notice_${locale}`] }} >
-                </h4>
+                <div className="p-4 text-base bg-white rounded-lg my-6 shadow-md text-mainColor" dangerouslySetInnerHTML={{ __html: settings.settings[`occasion_items_notice_${locale}`] }} >
+                </div>
                 <div className="bg-white px-2 py-4 rounded-lg shadow-md flex-1 flex flex-col justify-center items-center text-center w-full px-6 mt-4">
                   <h3 className="text-xl font-semibold">{t("paymentTitle")}</h3>
 
