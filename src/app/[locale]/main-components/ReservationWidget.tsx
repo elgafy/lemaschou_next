@@ -43,6 +43,7 @@ import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { checkAvailability, makeReservation } from "@/lib/actions";
+import { getRecaptchaToken } from "@/lib/recaptchaClient";
 import {
   formatSeatingDuration,
   formatTimeDisplay,
@@ -497,7 +498,8 @@ export default function ReservationWidget(props: { settings: any }) {
   async function book(values: z.infer<typeof formSchema>) {
     setLoading(true);
     setBookingError(null);
-    const response = await makeReservation({ ...values, seatingTime }, locale);
+    const recaptchaToken = await getRecaptchaToken("book");
+    const response = await makeReservation({ ...values, seatingTime }, locale, recaptchaToken);
     console.log("makeReservation response:", response);
     if (response.success) {
       // Set reservation data to local storage and state
@@ -518,9 +520,11 @@ export default function ReservationWidget(props: { settings: any }) {
     // Booking failed — surface the reason instead of silently stopping.
     console.error("Booking failed:", response);
     setBookingError(
-      response?.message ||
-        response?.response?.message ||
-        t("bookingFailed"),
+      response?.message === "recaptcha_failed"
+        ? t("recaptchaFailed")
+        : response?.message ||
+          response?.response?.message ||
+          t("bookingFailed"),
     );
     setLoading(false);
   }

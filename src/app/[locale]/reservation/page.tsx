@@ -4,6 +4,7 @@ import { Metadata } from "next";
 import { getData } from "../actions";
 import { ReservationType } from "../AppTypes";
 import Image from "next/image";
+import Script from "next/script";
 import logoWord from "/public/assets/logo-word.svg";
 import ReservationWidget from "../main-components/ReservationWidget";
 
@@ -60,6 +61,12 @@ export default async function Reservation({ params: { locale } }: pageProps) {
         className="mobile:w-[80%] bxs:w-[70%]"
         />
         <ReservationWidget settings={reservationSettings} />
+      {process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY && (
+        <Script
+          src={`https://www.google.com/recaptcha/api.js?render=${process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}`}
+          strategy="afterInteractive"
+        />
+      )}
     </main>
   );
 }

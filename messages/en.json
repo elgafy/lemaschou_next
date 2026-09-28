@@ -189,6 +189,7 @@
     "enterPhoneNumber": "Enter a phone number",
     "searchCountry": "Search country...",
     "noCountryFound": "No country found.",
-    "startingFrom": "Starting from"
+    "startingFrom": "Starting from",
+    "recaptchaFailed": "Verification failed. Please try again."
   }
 }

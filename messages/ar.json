@@ -185,6 +185,7 @@
     "enterPhoneNumber": "أدخل رقم الهاتف",
     "searchCountry": "ابحث عن دولة...",
     "noCountryFound": "لا توجد دولة.",
-    "startingFrom": "يبدأ من"
+    "startingFrom": "يبدأ من",
+    "recaptchaFailed": "فشل التحقق. يرجى المحاولة مرة أخرى."
   }
 }

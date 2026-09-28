@@ -2,6 +2,7 @@
 
 import { z } from "zod";
 import { isValidPhoneNumber } from "libphonenumber-js";
+import { verifyRecaptchaToken } from "./recaptcha";
 
 export async function getReservationSettings(day: number = 0) {
     try {
@@ -70,7 +71,9 @@ export async function checkAvailability(date: Date, guests: number = 2) {
     
 }
 
-export async function makeReservation(formData: any, locale: string) {
+export async function makeReservation(formData: any, locale: string, recaptchaToken?: string | null) {
+    const captchaOk = await verifyRecaptchaToken(recaptchaToken, "book");
+    if (!captchaOk) return { success: false, message: "recaptcha_failed" };
     // console.log("Raw date: " + formData.date);
     console.log("JSON data: " + JSON.stringify(formData));
     // Validating form data before sending
