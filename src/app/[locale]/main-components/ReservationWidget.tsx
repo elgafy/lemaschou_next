@@ -1628,6 +1628,7 @@ export default function ReservationWidget(props: { settings: any }) {
                     />
                   )}
                 </div>
+                
               )}
               {(orderItems.length > 0 || downPayment > 0) && showTimer && (
                 <div>
