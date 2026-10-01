@@ -78,7 +78,7 @@ export default function ReservationWidget(props: { settings: any }) {
   const { settings } = props;
   const locale = useLocale();
   const router = useRouter();
-
+  console.log(settings.settings);
   const bookingWindow = settings.settings.booking_time_window
     ? settings.settings.booking_time_window * 60000
     : 300000; // 5 minutes in milliseconds
@@ -498,7 +498,10 @@ export default function ReservationWidget(props: { settings: any }) {
   async function book(values: z.infer<typeof formSchema>) {
     setLoading(true);
     setBookingError(null);
-    const recaptchaToken = await getRecaptchaToken("book");
+    // Only obtain a reCAPTCHA token when the backend settings toggle is on.
+    const recaptchaFlag = settings.settings?.enable_recaptcha;
+    const recaptchaEnabled = recaptchaFlag === "1" || recaptchaFlag === 1 || recaptchaFlag === true;
+    const recaptchaToken = recaptchaEnabled ? await getRecaptchaToken("book") : null;
     const response = await makeReservation({ ...values, seatingTime }, locale, recaptchaToken);
     console.log("makeReservation response:", response);
     if (response.success) {
@@ -1628,7 +1631,7 @@ export default function ReservationWidget(props: { settings: any }) {
                     />
                   )}
                 </div>
-                
+
               )}
               {(orderItems.length > 0 || downPayment > 0) && showTimer && (
                 <div>

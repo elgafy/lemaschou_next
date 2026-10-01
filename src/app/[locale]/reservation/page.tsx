@@ -61,12 +61,13 @@ export default async function Reservation({ params: { locale } }: pageProps) {
         className="mobile:w-[80%] bxs:w-[70%]"
         />
         <ReservationWidget settings={reservationSettings} />
-      {process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY && (
-        <Script
-          src={`https://www.google.com/recaptcha/api.js?render=${process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}`}
-          strategy="afterInteractive"
-        />
-      )}
+      {reservationSettings?.settings?.enable_recaptcha == "1" &&
+        process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY && (
+          <Script
+            src={`https://www.google.com/recaptcha/api.js?render=${process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}`}
+            strategy="afterInteractive"
+          />
+        )}
     </main>
   );
 }

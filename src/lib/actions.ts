@@ -72,8 +72,28 @@ export async function checkAvailability(date: Date, guests: number = 2) {
 }
 
 export async function makeReservation(formData: any, locale: string, recaptchaToken?: string | null) {
-    const captchaOk = await verifyRecaptchaToken(recaptchaToken, "book");
-    if (!captchaOk) return { success: false, message: "recaptcha_failed" };
+    // reCAPTCHA runs only when the backend settings toggle is on.
+    // The server checks the setting itself (not client-supplied) so it can't be spoofed.
+    let recaptchaEnabled = false;
+    try {
+        const settingsRes = await fetch(process.env.BASE_URL + "reservations/settings", {
+            method: "GET",
+            headers: { "Accept": "application/json", lang: locale },
+            cache: "no-store",
+        });
+        if (settingsRes.ok) {
+            const settingsData = await settingsRes.json();
+            const flag = settingsData?.data?.settings?.enable_recaptcha;
+            recaptchaEnabled = flag === "1" || flag === 1 || flag === true;
+        }
+    } catch (e) {
+        // Settings unreachable -> fail open (don't block bookings on a settings hiccup).
+        console.warn("reCAPTCHA: could not fetch settings — skipping verification", e);
+    }
+    if (recaptchaEnabled) {
+        const captchaOk = await verifyRecaptchaToken(recaptchaToken, "book");
+        if (!captchaOk) return { success: false, message: "recaptcha_failed" };
+    }
     // console.log("Raw date: " + formData.date);
     console.log("JSON data: " + JSON.stringify(formData));
     // Validating form data before sending
