@@ -1,6 +1,10 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Metadata } from "next";
-import { isFailedStatus, isPaidStatus } from "@/lib/reservationStatus";
+import {
+  isFailedStatus,
+  isPaidStatus,
+  isReservationConfirmed,
+} from "@/lib/reservationStatus";
 import { getData, requestData } from "../../actions";
 import { ReservationType } from "../../AppTypes";
 import Image from "next/image";
@@ -59,11 +63,13 @@ export default async function ReservationPage({
     reservation && Object.keys(reservation).length > 0 && reservation?.id
   );
 
-  // Single route renders the state that matches the payment status:
-  // paid -> success, failed -> failure (+ retry), anything else -> pending.
-  const status = reservation?.order?.status;
-  const paid = isPaidStatus(status);
-  const failed = isFailedStatus(status);
+  // Single route renders the state that matches the reservation + payment status:
+  // confirmed reservation or paid order -> success, failed order -> failure
+  // (+ retry), anything else -> pending.
+  const orderStatus = reservation?.order?.status;
+  const paid = isPaidStatus(orderStatus);
+  const failed = isFailedStatus(orderStatus);
+  const confirmed = isReservationConfirmed(reservation?.status);
 
   return (
     <main className="flex flex-col justify-center items-center reservation-container pt-32">
@@ -79,15 +85,15 @@ export default async function ReservationPage({
         <ReservationConfirmation
           reservation={reservation}
           title={
-            paid
+            confirmed || paid
               ? t("reservationSuccessTitle")
               : failed
                 ? t("paymentFailed")
                 : t("paymentPending")
           }
-          hint={failed ? t("paymentFailedHint") : undefined}
-          failed={failed}
-          showRetry={!paid}
+          hint={!confirmed && failed ? t("paymentFailedHint") : undefined}
+          failed={!confirmed && failed}
+          showRetry={!confirmed && !paid}
           retryHref={retryPaymentUrl}
         />
       ) : (
