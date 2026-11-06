@@ -17,17 +17,21 @@ import ReservationConfirmation from "../../main-components/ReservationConfirmati
 export const dynamic = "force-dynamic";
 
 type pageProps = {
-  params: {
+  params: Promise<{
     locale: string;
     reservation_id: string;
-  };
+  }>;
 };
 type MetaDataProps = {
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 };
-export async function generateMetadata({
-  params: { locale },
-}: MetaDataProps): Promise<Metadata> {
+export async function generateMetadata(props: MetaDataProps): Promise<Metadata> {
+  const params = await props.params;
+
+  const {
+    locale
+  } = params;
+
   const t = await getTranslations({ locale, namespace: "reservationPage" });
   const data: ReservationType = await getData("pages/reservation", locale);
 
@@ -49,9 +53,14 @@ export async function generateMetadata({
     },
   };
 }
-export default async function ReservationPage({
-  params: { locale, reservation_id },
-}: pageProps) {
+export default async function ReservationPage(props: pageProps) {
+  const params = await props.params;
+
+  const {
+    locale,
+    reservation_id
+  } = params;
+
   setRequestLocale(locale);
   const reservationData = await requestData(`reservations/${reservation_id}`);
   const reservation = reservationData?.data ?? reservationData;

@@ -9,22 +9,26 @@ import ReduxContainer from "@/store/redux-container";
 const MenuSection = dynamic(() => import("./components/MenuSection"));
 export const revalidate = 30;
 type pageProps = {
-  params: {
+  params: Promise<{
     locale: string;
-  };
+  }>;
 };
 export async function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
 type MetaDataProps = {
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 };
-export async function generateMetadata({
-  params: { locale },
-}: MetaDataProps): Promise<Metadata> {
+export async function generateMetadata(props: MetaDataProps): Promise<Metadata> {
+  const params = await props.params;
+
+  const {
+    locale
+  } = params;
+
   const t = await getTranslations({ locale, namespace: "menuPage" });
   const data: menuTypes = await getData("pages/menu", locale);
-  
+
 
   return {
     title: t("tab"),
@@ -45,20 +49,26 @@ export async function generateMetadata({
     },
   };
 }
-export default async function Menu({ params: { locale } }: pageProps) {
+export default async function Menu(props: pageProps) {
+  const params = await props.params;
+
+  const {
+    locale
+  } = params;
+
   setRequestLocale(locale);
 
-   async function fetchData() {
-    return await fetch(process.env.BASE_URL + "pages/menu", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        lang: locale,
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => data.data);
-  }
+  async function fetchData() {
+   return await fetch(process.env.BASE_URL + "pages/menu", {
+     method: "GET",
+     headers: {
+       "Content-Type": "application/json",
+       lang: locale,
+     },
+   })
+     .then((res) => res.json())
+     .then((data) => data.data);
+ }
 
   const data=await fetchData()
   const menuDataMeals: MenuData = await getMenuData("menu/request", locale);

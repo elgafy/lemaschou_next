@@ -1,7 +1,6 @@
 "use client";
 import { useLocale } from "next-intl";
 import { usePathname, useRouter } from "next/navigation";
-import React from "react";
 import arrow from "/public/icons/lang-changer-arrow.svg";
 import { cn } from "@/lib/utils";
 

@@ -15,10 +15,10 @@ const MenuSection = dynamic(
   () => import("@/app/[locale]/home-components/MenuSection")
 );
 type props = {
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 };
 type MetadataProps = {
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 };
 export const revalidate = 0;
 
@@ -26,9 +26,13 @@ export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
 
-export async function generateMetadata({
-  params: { locale },
-}: MetadataProps): Promise<Metadata> {
+export async function generateMetadata(props: MetadataProps): Promise<Metadata> {
+  const params = await props.params;
+
+  const {
+    locale
+  } = params;
+
   const t = await getTranslations({ locale, namespace: "homePage" });
   const data: HomeProps = await getData("pages/home", locale);
 
@@ -53,7 +57,13 @@ export async function generateMetadata({
   };
 }
 
-export default async function Home({ params: { locale } }: props) {
+export default async function Home(props0: props) {
+  const params = await props0.params;
+
+  const {
+    locale
+  } = params;
+
   setRequestLocale(locale);
   const data: HomeProps = await getData("pages/home", locale);
 

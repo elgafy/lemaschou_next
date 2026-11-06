@@ -1,4 +1,4 @@
-import React, { memo } from "react";
+import { memo } from "react";
 import { resort } from "../../main-components/fonts";
 import { MealModalCard } from "./MealModalCard";
 import Image from "next/image";

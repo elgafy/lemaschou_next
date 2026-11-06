@@ -1,6 +1,6 @@
 "use client";
 import { useTranslations } from "next-intl";
-import React, { useCallback, useState } from "react";
+import { useCallback, useState } from "react";
 import Image from "next/image";
 import { Event } from "../../AppTypes";
 import ImageModal from "./ImageModal";

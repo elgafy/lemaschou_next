@@ -1,5 +1,5 @@
 "use client";
-import React, { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Sling as Hamburger } from "hamburger-react";
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";

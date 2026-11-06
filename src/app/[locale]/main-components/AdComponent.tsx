@@ -1,5 +1,5 @@
 "use client";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { AdsType } from "../AppTypes";
 import { motion } from "framer-motion";
 import Image from "next/image";

@@ -1,5 +1,4 @@
 "use client";
-import React from "react";
 import { useTranslations } from "next-intl";
 import CustomLinkWithBG from "../main-components/CustomLinkWithBG";
 import ReduxContainer from "@/store/redux-container";

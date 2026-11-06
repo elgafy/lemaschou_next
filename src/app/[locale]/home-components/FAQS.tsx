@@ -1,4 +1,3 @@
-import React from "react";
 import { FAQSType } from "../AppTypes";
 import {
   Accordion,

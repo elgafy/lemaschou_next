@@ -1,4 +1,3 @@
-import React from "react";
 import logoWord from "/public/assets/logo-word.svg";
 import Image from "next/image";
 // import styles from "../styles.module.css";
