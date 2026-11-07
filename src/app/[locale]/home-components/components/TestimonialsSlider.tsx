@@ -1,5 +1,4 @@
 "use client";
-import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { A11y, Autoplay } from "swiper/modules";
 import { Swiper as SwiperType } from "swiper/types";
@@ -14,7 +13,7 @@ type props = {
 };
 
 function TestimonialsSlider({ testimonials }: props) {
-  const swiperRef = useRef<SwiperType>();
+  const swiperRef = useRef<SwiperType>(null);
   return (
     <div className="w-full relative">
       <div className={"SVGContainer"}>

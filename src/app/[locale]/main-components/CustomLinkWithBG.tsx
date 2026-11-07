@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { useLocale } from "next-intl";
 import { useAppDispatch, useAppSelector } from "@/store/store";

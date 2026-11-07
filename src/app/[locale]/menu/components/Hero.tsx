@@ -1,6 +1,5 @@
 "use client"
 import { useTranslations } from "next-intl";
-import React from "react";
 import logoWord from "/public/assets/logo-word.svg";
 import Image from "next/image";
 import { Meals } from "../../AppTypes";

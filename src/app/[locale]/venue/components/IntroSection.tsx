@@ -1,4 +1,3 @@
-import React from "react";
 import img from "/public/assets/venue-large-img.png";
 import { useTranslations } from "next-intl";
 import flower from "/public/assets/logoFlower.png";

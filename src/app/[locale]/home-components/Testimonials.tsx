@@ -1,4 +1,3 @@
-import React from "react";
 import TestimonialsSlider from "./components/TestimonialsSlider";
 import { HomeProps } from "../AppTypes";
 

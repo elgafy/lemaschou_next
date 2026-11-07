@@ -7,20 +7,24 @@ import { TermsType } from "../AppTypes";
 export const revalidate = 10;
 
 type pageProps = {
-  params: {
+  params: Promise<{
     locale: string;
-  };
+  }>;
 };
 type MetaDataProps = {
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 };
 export async function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
-export async function generateMetadata({
-  params: { locale },
-}: MetaDataProps): Promise<Metadata> {
-//   const t = await getTranslations({ locale, namespace: "termsPage" });
+export async function generateMetadata(props: MetaDataProps): Promise<Metadata> {
+  const params = await props.params;
+
+  const {
+    locale
+  } = params;
+
+  //   const t = await getTranslations({ locale, namespace: "termsPage" });
   const data: TermsType = await getData("pages/terms", locale);
 
   return {
@@ -41,7 +45,12 @@ export async function generateMetadata({
     },
   };
 }
-export default async function Terms({ params: { locale } }: pageProps) {
+export default async function Terms(props: pageProps) {
+  const params = await props.params;
+
+  const {
+    locale
+  } = params;
 
   setRequestLocale(locale);
   const data: TermsType = await getData("pages/terms", locale);

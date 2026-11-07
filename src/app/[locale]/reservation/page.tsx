@@ -11,19 +11,23 @@ import ReservationWidget from "../main-components/ReservationWidget";
 export const revalidate = 10;
 
 type pageProps = {
-  params: {
+  params: Promise<{
     locale: string;
-  };
+  }>;
 };
 type MetaDataProps = {
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 };
 export async function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
-export async function generateMetadata({
-  params: { locale },
-}: MetaDataProps): Promise<Metadata> {
+export async function generateMetadata(props: MetaDataProps): Promise<Metadata> {
+  const params = await props.params;
+
+  const {
+    locale
+  } = params;
+
   const t = await getTranslations({ locale, namespace: "reservationPage" });
   const data: ReservationType = await getData("pages/reservation", locale);
 
@@ -45,7 +49,12 @@ export async function generateMetadata({
     },
   };
 }
-export default async function Reservation({ params: { locale } }: pageProps) {
+export default async function Reservation(props: pageProps) {
+  const params = await props.params;
+
+  const {
+    locale
+  } = params;
 
   setRequestLocale(locale);
   const reservationSettings = await getData("reservations/settings", locale);

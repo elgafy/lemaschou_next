@@ -1,7 +1,7 @@
 "use client";
 import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
-import React, { useRef } from "react";
+import { useRef } from "react";
 import logoEN from "/public/icons/en-logo.webp";
 import logoAR from "/public/icons/ar-logo.webp";
 import Image from "next/image";
